@@ -23,6 +23,8 @@ import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
 class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), LifecycleRegistryOwner {
     companion object {
         const val EXTRA_ACTION_BUNDLE = "Action"
+
+        const val VIEW_MODEL_REQUEST_CODE = 87961
     }
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -70,10 +72,24 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
         finish()
     }
 
+    private val activityOpenObserver = Observer<Intent> {
+        if (it == null) {
+            return@Observer
+        }
+
+        startActivityForResult(it, VIEW_MODEL_REQUEST_CODE)
+    }
+
     override fun onBackPressed() {
         if (!viewModel.tryGoBack()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        viewModel.onActivityResultReceived(requestCode, resultCode, data)
     }
 
     private inner class ActionsAdapter : RecyclerView.Adapter<ActionsHolder>() {
