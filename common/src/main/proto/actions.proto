@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+package com.matejdro.wearmusiccenter.proto;
+
+option java_package = "com.matejdro.wearmusiccenter.proto";
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+message WatchActions {
+  repeated ProtoButtonInfo actions = 1;
+  required float volumeStep = 2;
+
+  message ProtoButtonInfo {
+    required bool physicalButton = 1;
+    required int32 buttonIndex = 2;
+    required int32 gesture = 3;
+    optional string actionKey = 4;
+  }
+}
+
+

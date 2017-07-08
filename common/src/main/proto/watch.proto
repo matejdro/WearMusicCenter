@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+package com.matejdro.wearmusiccenter.proto;
+
+option java_package = "com.matejdro.wearmusiccenter.proto";
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+message WatchInfo {
+  required bool roundWatch = 1;
+  required float displayDensity = 2;
+  repeated WatchButton buttons = 3;
+  required int32 displayWidth = 4;
+  required int32 displayHeight = 5;
+
+  message WatchButton {
+    required string label = 1;
+  }
+}
+
+

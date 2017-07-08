@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="music_screen_volume_bar_foreground_color">#EEE8EAF6</color>
+    <color name="music_screen_volume_bar_background_color">#EE3F51B5</color>
+</resources>

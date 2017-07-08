@@ -1,0 +1,1 @@
+protoc -I common/src/main --javalite_out=common/src/main/java common/src/main/proto/*.proto

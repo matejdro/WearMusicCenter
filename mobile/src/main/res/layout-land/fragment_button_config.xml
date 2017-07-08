@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="16dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".view.mainactivity.MainActivityResultReceiver"
+            tools:showIn="@layout/app_bar_main">
+
+            <TextView
+                android:id="@+id/on_screen_buttons_caption"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/on_screen_buttons"/>
+
+            <FrameLayout
+                android:id="@+id/watch_display"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_below="@id/on_screen_buttons_caption">
+
+                <ImageView
+                    android:id="@+id/watch_display_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/watch_square_background"/>
+
+                <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+                    android:id="@+id/four_way_touch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
+
+                <ImageView
+                    android:id="@+id/watch_display_border"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/watch_square_border"/>
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:columnCount="3"
+                    android:rowCount="3">
+
+                    <ImageView
+                        android:id="@+id/icon_left"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_column="0"
+                        android:layout_columnWeight="1"
+                        android:layout_row="1"
+                        android:layout_rowWeight="1"
+                        android:adjustViewBounds="false"
+                        android:padding="10dp"
+                        android:src="@drawable/action_pause"
+                        tools:ignore="ContentDescription"/>
+
+                    <ImageView
+                        android:id="@+id/icon_top"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_column="1"
+                        android:layout_columnWeight="1"
+                        android:layout_row="0"
+                        android:layout_rowWeight="1"
+                        android:padding="10dp"
+                        android:src="@drawable/action_volume_up"
+                        tools:ignore="ContentDescription"/>
+
+                    <ImageView
+                        android:id="@+id/icon_right"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_column="2"
+                        android:layout_columnWeight="1"
+                        android:layout_row="1"
+                        android:layout_rowWeight="1"
+                        android:padding="10dp"
+                        android:src="@drawable/action_skip_next"
+                        tools:ignore="ContentDescription"/>
+
+                    <ImageView
+                        android:id="@+id/icon_bottom"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_column="1"
+                        android:layout_columnWeight="1"
+                        android:layout_row="2"
+                        android:layout_rowWeight="1"
+                        android:padding="10dp"
+                        android:src="@drawable/action_volume_down"
+                        tools:ignore="ContentDescription"/>
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_column="1"
+                        android:layout_columnWeight="1"
+                        android:layout_row="1"
+                        android:layout_rowWeight="1"
+                        />
+
+
+                </GridLayout>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/caption_physical_buttons"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/physical_buttons"
+                android:layout_alignParentEnd="true"/>
+
+            <LinearLayout
+                android:id="@+id/watch_button_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end"
+                android:layout_below="@id/caption_physical_buttons"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@id/watch_display"/>
+        </RelativeLayout>
+
+
+    </ScrollView>
+</layout>

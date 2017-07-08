@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/playing_controls"
+            android:icon="@drawable/ic_play_black"
+            android:title="@string/playing_controls"/>
+        <item
+            android:id="@+id/stopped_controls"
+            android:icon="@drawable/ic_pause_black"
+            android:title="@string/stopped_controls"/>
+
+        <item
+            android:id="@+id/actions_menu"
+            android:icon="@drawable/ic_actions_menu"
+            android:title="@string/actions_menu"/>
+    </group>
+
+</menu>

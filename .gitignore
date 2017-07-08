@@ -1,0 +1,37 @@
+*.iml
+*.iws
+*.ipr
+.idea/
+.gradle/
+local.properties
+keystore.properties
+out/
+build/
+gradle*
+
+bin/
+.classpath
+.project
+.settings*
+gen/
+
+*/build/
+*.apk
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+fabric.properties
+crashlytics.properties
+com_crashlytics_export_strings.xml
+crashlytics-build.properties
+
+# Ignore build protobuf files
+/common/src/main/java/com/matejdro/wearmusiccenter/proto

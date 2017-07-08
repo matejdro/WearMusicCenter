@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.wearable.view.drawer.WearableDrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.matejdro.wearsandbox.MainActivity"
+        tools:deviceIds="wear">
+
+        <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+            android:id="@+id/four_way_touch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            tools:deviceIds="wear"
+            tools:ignore="KeyboardInaccessibleWidget">
+
+            <ImageView
+                android:id="@+id/album_art"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.333"
+                tools:ignore="ContentDescription"/>
+
+            <ImageView
+                android:id="@+id/icon_top"
+                android:layout_width="@dimen/music_screen_icon_size"
+                android:layout_height="@dimen/music_screen_icon_size"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="@dimen/music_screen_icon_offset"
+                android:src="@drawable/action_volume_up"
+                tools:ignore="ContentDescription"/>
+
+            <ImageView
+                android:id="@+id/icon_bottom"
+                android:layout_width="@dimen/music_screen_icon_size"
+                android:layout_height="@dimen/music_screen_icon_size"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="@dimen/music_screen_icon_offset"
+                android:src="@drawable/action_volume_down"
+                tools:ignore="ContentDescription"/>
+
+            <ImageView
+                android:id="@+id/icon_left"
+                android:layout_width="@dimen/music_screen_icon_size"
+                android:layout_height="@dimen/music_screen_icon_size"
+                android:layout_gravity="center|left"
+                android:layout_marginLeft="@dimen/music_screen_icon_offset"
+                android:src="@drawable/action_pause"
+                tools:ignore="ContentDescription,RtlHardcoded"/>
+
+            <ImageView
+                android:id="@+id/icon_right"
+                android:layout_width="@dimen/music_screen_icon_size"
+                android:layout_height="@dimen/music_screen_icon_size"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/music_screen_icon_offset"
+                android:src="@android:mipmap/sym_def_app_icon"
+                tools:ignore="ContentDescription,RtlHardcoded"/>
+
+            <TextView
+                android:id="@+id/ambient_clock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:textColor="@color/white"
+                android:paddingTop="5sp"
+                android:textSize="15sp"
+                android:visibility="gone"/>
+
+            <android.support.wearable.view.BoxInsetLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/music_screen_text_margin">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_box="all"
+                    android:orientation="vertical">
+
+                    <com.lb.auto_fit_textview.AutoResizeTextView
+                        android:id="@+id/text_artist"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:textSize="48sp"
+                        android:maxLength="30"
+                        android:ellipsize="end"/>
+
+                    <com.lb.auto_fit_textview.AutoResizeTextView
+                        android:id="@+id/text_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android:maxLength="40"
+                        android:ellipsize="end"/>
+
+                </LinearLayout>
+
+            </android.support.wearable.view.BoxInsetLayout>
+
+        </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
+
+        <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
+            android:id="@+id/volume_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/loading_indicator"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone"/>
+
+        <android.support.wearable.view.drawer.WearableDrawerView
+            android:id="@+id/action_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            app:drawer_content="@+id/drawer_content">
+
+            <FrameLayout
+                android:id="@+id/drawer_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/red">
+                <!-- Drawer content goes here.  -->
+            </FrameLayout>
+
+
+        </android.support.wearable.view.drawer.WearableDrawerView>
+
+    </android.support.wearable.view.drawer.WearableDrawerLayout>
+</layout>

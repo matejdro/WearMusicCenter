@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Music Center for Wear</string>
+    <string name="app_name_short">Music Center</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_play">Play</string>
+    <string name="action_skip_prev">Skip prev</string>
+    <string name="action_skip_next">Skip next</string>
+    <string name="group_playback_controls">Playback controls</string>
+    <string name="pick_action">Pick action</string>
+    <string name="action_volume_up">Increase volume</string>
+    <string name="volume_down">Decrease volume</string>
+    <string name="group_volume_controls">Volume controls</string>
+    <string name="no_watch_detected">No watch detected</string>
+    <string name="connection_instructions">Open Music Center app on the watch to initiate connection</string>
+    <string name="playing_controls">Playing controls</string>
+    <string name="stopped_controls">Stopped controls</string>
+    <string name="actions_menu">Actions menu</string>
+    <string name="on_screen_buttons">ON-SCREEN BUTTONS</string>
+    <string name="physical_buttons">PHYSICAL BUTTONS</string>
+    <string name="no_action">No action</string>
+    <string name="gesture_single_press">Single press</string>
+    <string name="gesture_double_press">Double press</string>
+</resources>
