@@ -26,7 +26,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
         private const val PREF_NAME = "custom_icon_storage"
         private const val PREF_KEY_NUM_SAVES = "num_saves"
 
-        private const val GC_SAVES_THRESHOLD = 1
+        private const val GC_SAVES_THRESHOLD = 10
 
         private const val MAX_MEMORY_LRU_STORE_SIZE_BYTES = 5_000_000
 
