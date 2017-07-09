@@ -19,7 +19,7 @@ import com.matejdro.wearmusiccenter.common.util.FloatPacker
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
-import com.matejdro.wearmusiccenter.di.DaggerMusicServiceComponent
+import com.matejdro.wearmusiccenter.di.GlobalConfig
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
@@ -41,6 +41,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     lateinit var mediaSessionProvider: ActiveMediaSessionProvider
 
     @Inject
+    @field:GlobalConfig
     lateinit var configProvider: ActionConfigProvider
 
     @Inject
@@ -54,11 +55,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     override fun onCreate() {
         super.onCreate()
 
-        DaggerMusicServiceComponent
-                .builder()
-                .appComponent(WearMusicCenter.getAppComponent())
-                .build()
-                .inject(this)
+        WearMusicCenter.getAppComponent().inject(this)
 
         connectionThread.start()
         connectionHandler = Handler(connectionThread.looper)

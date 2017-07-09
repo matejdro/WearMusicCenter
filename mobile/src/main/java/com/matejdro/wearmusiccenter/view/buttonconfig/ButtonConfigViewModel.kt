@@ -7,6 +7,7 @@ import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.ActionConfigStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.di.ConfigActivityComponent
+import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import javax.inject.Inject
 
 class ButtonConfigViewModel(setsPlaybackActions : Boolean, configActivityComponent: ConfigActivityComponent) : ViewModel() {
@@ -14,6 +15,7 @@ class ButtonConfigViewModel(setsPlaybackActions : Boolean, configActivityCompone
     lateinit var watchInfoProvider: WatchInfoProvider
 
     @Inject
+    @field:LocalActivityConfig
     lateinit var buttonConfigProvider : ActionConfigProvider
 
     val buttonConfig = MutableLiveData<ActionConfigStorage>()

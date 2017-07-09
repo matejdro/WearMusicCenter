@@ -1,6 +1,7 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
@@ -10,10 +11,12 @@ import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v4.app.DialogFragment
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
@@ -21,6 +24,7 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.*
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
+import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 import timber.log.Timber
@@ -58,6 +62,7 @@ class GesturePickerFragment : DialogFragment() {
     private lateinit var actions : Array<PhoneAction?>
 
     @Inject
+    @field:LocalActivityConfig
     lateinit var configProvider: ActionConfigProvider
 
     private lateinit var buttonConfig: ActionConfigStorage
