@@ -30,5 +30,5 @@ class PlayAction : SelectableAction {
     }
 
     override fun getName(): String = context.getString(R.string.action_play)
-    override fun getIcon(): Drawable = context.getDrawable(R.drawable.action_play)
+    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_play)
 }

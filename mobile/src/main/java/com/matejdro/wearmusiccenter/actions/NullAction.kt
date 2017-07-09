@@ -3,8 +3,8 @@ package com.matejdro.wearmusiccenter.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 
 class NullAction : PhoneAction {
@@ -21,5 +21,5 @@ class NullAction : PhoneAction {
 
     override fun getName(): String = context.getString(R.string.no_action)
 
-    override fun getIcon(): Drawable = context.getDrawable(R.drawable.ic_cross_black)
+    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.ic_cross_black)
 }

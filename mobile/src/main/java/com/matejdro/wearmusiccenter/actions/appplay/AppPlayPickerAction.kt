@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.actions.playback.AppPlayAction
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 
@@ -20,7 +19,7 @@ class AppPlayPickerAction : PhoneAction {
     }
 
     override fun getName(): String = context.getString(R.string.start_playback)
-    override fun getIcon(): Drawable = context.getDrawable(R.drawable.ic_apps)
+    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.ic_apps)
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         val actions = getAllMusicApps(context)

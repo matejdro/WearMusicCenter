@@ -8,6 +8,7 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 interface ActionConfigStorage {
     fun saveButtonAction(buttonInfo: ButtonInfo, action : PhoneAction?)
     fun getScreenAction(buttonInfo: ButtonInfo) : PhoneAction?
+    fun getAllActions() : Collection<Map.Entry<ButtonInfo, PhoneAction>>
 
     fun commit()
 }

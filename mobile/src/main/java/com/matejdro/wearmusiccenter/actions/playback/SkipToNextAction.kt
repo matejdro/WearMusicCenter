@@ -3,9 +3,9 @@ package com.matejdro.wearmusiccenter.actions.playback
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.SelectableAction
+import com.matejdro.wearmusiccenter.music.MusicService
 
 class SkipToNextAction : SelectableAction {
     constructor(context : Context) : super(context)
@@ -16,5 +16,5 @@ class SkipToNextAction : SelectableAction {
     }
 
     override fun getName(): String = context.getString(R.string.action_skip_next)
-    override fun getIcon(): Drawable = context.getDrawable(R.drawable.action_skip_next)
+    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_skip_next)
 }

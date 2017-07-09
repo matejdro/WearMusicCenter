@@ -30,6 +30,10 @@ constructor(playbackConfig: Boolean, context : Context, private val watchInfoPro
         return configMap[buttonInfo]
     }
 
+    override fun getAllActions(): Collection<Map.Entry<ButtonInfo, PhoneAction>> {
+        return configMap.entries
+    }
+
     init {
         val diskSuffix : String
         val watchSenderPath : String

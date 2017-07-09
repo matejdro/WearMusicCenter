@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
 import com.matejdro.wearmusiccenter.actions.appplay.AppPlayPickerAction
-import com.matejdro.wearmusiccenter.actions.tasker.TaskerTaskPickerAction
 import com.matejdro.wearmusiccenter.actions.playback.PlaybackActionList
+import com.matejdro.wearmusiccenter.actions.tasker.TaskerTaskPickerAction
 import com.matejdro.wearmusiccenter.actions.volume.VolumeActionList
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
@@ -40,7 +40,7 @@ class RootActionList : PhoneAction {
         throw UnsupportedOperationException()
     }
 
-    override fun getIcon(): Drawable {
+    override fun retrieveIcon(): Drawable {
         throw UnsupportedOperationException()
     }
 

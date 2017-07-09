@@ -3,9 +3,9 @@ package com.matejdro.wearmusiccenter.actions.volume
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import java.lang.UnsupportedOperationException
 
@@ -28,7 +28,7 @@ class VolumeActionList : PhoneAction {
         return context.getString(R.string.group_volume_controls)
     }
 
-    override fun getIcon(): Drawable {
+    override fun retrieveIcon(): Drawable {
         return context.getDrawable(R.drawable.action_volume_up)
     }
 

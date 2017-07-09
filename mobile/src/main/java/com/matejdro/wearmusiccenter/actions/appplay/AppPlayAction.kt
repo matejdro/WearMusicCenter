@@ -1,4 +1,4 @@
-package com.matejdro.wearmusiccenter.actions.playback
+package com.matejdro.wearmusiccenter.actions.appplay
 
 import android.content.ComponentName
 import android.content.Context
@@ -89,10 +89,10 @@ class AppPlayAction : SelectableAction {
     }
 
     override fun getName(): String = lazyName
-    override fun getIcon(): Drawable = lazyIcon
+    override fun retrieveIcon(): Drawable = lazyIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {
         other as AppPlayAction
-        return this.receiverComponent == other.receiverComponent
+        return super.isEqualToAction(other) && this.receiverComponent == other.receiverComponent
     }
 }

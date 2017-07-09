@@ -43,10 +43,10 @@ class TaskerTaskAction : SelectableAction {
     }
 
     override fun getName(): String = taskName
-    override fun getIcon(): Drawable = taskerIcon
+    override fun retrieveIcon(): Drawable = taskerIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {
         other as TaskerTaskAction
-        return this.taskName == other.taskName
+        return  super.isEqualToAction(other) && this.taskName == other.taskName
     }
 }
