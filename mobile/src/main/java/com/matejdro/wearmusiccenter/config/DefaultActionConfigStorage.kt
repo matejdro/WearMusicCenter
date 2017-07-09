@@ -10,7 +10,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
 class DefaultActionConfigStorage
-constructor(playbackConfig: Boolean, context : Context, private val watchInfoProvider: WatchInfoProvider) : ActionConfigStorage {
+constructor(playbackConfig: Boolean, context : Context, watchInfoProvider: WatchInfoProvider) : ActionConfigStorage {
     private val configMap = ArrayMap<ButtonInfo, PhoneAction>()
     private var commiting : Boolean = false
     private var commitAgain : Boolean = false
