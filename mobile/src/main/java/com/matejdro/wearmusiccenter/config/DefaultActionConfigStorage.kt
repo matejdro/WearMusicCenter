@@ -8,7 +8,6 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import timber.log.Timber
 
 class DefaultActionConfigStorage
 constructor(playbackConfig: Boolean, context : Context, private val watchInfoProvider: WatchInfoProvider) : ActionConfigStorage {
@@ -28,8 +27,6 @@ constructor(playbackConfig: Boolean, context : Context, private val watchInfoPro
     }
 
     override fun getScreenAction(buttonInfo: ButtonInfo): PhoneAction? {
-        Timber.d(configMap.toString())
-
         return configMap[buttonInfo]
     }
 
