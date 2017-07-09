@@ -25,4 +25,8 @@
     <string name="no_action">No action</string>
     <string name="gesture_single_press">Single press</string>
     <string name="gesture_double_press">Double press</string>
+    <string name="start_playback">Start playback</string>
+    <string name="uninstalled_app">Uninstalled app</string>
+
+    <string name="play_app">Play %1$s</string>
 </resources>

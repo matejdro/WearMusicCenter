@@ -3,9 +3,10 @@ package com.matejdro.wearmusiccenter.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import com.matejdro.wearmusiccenter.music.MusicService
+import com.matejdro.wearmusiccenter.actions.appplay.AppPlayPickerAction
 import com.matejdro.wearmusiccenter.actions.playback.PlaybackActionList
 import com.matejdro.wearmusiccenter.actions.volume.VolumeActionList
+import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import java.lang.UnsupportedOperationException
 
@@ -22,7 +23,8 @@ class RootActionList : PhoneAction {
         actionPicker.displayedActions.value = listOf(
                 NullAction(context),
                 PlaybackActionList(context),
-                VolumeActionList(context)
+                VolumeActionList(context),
+                AppPlayPickerAction(context)
         )
     }
 
