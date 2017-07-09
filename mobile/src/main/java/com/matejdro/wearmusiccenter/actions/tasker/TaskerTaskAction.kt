@@ -1,0 +1,52 @@
+package com.matejdro.wearmusiccenter.actions.tasker
+
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.os.PersistableBundle
+import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.actions.SelectableAction
+import com.matejdro.wearmusiccenter.music.MusicService
+import com.matejdro.wearutils.tasker.TaskerIntent
+
+class TaskerTaskAction : SelectableAction {
+    companion object {
+        const val KEY_TASK_NAME = "TASK_NAME"
+    }
+
+    val taskName : String
+
+    constructor(context : Context, taskName : String) : super(context) {
+        this.taskName = taskName
+    }
+    constructor(context : Context, bundle: PersistableBundle) : super(context, bundle) {
+        this.taskName = bundle.getString(KEY_TASK_NAME)
+    }
+
+    private val taskerIcon by lazy {
+        try {
+            context.packageManager.getApplicationIcon(TaskerIntent.getInstalledTaskerPackage(context))
+        } catch(ignored: PackageManager.NameNotFoundException) {
+            context.getDrawable(android.R.drawable.sym_def_app_icon)
+        }
+    }
+
+    override fun execute(service: MusicService) {
+        val taskerIntent = TaskerIntent(taskName)
+        service.sendBroadcast(taskerIntent)
+    }
+
+    override fun writeToBundle(bundle: PersistableBundle) {
+        super.writeToBundle(bundle)
+
+        bundle.putString(KEY_TASK_NAME, taskName)
+    }
+
+    override fun getName(): String = taskName
+    override fun getIcon(): Drawable = taskerIcon
+
+    override fun isEqualToAction(other : PhoneAction) : Boolean {
+        other as TaskerTaskAction
+        return this.taskName == other.taskName
+    }
+}

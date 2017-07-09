@@ -24,7 +24,7 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
     companion object {
         const val EXTRA_ACTION_BUNDLE = "Action"
 
-        const val VIEW_MODEL_REQUEST_CODE = 87961
+        const val VIEW_MODEL_REQUEST_CODE = 7961
     }
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -45,6 +45,7 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
         viewModel = ViewModelProviders.of(this)[ActionPickerViewModel::class.java]
         viewModel.displayedActions.observe(this, listObserver)
         viewModel.selectedAction.observe(this, pickObserver)
+        viewModel.activityStarter.observe(this, activityOpenObserver)
 
         recycler = binding.recycler
         adapter = ActionsAdapter()
@@ -89,7 +90,9 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        viewModel.onActivityResultReceived(requestCode, resultCode, data)
+        if (requestCode == VIEW_MODEL_REQUEST_CODE) {
+            viewModel.onActivityResultReceived(requestCode, resultCode, data)
+        }
     }
 
     private inner class ActionsAdapter : RecyclerView.Adapter<ActionsHolder>() {

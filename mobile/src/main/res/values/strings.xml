@@ -29,4 +29,5 @@
     <string name="uninstalled_app">Uninstalled app</string>
 
     <string name="play_app">Play %1$s</string>
+    <string name="tasker_task">Tasker Task</string>
 </resources>
