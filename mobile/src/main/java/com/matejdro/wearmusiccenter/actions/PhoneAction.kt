@@ -29,6 +29,22 @@ abstract class PhoneAction : Bundlable {
         super.writeToBundle(bundle)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        if (this === other) return true
+        if (other.javaClass != this.javaClass) return false
+
+        return isEqualToAction(other as PhoneAction)
+    }
+
+    override fun hashCode(): Int {
+        return 0
+    }
+
+    protected open fun isEqualToAction(other : PhoneAction) : Boolean {
+        return true
+    }
+
     companion object {
         const val FIELD_ICON_BITMAP = "Icon"
 
@@ -67,4 +83,6 @@ abstract class PhoneAction : Bundlable {
             dest.writeInt(a)
         }
     }
+
+
 }

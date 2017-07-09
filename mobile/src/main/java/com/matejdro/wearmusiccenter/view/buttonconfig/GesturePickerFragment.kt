@@ -5,6 +5,7 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -22,6 +23,7 @@ import com.matejdro.wearmusiccenter.config.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
+import timber.log.Timber
 import javax.inject.Inject
 
 class GesturePickerFragment : DialogFragment() {
@@ -127,8 +129,14 @@ class GesturePickerFragment : DialogFragment() {
             icon.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
         }
 
+        // Wrap icon into another dummy drawable, so setting its bounds will not affect the icon
+        icon = InsetDrawable(icon, 0)
+
+        val iconSize = resources.getDimensionPixelSize(R.dimen.action_icon_size)
+        icon.setBounds(0, 0, iconSize, iconSize)
+
         button.text = mutableAction.getName()
-        button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
+        button.setCompoundDrawables(icon, null, null, null)
     }
 
     fun save() {
@@ -155,7 +163,7 @@ class GesturePickerFragment : DialogFragment() {
             val actionBundle = data.getParcelableExtra<PersistableBundle>(ActionPickerActivity.EXTRA_ACTION_BUNDLE)
             val action = PhoneAction.deserialize<PhoneAction>(activity, actionBundle)
 
-            anythingChanged = anythingChanged || action?.javaClass != actions[gesture]?.javaClass
+            anythingChanged = anythingChanged || action != actions[gesture]
 
             actions[gesture] = action
             applyButton(buttons[gesture], action)
