@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="music_screen_icon_offset">0dp</dimen>
+    <dimen name="music_screen_icon_offset">4dp</dimen>
     <dimen name="music_screen_icon_size">24dp</dimen>
     <dimen name="music_screen_text_margin">30dp</dimen>
     <dimen name="music_screen_volume_bar_width">30dp</dimen>
