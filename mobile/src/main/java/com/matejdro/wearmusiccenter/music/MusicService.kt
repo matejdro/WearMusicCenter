@@ -30,7 +30,7 @@ import javax.inject.Inject
 class MusicService : LifecycleService(), MessageApi.MessageListener {
     companion object {
         const val MESSAGE_STOP_SELF = 0
-        const val ACK_TIMEOUT = 3000L
+        const val ACK_TIMEOUT_MS = 10_000L
     }
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -157,6 +157,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             return
         }
 
+        Timber.d("TransmittingToWear")
         transmitToWear(musicState, albumArt)
     }
 
@@ -184,7 +185,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             putDataRequest.setUrgent()
 
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
-            Timber.d("Transmitting " + musicState)
+
+            ackTimeoutHandler.sendEmptyMessageDelayed(0, ACK_TIMEOUT_MS)
         }
     }
 
@@ -211,6 +213,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     .Handler() {
         override fun dispatchMessage(msg: android.os.Message?) {
             if (msg?.what == MESSAGE_STOP_SELF) {
+                Timber.d("TIMEOUT!")
                 service.get()?.stopSelf()
             }
         }
