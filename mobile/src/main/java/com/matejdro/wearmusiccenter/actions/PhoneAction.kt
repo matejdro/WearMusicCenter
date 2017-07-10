@@ -93,7 +93,6 @@ abstract class PhoneAction : Bundlable {
                 return constructor.newInstance(context, bundle) as T?
             } catch(e: ReflectiveOperationException) {
                 Timber.e(e, "PhoneAction deserialization error")
-                e.printStackTrace()
                 return null
             }
         }
