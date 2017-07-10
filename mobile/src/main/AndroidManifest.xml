@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:tools="http://schemas.android.com/tools"
-    package="com.matejdro.wearmusiccenter"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.matejdro.wearmusiccenter">
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -40,7 +40,7 @@
 
                 <data
                     android:host="*"
-                    android:pathPrefix="/Messages/WatchOpened"
+                    android:pathPrefix="/Messages"
                     android:scheme="wear"/>
             </intent-filter>
         </service>
