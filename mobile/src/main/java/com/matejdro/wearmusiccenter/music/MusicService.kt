@@ -1,7 +1,9 @@
 package com.matejdro.wearmusiccenter.music
 
+import android.app.PendingIntent
 import android.arch.lifecycle.LifecycleService
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -29,8 +31,11 @@ import javax.inject.Inject
 
 class MusicService : LifecycleService(), MessageApi.MessageListener {
     companion object {
-        const val MESSAGE_STOP_SELF = 0
-        const val ACK_TIMEOUT_MS = 10_000L
+        private const val MESSAGE_STOP_SELF = 0
+        private const val ACK_TIMEOUT_MS = 10_000L
+
+        private const val STOP_SELF_PENDING_INTENT_REQUEST_CODE = 333
+        private const val ACTION_STOP_SELF = "STOP_SELF"
     }
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -77,16 +82,33 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         watchInfoProvider.observe(this, Observer<WatchInfoWithIcons> {})
 
-        //TODO fix notification and add remove event
+        val stopSelfIntent = Intent(this, MusicService::class.java)
+        stopSelfIntent.action = ACTION_STOP_SELF
+
+        val stopSelfPendingIntent = PendingIntent.getService(this,
+                STOP_SELF_PENDING_INTENT_REQUEST_CODE,
+                stopSelfIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+
+        //TODO fix notification icon and text
         val persistentNotification = NotificationCompat.Builder(this)
                 .setContentText("Music Service active")
                 .setContentTitle("WearMusicCenter")
+                .setContentIntent(stopSelfPendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .build()
 
         startForeground(1, persistentNotification)
 
         Timber.d("Service started")
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP_SELF) {
+            stopSelf()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
