@@ -56,7 +56,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
     private var previousMusicState: MusicState? = null
     var currentMediaController: MediaController? = null
-    private var firstMessage = false
+    private var firstMessage = true
 
     override fun onCreate() {
         super.onCreate()
