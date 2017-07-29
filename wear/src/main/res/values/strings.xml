@@ -7,4 +7,5 @@
     <string name="hello_world">Hello Square World!</string>
     <string name="no_phone">No phone connected</string>
     <string name="playback_stopped">Playback Stopped</string>
+    <string name="error">ERROR</string>
 </resources>

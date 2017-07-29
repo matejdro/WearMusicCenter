@@ -163,6 +163,9 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
             }
 
             binding.textTitle.text = it.data?.title
+        } else if (it.status == Resource.Status.ERROR) {
+            binding.textArtist.text = getString(R.string.error)
+            binding.textTitle.text = it.message
         } else {
             binding.textArtist.text = ""
             binding.textTitle.text = getString(R.string.playback_stopped)
