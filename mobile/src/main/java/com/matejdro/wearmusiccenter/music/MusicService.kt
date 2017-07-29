@@ -56,6 +56,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
     private var previousMusicState: MusicState? = null
     var currentMediaController: MediaController? = null
+    private var firstMessage = false
 
     override fun onCreate() {
         super.onCreate()
@@ -155,7 +156,12 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         val musicStateBuilder = MusicState.newBuilder()
         var albumArt: Bitmap? = null
 
-        musicStateBuilder.time = System.currentTimeMillis().toInt()
+        if (firstMessage) {
+            // Add time to the first message to make sure it gets transmitted even if it is
+            // identical to the previous one
+            musicStateBuilder.time = System.currentTimeMillis().toInt()
+            firstMessage = false
+        }
 
         if (mediaController == null) {
             musicStateBuilder.playing = false
@@ -175,9 +181,6 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
 
         val musicState = musicStateBuilder.build()
-        if (musicState.equalsIgnoringTime(previousMusicState)) {
-            return
-        }
 
         Timber.d("TransmittingToWear")
         transmitToWear(musicState, albumArt)
@@ -238,12 +241,4 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             }
         }
     }
-
-    fun MusicState.equalsIgnoringTime(other: MusicState?): Boolean {
-        return other != null &&
-                other.playing == playing &&
-                other.artist == artist &&
-                other.title == title
-    }
-
 }
