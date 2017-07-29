@@ -196,8 +196,6 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                         true)
             }
 
-            Timber.d("AlbumArtSize " + albumArt?.width + " " + albumArt?.height + " " + watchInfo?.displayWidth + " " + watchInfo?.displayHeight)
-
             if (albumArt != null) {
                 val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt))
                 putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
