@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
@@ -74,7 +75,12 @@ class PhoneConnection(private val context: Context
         }
 
         connectionHandler.post {
-            googleApiClient.blockingConnect()
+            val result = googleApiClient.blockingConnect()
+
+            if (!result.isSuccess) {
+                GoogleApiAvailability.getInstance().showErrorNotification(context, result)
+                return@post
+            }
 
             Wearable.DataApi.addListener(googleApiClient, this)
 
