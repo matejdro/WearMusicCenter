@@ -1,5 +1,6 @@
 package com.matejdro.wearmusiccenter.watch.view
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
@@ -34,6 +35,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         private const val VOLUME_BAR_TIMEOUT = 1000L
 
+        @SuppressLint("StaticFieldLeak")
         private var storedViewModel: MusicViewModel? = null
     }
 
