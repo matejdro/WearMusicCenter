@@ -1,4 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.2'
+    }
+}
+
+
 apply plugin: 'com.android.library'
+apply plugin: 'com.google.protobuf'
 apply plugin: 'kotlin-android'
 
 android {
@@ -43,5 +54,20 @@ repositories {
 kotlin {
     experimental {
         coroutines "enable"
+    }
+}
+
+protobuf {
+    plugins {
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                javalite { }
+            }
+        }
     }
 }
