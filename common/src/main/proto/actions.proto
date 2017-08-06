@@ -18,4 +18,12 @@ message WatchActions {
   }
 }
 
+message WatchList {
+  repeated WatchListAction actions = 1;
+
+  message WatchListAction {
+    required string actionTitle = 1;
+    optional string actionKey = 2;
+  }
+}
 

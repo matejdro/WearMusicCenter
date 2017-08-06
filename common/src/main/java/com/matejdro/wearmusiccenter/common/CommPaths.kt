@@ -6,7 +6,6 @@ interface CommPaths {
         const val WATCH_APP_CAPABILITY = "MusicCenterWatch"
 
         const val DATA_MUSIC_STATE = "/Music/State"
-        const val DATA_MUSIC_VOLUME = "/Music/Volume"
         const val DATA_WATCH_INFO = "/WatchInfo"
         const val ASSET_WATCH_INFO_BUTTON_PREFIX = "/WatchInfo/Button"
 
@@ -20,6 +19,7 @@ interface CommPaths {
         const val ASSET_ALBUM_ART = "AlbumArt"
 
         const val DATA_ACTION_CONFIG_PREFIX = "/Actions"
+        const val DATA_LIST_ITEMS = "/ActionList"
 
         const val DATA_PLAYING_ACTION_CONFIG = DATA_ACTION_CONFIG_PREFIX + "/Playback"
         const val DATA_STOPPING_ACTION_CONFIG = DATA_ACTION_CONFIG_PREFIX + "/Stopped"

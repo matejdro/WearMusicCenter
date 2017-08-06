@@ -32,7 +32,6 @@ import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
-import timber.log.Timber
 
 class ActionListFragment : LifecycleFragment(), FabFragment {
     companion object {
@@ -109,7 +108,6 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
     }
 
     val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>> {
-        Timber.d("Received: %s", it)
         if (it == null) {
             return@Observer
         }

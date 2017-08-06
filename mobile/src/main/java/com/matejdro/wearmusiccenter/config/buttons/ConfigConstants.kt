@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.config.buttons
 
-interface ButtonConfigConstants {
+interface ConfigConstants {
     companion object {
         const val ICON_SIZE_DP = 24
 

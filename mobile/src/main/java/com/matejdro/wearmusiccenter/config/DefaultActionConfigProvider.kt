@@ -10,7 +10,7 @@ class DefaultActionConfigProvider (private val context: Context, private val wat
 
     private val playingConfig by lazy { DefaultActionConfigStorage(true, context, watchInfoProvider) }
     private val stoppedConfig by lazy { DefaultActionConfigStorage(false, context, watchInfoProvider) }
-    private val actionListConfig by lazy { DefaultActionListStorage(context) }
+    private val actionListConfig by lazy { DefaultActionListStorage(context, watchInfoProvider) }
 
     override fun getPlayingConfig(): ActionConfigStorage = playingConfig
     override fun getStoppedConfig(): ActionConfigStorage = stoppedConfig

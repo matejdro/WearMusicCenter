@@ -47,7 +47,6 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
                 for (action in actions.actionsList) {
                     val buttonInfo = ButtonInfo(action)
 
-                    //TODO standard icons
                     val iconKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + buttonInfo.getKey()
                     val iconAsset = it.assets[iconKey]
                     val icon = BitmapUtils.deserialize(DataUtils.getByteArrayAsset(iconAsset,

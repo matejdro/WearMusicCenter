@@ -1,7 +1,6 @@
-package com.matejdro.wearmusiccenter.config.buttons
+package com.matejdro.wearmusiccenter.config.actionlist
 
 import android.content.Context
-import android.media.AudioManager
 import android.support.annotation.WorkerThread
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
@@ -10,12 +9,12 @@ import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
-import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
-import com.matejdro.wearmusiccenter.proto.WatchActions
+import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
+import com.matejdro.wearmusiccenter.proto.WatchList
 import com.matejdro.wearutils.miscutils.BitmapUtils
 
-class WatchConfigSender(private val context : Context, private val watchInfoProvider: WatchInfoProvider, private val endpointPath : String) {
+class WatchActionListSender(private val context: Context, private val watchInfoProvider: WatchInfoProvider) {
     val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addApi(Wearable.API)
             .build()
@@ -25,7 +24,7 @@ class WatchConfigSender(private val context : Context, private val watchInfoProv
     }
 
     @WorkerThread
-    fun sendConfigToWatch(buttons: Collection<Map.Entry<ButtonInfo, PhoneAction>>): Boolean {
+    fun sendConfigToWatch(actions: List<PhoneAction>): Boolean {
         val connectionStatus = apiClient.blockingConnect()
         if (!connectionStatus.isSuccess) {
             GoogleApiAvailability.getInstance().showErrorNotification(context, connectionStatus)
@@ -35,25 +34,20 @@ class WatchConfigSender(private val context : Context, private val watchInfoProv
         val density = watchInfoProvider.value?.watchInfo?.displayDensity ?: 1f
         val targetIconSize = (ConfigConstants.ICON_SIZE_DP * density).toInt()
 
-        val putDataRequest = PutDataRequest.create(endpointPath)
-        val protoBuilder = WatchActions.newBuilder()
-        protoBuilder.volumeStep = volumeStep
+        val putDataRequest = PutDataRequest.create(CommPaths.DATA_LIST_ITEMS)
+        val protoBuilder = WatchList.newBuilder()
 
-        for ((buttonInfo, action) in buttons) {
-            val buttonInfoProto = buttonInfo.buildProtoVersion()
-            buttonInfoProto.actionKey = action.javaClass.canonicalName
-            protoBuilder.addActions(buttonInfoProto.build())
-
-            if (buttonInfo.physicalButton) {
-                // No need to send action images for physical buttons
-                continue
-            }
+        for ((index, action) in actions.withIndex()) {
+            val actionProto = WatchList.WatchListAction.newBuilder()
+            actionProto.actionTitle = action.getTitle()
+            actionProto.actionKey = action.javaClass.canonicalName
+            protoBuilder.addActions(actionProto.build())
 
             var icon = BitmapUtils.getBitmap(action.getIcon())
             icon = BitmapUtils.shrinkPreservingRatio(icon, targetIconSize, targetIconSize, true)
 
             val iconData = BitmapUtils.serialize(icon)
-            val assetKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + buttonInfo.getKey()
+            val assetKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + index
             putDataRequest.putAsset(assetKey, Asset.createFromBytes(iconData))
         }
 
@@ -61,14 +55,5 @@ class WatchConfigSender(private val context : Context, private val watchInfoProv
 
         val result = Wearable.DataApi.putDataItem(apiClient, putDataRequest).await()
         return result.status.isSuccess
-    }
-
-    private val volumeStep by lazy {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-        val volumeSteps = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val volumeStep = 1f / volumeSteps
-
-        volumeStep
     }
 }

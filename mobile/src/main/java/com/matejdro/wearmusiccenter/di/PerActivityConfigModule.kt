@@ -8,6 +8,7 @@ import dagger.Provides
 
 @Module
 class PerActivityConfigModule {
+    @Suppress("UNUSED_PARAMETER")
     @Provides
     @PerContextLifecycle
     @LocalActivityConfig

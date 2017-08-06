@@ -45,16 +45,16 @@ class DiskConfigStorage(private val context: Context, fileSuffix : String) {
     private fun getConfigBundle(buttons : Collection<Map.Entry<ButtonInfo, PhoneAction>>): PersistableBundle {
         val configBundle = PersistableBundle()
 
-        configBundle.putInt(ButtonConfigConstants.NUM_BUTTONS, buttons.size)
+        configBundle.putInt(ConfigConstants.NUM_BUTTONS, buttons.size)
 
         for ((counter, button) in buttons.withIndex()) {
             val buttonInfo = button.key
             val buttonValue = button.value
 
-            val buttonInfoKey = "${ButtonConfigConstants.BUTTON_INFO}.$counter"
+            val buttonInfoKey = "${ConfigConstants.BUTTON_INFO}.$counter"
             configBundle.putPersistableBundle(buttonInfoKey, buttonInfo.serialize())
 
-            val buttonActionKey = "${ButtonConfigConstants.BUTTON_ACTION}.$counter"
+            val buttonActionKey = "${ConfigConstants.BUTTON_ACTION}.$counter"
             configBundle.putPersistableBundle(buttonActionKey, buttonValue.serialize())
         }
 
@@ -62,12 +62,12 @@ class DiskConfigStorage(private val context: Context, fileSuffix : String) {
     }
 
     private fun unpackConfigBundle(bundle : PersistableBundle, target : ActionConfigStorage) {
-        val numButtons = bundle.getInt(ButtonConfigConstants.NUM_BUTTONS, 0)
+        val numButtons = bundle.getInt(ConfigConstants.NUM_BUTTONS, 0)
         for (buttonIndex in 0 until numButtons) {
-            val buttonInfoKey = "${ButtonConfigConstants.BUTTON_INFO}.$buttonIndex"
+            val buttonInfoKey = "${ConfigConstants.BUTTON_INFO}.$buttonIndex"
             val buttonInfo = ButtonInfo(bundle.getPersistableBundle(buttonInfoKey))
 
-            val buttonActionKey = "${ButtonConfigConstants.BUTTON_ACTION}.$buttonIndex"
+            val buttonActionKey = "${ConfigConstants.BUTTON_ACTION}.$buttonIndex"
             val buttonAction = PhoneAction.deserialize<PhoneAction>(context, bundle.getPersistableBundle(buttonActionKey))
 
             target.saveButtonAction(buttonInfo, buttonAction)
