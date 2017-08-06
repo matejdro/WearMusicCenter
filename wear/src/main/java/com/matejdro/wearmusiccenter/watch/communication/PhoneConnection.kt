@@ -26,9 +26,9 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 
-class PhoneConnection(private val context: Context
-) : DataApi.DataListener, LiveDataLifecycleListener {
+class PhoneConnection(private val context: Context) : DataApi.DataListener, LiveDataLifecycleListener {
 
     companion object {
         const val MESSAGE_CLOSE_CONNECTION = 0
@@ -38,8 +38,9 @@ class PhoneConnection(private val context: Context
     val musicState = ListenableLiveData<Resource<MusicState>>()
     val albumArt = ListenableLiveData<Bitmap?>()
 
-    val rawPlaybackConfig = ListenableLiveData<DataItem>()
-    val rawStoppedConfig = ListenableLiveData<DataItem>()
+    val rawPlaybackConfig = MutableLiveData<DataItem>()
+    val rawStoppedConfig = MutableLiveData<DataItem>()
+    val rawActionMenuConfig = MutableLiveData<DataItem>()
 
     private val lifecycleObserver = LiveDataLifecycleCombiner(this)
 
@@ -96,6 +97,7 @@ class PhoneConnection(private val context: Context
 
             loadCurrentActionConfig(CommPaths.DATA_PLAYING_ACTION_CONFIG, rawPlaybackConfig)
             loadCurrentActionConfig(CommPaths.DATA_STOPPING_ACTION_CONFIG, rawStoppedConfig)
+            loadCurrentActionConfig(CommPaths.DATA_LIST_ITEMS, rawActionMenuConfig)
         }
 
         running = true
@@ -154,7 +156,7 @@ class PhoneConnection(private val context: Context
         }
     }
 
-    fun executeAction(buttonInfo: ButtonInfo) {
+    fun executeButtonAction(buttonInfo: ButtonInfo) {
         connectionHandler.post {
             val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
@@ -166,6 +168,20 @@ class PhoneConnection(private val context: Context
 
         }
     }
+
+    fun executeMenuAction(index: Int) {
+        connectionHandler.post {
+            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            if (phoneNode != null) {
+                Wearable.MessageApi.sendMessage(googleApiClient,
+                        phoneNode,
+                        CommPaths.MESSAGE_EXECUTE_MENU_ACTION,
+                        ByteBuffer.allocate(4).putInt(index).array()).await()
+            }
+
+        }
+    }
+
 
 
     override fun onDataChanged(data: DataEventBuffer?) {
@@ -197,8 +213,12 @@ class PhoneConnection(private val context: Context
                         rawPlaybackConfig.postValue(it.freeze())
                     } else if (it.uri.path == CommPaths.DATA_STOPPING_ACTION_CONFIG) {
                         rawStoppedConfig.postValue(it.freeze())
+                    } else if (it.uri.path == CommPaths.DATA_LIST_ITEMS) {
+                        rawActionMenuConfig.postValue(it.freeze())
                     }
                 }
+
+        data.release()
     }
 
     private fun loadCurrentActionConfig(configPath: String, targetLiveData: MutableLiveData<DataItem>) {
@@ -206,9 +226,12 @@ class PhoneConnection(private val context: Context
                 Uri.parse("wear://*" + configPath),
                 DataApi.FILTER_LITERAL)
 
-        val dataItem = dataItems.await().firstOrNull() ?: return
+        val items = dataItems.await()
 
-        targetLiveData.postValue(dataItem)
+        val dataItem = items.firstOrNull() ?: return
+
+        targetLiveData.postValue(dataItem.freeze())
+        items.release()
     }
 
     override fun onInactive() {

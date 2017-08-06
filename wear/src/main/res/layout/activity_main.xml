@@ -67,8 +67,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|top"
-                android:textColor="@color/white"
                 android:paddingTop="5sp"
+                android:textColor="@color/white"
                 android:textSize="15sp"
                 android:visibility="gone"/>
 
@@ -80,31 +80,31 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:layout_box="all"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_box="all">
 
                     <com.lb.auto_fit_textview.AutoResizeTextView
                         android:id="@+id/text_artist"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
+                        android:ellipsize="end"
                         android:gravity="center"
-                        android:textSize="48sp"
                         android:maxLength="30"
-                        android:ellipsize="end"/>
+                        android:textColor="@color/white"
+                        android:textSize="48sp" />
 
                     <com.lb.auto_fit_textview.AutoResizeTextView
                         android:id="@+id/text_title"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:textColor="@color/white"
+                        android:ellipsize="end"
                         android:gravity="center"
-                        android:textSize="48sp"
-                        android:textStyle="bold"
                         android:maxLength="40"
-                        android:ellipsize="end"/>
+                        android:textColor="@color/white"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -133,13 +133,13 @@
             android:layout_gravity="bottom"
             app:drawer_content="@+id/drawer_content">
 
-            <FrameLayout
+            <fragment
                 android:id="@+id/drawer_content"
+                android:name="com.matejdro.wearmusiccenter.watch.view.ActionsMenuFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/red">
-                <!-- Drawer content goes here.  -->
-            </FrameLayout>
+                android:layout_height="match_parent">
+
+            </fragment>
 
 
         </android.support.wearable.view.drawer.WearableDrawerView>

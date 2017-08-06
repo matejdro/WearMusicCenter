@@ -44,7 +44,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private val lifecycleRegistry = LifecycleRegistry(this)
-    private lateinit var viewModel: MusicViewModel
+    lateinit var viewModel: MusicViewModel
 
     private lateinit var lastStemPresses: Array<Long>
     private lateinit var stemHasDoublePressAction: Array<Boolean>
@@ -53,6 +53,12 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     val alwaysDisplayTime = true
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        if (storedViewModel == null) {
+            storedViewModel = MusicViewModel(application)
+        }
+
+        viewModel = storedViewModel as MusicViewModel
+
         super.onCreate(savedInstanceState)
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
 
@@ -77,16 +83,12 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         // Enables Always-on
         setAmbientEnabled()
 
-        if (storedViewModel == null) {
-            storedViewModel = MusicViewModel(application)
-        }
-
-        viewModel = storedViewModel as MusicViewModel
 
         viewModel.albumArt.observe(this, albumArtObserver)
         viewModel.currentConfig.observe(this, configObserver)
         viewModel.volume.observe(this, phoneVolumeListener)
         viewModel.popupVolumeBar.observe(this, volumeBarPopupListener)
+        viewModel.closeActionsMenu.observe(this, closeDrawerListener)
 
         val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
@@ -220,6 +222,13 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         showVolumeBar()
     }
 
+    private val closeDrawerListener = Observer<Unit> {
+        closeMenuDrawer()
+    }
+
+    fun closeMenuDrawer() {
+        binding.actionDrawer.closeDrawer()
+    }
 
     override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
         binding.ambientClock.visibility = android.view.View.VISIBLE
@@ -238,6 +247,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         binding.fourWayTouch.background = ColorDrawable(Color.BLACK)
 
+        binding.actionDrawer.closeDrawer()
         super.onEnterAmbient(ambientDetails)
     }
 
@@ -304,6 +314,11 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
             return super.onKeyDown(keyCode, event)
         }
 
+        if (binding.actionDrawer.isOpened) {
+            return (fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment)
+                    .onKeyDown(keyCode, event)
+        }
+
         if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
             val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
             handleStemDown(buttonIndex)
@@ -326,7 +341,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         handler.removeMessages(MESSAGE_HIDE_VOLUME)
         handler.sendEmptyMessageDelayed(MESSAGE_HIDE_VOLUME, VOLUME_BAR_TIMEOUT)
     }
-
 
     override fun onUpwardsSwipe() {
         timber.log.Timber.d("UpwardsSwipe")

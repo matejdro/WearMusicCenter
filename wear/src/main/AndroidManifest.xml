@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.matejdro.wearmusiccenter"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.matejdro.wearmusiccenter">
 
     <uses-feature android:name="android.hardware.type.watch"/>
 
@@ -23,7 +24,8 @@
         -->
         <meta-data
             android:name="com.google.android.wearable.standalone"
-            android:value="false"/>
+            android:value="false"
+            tools:replace="android:value" />
 
         <activity
             android:name=".watch.view.MainActivity"

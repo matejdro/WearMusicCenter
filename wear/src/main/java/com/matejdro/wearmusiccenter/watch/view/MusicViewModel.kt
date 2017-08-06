@@ -9,7 +9,9 @@ import com.matejdro.wearmusiccenter.common.actions.CommonActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
+import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
+import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import timber.log.Timber
 
@@ -21,25 +23,46 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
 
     val currentConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
+    val actionsMenuConfig = WatchActionMenuProvider(phoneConnection.googleApiClient, phoneConnection.rawActionMenuConfig)
 
     val volume = MutableLiveData<Float>()
     val popupVolumeBar = MutableLiveData<Unit>()
+    val closeActionsMenu = MutableLiveData<Unit>()
 
     val albumArt
     get() = phoneConnection.albumArt
 
+    fun executeActionFromMenu(index: Int) {
+        val action = actionsMenuConfig.config.value?.get(index) ?: return
+
+        closeActionsMenu.postValue(null)
+
+        if (executeActionOnWatch(action)) {
+            return
+        }
+
+        phoneConnection.executeMenuAction(index)
+    }
+
     fun executeAction(buttonInfo: ButtonInfo) {
         val action = currentConfig.value?.getAction(buttonInfo) ?: return
+        if (!executeActionOnWatch(action)) {
+            phoneConnection.executeButtonAction(buttonInfo)
+        }
+    }
 
+    private fun executeActionOnWatch(action: ButtonAction): Boolean {
         //Special handling for volume actions
         if (action.key == CommonActions.ACTION_VOLUME_UP) {
             updateVolume(Math.min(1f, volume.value!! + (currentConfig.value?.volumeStep ?: 0.1f)))
             popupVolumeBar.value = popupVolumeBar.value
+            return true
         } else if (action.key == CommonActions.ACTION_VOLUME_DOWN) {
             updateVolume(Math.max(0f, volume.value!! - (currentConfig.value?.volumeStep ?: 0.1f)))
             popupVolumeBar.value = popupVolumeBar.value
+            return true
         } else {
-            phoneConnection.executeAction(buttonInfo)
+            return false
         }
     }
 

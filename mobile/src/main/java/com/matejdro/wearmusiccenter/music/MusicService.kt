@@ -27,6 +27,7 @@ import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 import javax.inject.Inject
 
 class MusicService : LifecycleService(), MessageApi.MessageListener {
@@ -152,6 +153,18 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         buttonAction.execute(this)
     }
 
+    private fun executeMenuAction(index: Int) {
+        val config = configProvider.getActionList()
+        val list = config.actions
+
+        if (index < 0 || index >= list.size) {
+            Timber.e("Action out of bounds: %d", index)
+            return
+        }
+
+        list[index].execute(this)
+    }
+
     private fun buildMusicStateAndTransmit(mediaController: MediaController?) {
         val musicStateBuilder = MusicState.newBuilder()
         var albumArt: Bitmap? = null
@@ -226,6 +239,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             updateVolume(FloatPacker.unpackFloat(event.data))
         } else if (event.path == CommPaths.MESSAGE_EXECUTE_ACTION) {
             executeAction(ButtonInfo(WatchActions.ProtoButtonInfo.parseFrom(event.data)))
+        } else if (event.path == CommPaths.MESSAGE_EXECUTE_MENU_ACTION) {
+            executeMenuAction(ByteBuffer.wrap(event.data).int)
         } else if (event.path == CommPaths.MESSAGE_WATCH_OPENED) {
             buildMusicStateAndTransmit(currentMediaController)
         }
