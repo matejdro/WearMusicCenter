@@ -19,7 +19,7 @@ class NullAction : PhoneAction {
         actionPicker.selectedAction.value = null
     }
 
-    override fun getName(): String = context.getString(R.string.no_action)
+    override fun retrieveTitle(): String = context.getString(R.string.no_action)
 
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.ic_cross_black)
 }

@@ -24,7 +24,7 @@ class VolumeActionList : PhoneAction {
         ))
     }
 
-    override fun getName(): String {
+    override fun retrieveTitle(): String {
         return context.getString(R.string.group_volume_controls)
     }
 

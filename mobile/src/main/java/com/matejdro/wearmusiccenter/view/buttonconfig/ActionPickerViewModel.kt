@@ -3,13 +3,15 @@ package com.matejdro.wearmusiccenter.view.buttonconfig
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.RootActionList
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import java.util.*
 
-class ActionPickerViewModel(application: Application) : AndroidViewModel(application) {
+class ActionPickerViewModel(showNone: Boolean, application: Application) : AndroidViewModel(application) {
     val displayedActions = MutableLiveData<List<PhoneAction>>()
     val selectedAction = MutableLiveData<PhoneAction>()
     val activityStarter = MutableLiveData<Intent>()
@@ -18,7 +20,7 @@ class ActionPickerViewModel(application: Application) : AndroidViewModel(applica
     private var activityResultReceiver: ActivityResultReceiver? = null
 
     init {
-        RootActionList(application).onActionPicked(this)
+        RootActionList(getApplication(), showNone).onActionPicked(this)
     }
 
     fun updateDisplayedActionsWithBackStack(actions : List<PhoneAction>) {
@@ -55,3 +57,10 @@ class ActionPickerViewModel(application: Application) : AndroidViewModel(applica
         activityResultReceiver = null
     }
  }
+
+class ActionPickerViewModelFactory(private val application: Application, private val showNone: Boolean) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>?): T
+            = ActionPickerViewModel(showNone, application) as T
+
+}

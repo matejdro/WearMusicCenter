@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.v4.util.ArraySet
 import android.util.LruCache
+import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
+import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.di.GlobalConfig
 import timber.log.Timber
 import java.io.File
@@ -17,8 +19,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.regex.Pattern
 import javax.inject.Inject
+
 class CustomIconStorage @Inject constructor(val context: Context,
-                                            @GlobalConfig val config : ActionConfigProvider) {
+                                            @GlobalConfig val config: ActionConfigProvider) {
 
     companion object {
         private val UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^\\w.\\-_]")
@@ -45,7 +48,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
         storageFolder.mkdirs()
     }
 
-    fun getIcon(iconUri : Uri) : Drawable? {
+    fun getIcon(iconUri: Uri): Drawable? {
         var bitmap = memoryIconStore[iconUri]
         if (bitmap == null) {
             bitmap = loadImageFromFile(iconUri) ?: return null
@@ -55,18 +58,18 @@ class CustomIconStorage @Inject constructor(val context: Context,
         return BitmapDrawable(context.resources, bitmap)
     }
 
-    private fun loadImageFromFile(uri : Uri) : Bitmap? {
+    private fun loadImageFromFile(uri: Uri): Bitmap? {
         val file = getFileForUri(uri)
         if (!file.exists()) {
             return null
         }
 
-        val bitmap : Bitmap
+        val bitmap: Bitmap
         try {
             bitmap = FileInputStream(file).use<FileInputStream, Bitmap> {
                 return BitmapFactory.decodeStream(it)
             }
-        } catch (e : IOException) {
+        } catch (e: IOException) {
             Timber.e(e, "Image loading error")
             return null
         }
@@ -74,7 +77,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
         return bitmap
     }
 
-    fun setIcon(iconUri: Uri, icon : Bitmap) {
+    fun setIcon(iconUri: Uri, icon: Bitmap) {
         incrementSets()
 
         memoryIconStore.put(iconUri, icon)
@@ -83,7 +86,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
             FileOutputStream(getFileForUri(iconUri)).use {
                 icon.compress(Bitmap.CompressFormat.PNG, 100, it)
             }
-        } catch (e : IOException) {
+        } catch (e: IOException) {
             Timber.e(e, "Image saving error")
         }
     }
@@ -103,7 +106,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
 
         utilizedIconUris.addAll(getAllCustomUriFiles(config.getPlayingConfig()))
         utilizedIconUris.addAll(getAllCustomUriFiles(config.getStoppedConfig()))
-        //TODO action list config
+        utilizedIconUris.addAll(getAllCustomUriFiles(config.getActionList()))
 
         storageFolder
                 .listFiles()
@@ -112,14 +115,22 @@ class CustomIconStorage @Inject constructor(val context: Context,
 
     }
 
-    private fun getAllCustomUriFiles(config : ActionConfigStorage) : Collection<String> {
+    private fun getAllCustomUriFiles(config: ActionConfigStorage): Collection<String> {
         return config.getAllActions()
                 .map { it.value.customIconUri }
                 .filterNotNull()
                 .map { getFileForUri(it).name }
     }
 
-    private fun getFileForUri(uri : Uri) : File {
+    private fun getAllCustomUriFiles(config: ActionListStorage): Collection<String> {
+        return config.actions
+                .map { it.customIconUri }
+                .filterNotNull()
+                .map { getFileForUri(it).name }
+    }
+
+
+    private fun getFileForUri(uri: Uri): File {
         var fileName = uri.toString()
         fileName = UNSAFE_CHARACTERS_PATTERN.matcher(fileName).replaceAll("")
         fileName += ".png"

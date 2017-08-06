@@ -3,9 +3,9 @@ package com.matejdro.wearmusiccenter.actions.playback
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import java.lang.UnsupportedOperationException
 
@@ -26,7 +26,7 @@ class PlaybackActionList : PhoneAction {
         ))
     }
 
-    override fun getName(): String {
+    override fun retrieveTitle(): String {
         return context.getString(R.string.group_playback_controls)
     }
 

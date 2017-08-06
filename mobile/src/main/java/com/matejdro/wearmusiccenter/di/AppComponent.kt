@@ -5,6 +5,7 @@ import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.music.MusicService
+import com.matejdro.wearmusiccenter.view.actionlist.ActionEditorActivity
 import dagger.Component
 import javax.inject.Singleton
 
@@ -19,5 +20,5 @@ interface AppComponent {
 
     fun inject(phoneAction: PhoneAction)
     fun inject(service: MusicService)
-
+    fun inject(actionEditorActivity: ActionEditorActivity)
 }

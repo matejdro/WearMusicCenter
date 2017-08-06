@@ -15,6 +15,6 @@ class PauseAction : SelectableAction {
         service.currentMediaController?.transportControls?.pause()
     }
 
-    override fun getName(): String = context.getString(R.string.action_pause)
+    override fun retrieveTitle(): String = context.getString(R.string.action_pause)
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_pause)
 }

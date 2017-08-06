@@ -20,25 +20,27 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
+import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleRegistryOwner,
         ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
-    private lateinit var viewmodel : MainActivityViewModel
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var viewmodel: MainActivityViewModel
+    private lateinit var binding: ActivityMainBinding
 
-    private lateinit var drawerToggle : ActionBarDrawerToggle
+    private lateinit var drawerToggle: ActionBarDrawerToggle
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
-    private var currentFragment : Any? = null
+    private var currentFragment: Any? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        viewmodel = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
+
         super.onCreate(savedInstanceState)
 
-        viewmodel = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
         viewmodel.watchInfoProvider.observe(this, watchInfoObserver)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -52,6 +54,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
 
         watchInfoObserver.onChanged(null)
+
+        binding.appBar?.fab?.setOnClickListener {
+            val currentFragment = currentFragment ?: return@setOnClickListener
+            if (currentFragment is FabFragment) {
+                currentFragment.onFabClicked()
+            }
+        }
     }
 
     private fun disableDrawer() {
@@ -83,12 +92,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun swapFragment(newFragment : Fragment) {
+    private fun swapFragment(newFragment: Fragment) {
         currentFragment = newFragment
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, newFragment)
                 .commit()
+
+        if (newFragment is FabFragment) {
+            binding.appBar?.fab?.let {
+                it.show()
+                newFragment.prepareFab(it)
+            }
+        } else {
+            binding.appBar?.fab?.hide()
+        }
+
     }
 
     override fun onBackPressed() {

@@ -1,13 +1,16 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
+import android.app.Activity
 import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.NinePatchDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -26,11 +29,16 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.databinding.FragmentActionListBinding
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
+import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 import timber.log.Timber
 
-class ActionListFragment : LifecycleFragment() {
+class ActionListFragment : LifecycleFragment(), FabFragment {
+    companion object {
+        const val REQUEST_CODE_EDIT_WINDOW = 1031
+    }
+
     private lateinit var viewModel: ActionListViewModel
     private lateinit var binding: FragmentActionListBinding
     private lateinit var adapter: RecyclerView.Adapter<ListItemHolder>
@@ -48,6 +56,7 @@ class ActionListFragment : LifecycleFragment() {
         viewModel = ViewModelProviders.of(this, factory)[ActionListViewModel::class.java]
 
         viewModel.actions.observe(this, actionListListener)
+        viewModel.openActionEditor.observe(this, openEditDialogListener)
     }
 
     override fun onStart() {
@@ -94,6 +103,11 @@ class ActionListFragment : LifecycleFragment() {
         dragDropManager.release()
     }
 
+    override fun onFabClicked() {
+        val intent = Intent(context, ActionEditorActivity::class.java)
+        startActivityForResult(intent, REQUEST_CODE_EDIT_WINDOW)
+    }
+
     val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>> {
         Timber.d("Received: %s", it)
         if (it == null) {
@@ -108,6 +122,16 @@ class ActionListFragment : LifecycleFragment() {
         ignoreNextUpdate = false
     }
 
+    val openEditDialogListener = Observer<Int> {
+        if (it == null || it < 0) {
+            return@Observer
+        }
+
+        val intent = Intent(context, ActionEditorActivity::class.java)
+        intent.putExtra(ActionEditorActivity.EXTRA_ACTION, actions[it].item.serialize())
+        startActivityForResult(intent, REQUEST_CODE_EDIT_WINDOW)
+    }
+
     private inner class ListItemAdapter : RecyclerView.Adapter<ListItemHolder>(),
             DraggableItemAdapter<ListItemHolder> {
         init {
@@ -117,7 +141,7 @@ class ActionListFragment : LifecycleFragment() {
         override fun onBindViewHolder(holder: ListItemHolder, position: Int) {
             val phoneAction = actions[position].item
 
-            holder.text.text = phoneAction.getName()
+            holder.text.text = phoneAction.getTitle()
 
 
             val icon = phoneAction.getIcon()
@@ -158,13 +182,29 @@ class ActionListFragment : LifecycleFragment() {
         val text = itemView.findViewById(R.id.text) as TextView
 
         init {
-            /* itemView.setOnLongClickListener(View.OnLongClickListener {
-                 itemView.isSelected = true
-                 itemView.background = ColorDrawable(Color.RED)
-                 Timber.d("Selected %s", itemView)
-                 adapter.notifyItemChanged(adapterPosition)
-                 true
-             })*/
+            itemView.setOnClickListener {
+                viewModel.editAction(adapterPosition)
+            }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_EDIT_WINDOW &&
+                resultCode == Activity.RESULT_OK &&
+                data != null) {
+            if (data.getBooleanExtra(ActionEditorActivity.EXTRA_DELETING, false)) {
+                viewModel.deleteLastEditedAction()
+                return
+            }
+
+            val actionBundle = data.getParcelableExtra<PersistableBundle>(
+                    ActionEditorActivity.EXTRA_ACTION) ?: return
+
+            val newAction = PhoneAction.deserialize<PhoneAction>(context, actionBundle) ?: return
+
+            viewModel.actionEditFinished(newAction)
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -13,21 +13,31 @@ import com.matejdro.wearutils.tasker.TaskerIntent
 import java.lang.UnsupportedOperationException
 
 class RootActionList : PhoneAction {
-    constructor(context : Context) : super(context)
+    private val showNone: Boolean
 
-    constructor(context : Context, bundle: PersistableBundle) : super(context, bundle)
+    constructor(context: Context, showNone: Boolean) : super(context) {
+        this.showNone = showNone
+    }
+
+    constructor(context: Context, bundle: PersistableBundle) : super(context, bundle) {
+        this.showNone = true
+    }
 
     override fun execute(service: MusicService) {
         throw UnsupportedOperationException()
     }
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
-        val actions = mutableListOf(
-                NullAction(context),
-                PlaybackActionList(context),
+        val actions = ArrayList<PhoneAction>(20)
+
+        if (showNone) {
+            actions.add(NullAction(context))
+        }
+
+        actions.addAll(listOf(PlaybackActionList(context),
                 VolumeActionList(context),
                 AppPlayPickerAction(context)
-        )
+        ))
 
         if (isTaskerInstalled()) {
             actions.add(TaskerTaskPickerAction(context))
@@ -36,7 +46,7 @@ class RootActionList : PhoneAction {
         actionPicker.displayedActions.value = actions
     }
 
-    override fun getName(): String {
+    override fun retrieveTitle(): String {
         throw UnsupportedOperationException()
     }
 
@@ -44,5 +54,5 @@ class RootActionList : PhoneAction {
         throw UnsupportedOperationException()
     }
 
-    private fun isTaskerInstalled() : Boolean = TaskerIntent.getInstalledTaskerPackage(context) != null
+    private fun isTaskerInstalled(): Boolean = TaskerIntent.getInstalledTaskerPackage(context) != null
 }

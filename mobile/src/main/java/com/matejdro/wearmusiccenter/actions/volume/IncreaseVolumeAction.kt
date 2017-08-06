@@ -15,6 +15,6 @@ class IncreaseVolumeAction : SelectableAction {
 
     }
 
-    override fun getName(): String = context.getString(R.string.action_volume_up)
+    override fun retrieveTitle(): String = context.getString(R.string.action_volume_up)
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_volume_up)
 }

@@ -16,7 +16,8 @@ import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
-import com.matejdro.wearmusiccenter.config.*
+import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
+import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
 import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
 import com.matejdro.wearmusiccenter.view.TitledActivity

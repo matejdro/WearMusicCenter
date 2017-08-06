@@ -88,7 +88,7 @@ class AppPlayAction : SelectableAction {
         bundle.putString(KEY_CLASS_NAME, receiverComponent.className)
     }
 
-    override fun getName(): String = lazyName
+    override fun retrieveTitle(): String = lazyName
     override fun retrieveIcon(): Drawable = lazyIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {

@@ -1,4 +1,4 @@
-package com.matejdro.wearmusiccenter.config
+package com.matejdro.wearmusiccenter.config.buttons
 
 import android.content.Context
 import android.media.AudioManager
@@ -11,6 +11,7 @@ import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
 

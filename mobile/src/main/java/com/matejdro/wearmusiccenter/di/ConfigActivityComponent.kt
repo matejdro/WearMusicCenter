@@ -1,5 +1,6 @@
 package com.matejdro.wearmusiccenter.di
 
+import com.matejdro.wearmusiccenter.view.actionlist.ActionListViewModel
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigViewModel
 import com.matejdro.wearmusiccenter.view.buttonconfig.GesturePickerFragment
 import com.matejdro.wearmusiccenter.view.mainactivity.MainActivityViewModel
@@ -11,5 +12,5 @@ interface ConfigActivityComponent {
     fun inject(viewModel : MainActivityViewModel)
     fun inject(viewModel : ButtonConfigViewModel)
     fun inject(fragment: GesturePickerFragment)
-
+    fun inject(actionListViewModel: ActionListViewModel)
 }

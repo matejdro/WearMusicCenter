@@ -23,8 +23,8 @@ import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
 class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), LifecycleRegistryOwner {
     companion object {
         const val EXTRA_ACTION_BUNDLE = "Action"
-
         const val VIEW_MODEL_REQUEST_CODE = 7961
+        const val EXTRA_DISPLAY_NONE = "DisplayNone"
     }
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -41,8 +41,14 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
                 com.matejdro.wearmusiccenter.R.layout.popup_action_picker)
         binding.activity = this
 
+        val displayNone = intent.getBooleanExtra(EXTRA_DISPLAY_NONE, true)
 
-        viewModel = ViewModelProviders.of(this)[ActionPickerViewModel::class.java]
+        val factory = ActionPickerViewModelFactory(
+                application,
+                displayNone
+        )
+
+        viewModel = ViewModelProviders.of(this, factory)[ActionPickerViewModel::class.java]
         viewModel.displayedActions.observe(this, listObserver)
         viewModel.selectedAction.observe(this, pickObserver)
         viewModel.activityStarter.observe(this, activityOpenObserver)
@@ -52,6 +58,7 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
 
         setFinishOnTouchOutside(true)
     }
@@ -115,7 +122,7 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
                 holder.iconView.clearColorFilter()
             }
 
-            holder.textView.text = action.getName()
+            holder.textView.text = action.getTitle()
             holder.iconView.setImageDrawable(icon)
         }
 

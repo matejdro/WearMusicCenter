@@ -5,9 +5,9 @@ import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.PersistableBundle
 import android.view.KeyEvent
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.SelectableAction
+import com.matejdro.wearmusiccenter.music.MusicService
 
 class PlayAction : SelectableAction {
     constructor(context : Context) : super(context)
@@ -29,6 +29,6 @@ class PlayAction : SelectableAction {
         audioService.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY))
     }
 
-    override fun getName(): String = context.getString(R.string.action_play)
+    override fun retrieveTitle(): String = context.getString(R.string.action_play)
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_play)
 }

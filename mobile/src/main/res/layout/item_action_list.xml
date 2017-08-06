@@ -13,6 +13,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
+        android:padding="5dp"
         tools:ignore="ContentDescription"
         tools:src="@drawable/action_play"
         tools:tint="@color/black" />

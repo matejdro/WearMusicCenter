@@ -4,8 +4,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
-import com.matejdro.wearmusiccenter.config.ActionConfigStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
+import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.di.ConfigActivityComponent
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import javax.inject.Inject

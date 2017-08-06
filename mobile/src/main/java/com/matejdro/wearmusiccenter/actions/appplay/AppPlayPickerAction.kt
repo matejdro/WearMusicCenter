@@ -18,13 +18,13 @@ class AppPlayPickerAction : PhoneAction {
         throw UnsupportedOperationException()
     }
 
-    override fun getName(): String = context.getString(R.string.start_playback)
+    override fun retrieveTitle(): String = context.getString(R.string.start_playback)
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.ic_apps)
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         val actions = getAllMusicApps(context)
                 .map { AppPlayAction(context, it) as PhoneAction }
-                .sortedBy { it.getName() }
+                .sortedBy { it.getTitle() }
 
         actionPicker.updateDisplayedActionsWithBackStack(actions)
     }

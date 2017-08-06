@@ -37,5 +37,8 @@
         installed icon pack.\n\nUnfortunately it appears you do not have any icon packs installed.</string>
     <string name="icon_selection_no_storage_permission">This feature allows you to pick custom icon for your action from
         installed icon pack.\n\nSome icon packs require apps to have storage permission. You will need to allow it in order to use this feature.</string>
+    <string name="delete">Delete</string>
+    <string name="action_text">Action text</string>
+    <string name="swap_action">Swap action</string>
 
 </resources>

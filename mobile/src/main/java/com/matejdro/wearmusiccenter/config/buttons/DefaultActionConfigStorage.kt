@@ -1,10 +1,11 @@
-package com.matejdro.wearmusiccenter.config
+package com.matejdro.wearmusiccenter.config.buttons
 
 import android.content.Context
 import android.util.ArrayMap
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch

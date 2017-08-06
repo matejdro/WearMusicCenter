@@ -1,62 +1,38 @@
-package com.matejdro.wearmusiccenter.config
+package com.matejdro.wearmusiccenter.config.buttons
 
 import android.content.Context
 import android.os.PersistableBundle
 import android.support.annotation.WorkerThread
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
-import com.matejdro.wearmusiccenter.util.readInt
-import com.matejdro.wearmusiccenter.util.writeInt
-import com.matejdro.wearutils.messages.ParcelPacker
+import com.matejdro.wearmusiccenter.util.BundleFileSerialization
 import timber.log.Timber
-import java.io.*
+import java.io.File
+import java.io.IOException
 
 class DiskConfigStorage(private val context: Context, fileSuffix : String) {
     private val storageFile = File(context.filesDir, "action_config" + fileSuffix)
 
     fun loadButtons(target : ActionConfigStorage) : Boolean {
-        if (!storageFile.exists()) {
+        try {
+            val configBundle = BundleFileSerialization.readFromFile(storageFile) ?: return false
+            unpackConfigBundle(configBundle, target)
+
+            return true
+        } catch(e: IOException) {
+            Timber.e(e, "Config reading error")
             return false
-        }
-
-        FileInputStream(storageFile).use {
-            try {
-                val configSize = it.readInt()
-
-                if (configSize > 10_000_000) {
-                    // Treat extraordinary long config as reading error
-                    Timber.e("Config too large! Non-config stream?")
-                    return false
-                }
-
-                val configData = ByteArray(configSize)
-                it.read(configData)
-
-                val configBundle = ParcelPacker.getParcelable(configData, PersistableBundle.CREATOR)
-                unpackConfigBundle(configBundle, target)
-
-                return true
-            } catch(e: IOException) {
-                Timber.e(e, "Config reading error")
-                return false
-            } catch(e: RuntimeException) {
-                // RuntimeException is thrown if marshalling fails
-                Timber.e(e, "Config reading error")
-                return false
-            }
+        } catch(e: RuntimeException) {
+            // RuntimeException is thrown if marshalling fails
+            Timber.e(e, "Config reading error")
+            return false
         }
     }
 
     @WorkerThread
     fun saveButtons(buttons : Collection<Map.Entry<ButtonInfo, PhoneAction>>) : Boolean {
         try {
-            FileOutputStream(storageFile).use {
-                val configBundle = getConfigBundle(buttons)
-                val configBundleBytes = ParcelPacker.getData(configBundle)
-
-                it.writeInt(configBundleBytes.size)
-                it.write(configBundleBytes)
-            }
+            BundleFileSerialization.writeToFile(getConfigBundle(buttons), storageFile)
         } catch(e: IOException) {
             Timber.e(e, "Config writing error")
             return false
@@ -78,7 +54,7 @@ class DiskConfigStorage(private val context: Context, fileSuffix : String) {
             val buttonInfoKey = "${ButtonConfigConstants.BUTTON_INFO}.$counter"
             configBundle.putPersistableBundle(buttonInfoKey, buttonInfo.serialize())
 
-            val buttonActionKey = "${ButtonConfigConstants.BUTTTON_ACTION}.$counter"
+            val buttonActionKey = "${ButtonConfigConstants.BUTTON_ACTION}.$counter"
             configBundle.putPersistableBundle(buttonActionKey, buttonValue.serialize())
         }
 
@@ -91,7 +67,7 @@ class DiskConfigStorage(private val context: Context, fileSuffix : String) {
             val buttonInfoKey = "${ButtonConfigConstants.BUTTON_INFO}.$buttonIndex"
             val buttonInfo = ButtonInfo(bundle.getPersistableBundle(buttonInfoKey))
 
-            val buttonActionKey = "${ButtonConfigConstants.BUTTTON_ACTION}.$buttonIndex"
+            val buttonActionKey = "${ButtonConfigConstants.BUTTON_ACTION}.$buttonIndex"
             val buttonAction = PhoneAction.deserialize<PhoneAction>(context, bundle.getPersistableBundle(buttonActionKey))
 
             target.saveButtonAction(buttonInfo, buttonAction)

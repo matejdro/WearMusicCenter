@@ -42,7 +42,7 @@ class TaskerTaskAction : SelectableAction {
         bundle.putString(KEY_TASK_NAME, taskName)
     }
 
-    override fun getName(): String = taskName
+    override fun retrieveTitle(): String = taskName
     override fun retrieveIcon(): Drawable = taskerIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {

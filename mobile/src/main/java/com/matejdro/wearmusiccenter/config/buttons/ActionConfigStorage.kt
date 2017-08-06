@@ -1,4 +1,4 @@
-package com.matejdro.wearmusiccenter.config
+package com.matejdro.wearmusiccenter.config.buttons
 
 import android.content.Context
 import com.matejdro.wearmusiccenter.actions.NullAction

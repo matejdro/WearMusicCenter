@@ -18,6 +18,7 @@ import javax.inject.Inject
 abstract class PhoneAction : Bundlable {
     protected val context : Context
     var customIconUri : Uri? = null
+    var customTitle: String? = null
 
     @Inject
     protected lateinit var customIconStorage : CustomIconStorage
@@ -31,6 +32,8 @@ abstract class PhoneAction : Bundlable {
         bundle.getString(KEY_CUSTOM_ICON_URI)?.also {
             customIconUri = Uri.parse(it)
         }
+
+        customTitle = bundle.getString(KEY_CUSTOM_TITLE)
     }
 
     init {
@@ -40,8 +43,12 @@ abstract class PhoneAction : Bundlable {
 
     abstract fun execute(service : MusicService)
     abstract fun onActionPicked(actionPicker : ActionPickerViewModel)
-    abstract fun getName() : String
+    abstract protected fun retrieveTitle(): String
     abstract protected fun retrieveIcon(): Drawable
+
+    fun getTitle(): String {
+        return customTitle ?: retrieveTitle()
+    }
 
     fun getIcon() : Drawable {
         val customIconUri = customIconUri ?: return retrieveIcon()
@@ -59,6 +66,7 @@ abstract class PhoneAction : Bundlable {
         super.writeToBundle(bundle)
 
         bundle.putString(KEY_CUSTOM_ICON_URI, customIconUri?.toString())
+        bundle.putString(KEY_CUSTOM_TITLE, customTitle)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -75,12 +83,13 @@ abstract class PhoneAction : Bundlable {
 
     @CallSuper
     protected open fun isEqualToAction(other : PhoneAction) : Boolean {
-        return customIconUri == this.customIconUri
+        return customIconUri == other.customIconUri &&
+                customTitle == other.customTitle
     }
 
     companion object {
-        const val FIELD_ICON_BITMAP = "Icon"
         const val KEY_CUSTOM_ICON_URI = "CUSTOM_ICON_URI"
+        const val KEY_CUSTOM_TITLE = "CUSTOM_TITLE"
 
         @Suppress("UNCHECKED_CAST")
         fun <T : PhoneAction> deserialize(context : Context, bundle: PersistableBundle?) : T? {

@@ -15,6 +15,6 @@ class SkipToNextAction : SelectableAction {
         service.currentMediaController?.transportControls?.skipToNext()
     }
 
-    override fun getName(): String = context.getString(R.string.action_skip_next)
+    override fun retrieveTitle(): String = context.getString(R.string.action_skip_next)
     override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_skip_next)
 }

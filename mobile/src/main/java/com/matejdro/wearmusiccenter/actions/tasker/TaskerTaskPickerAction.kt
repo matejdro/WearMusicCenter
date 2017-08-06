@@ -31,7 +31,7 @@ class TaskerTaskPickerAction : PhoneAction, ActivityResultReceiver {
         }
     }
 
-    override fun getName(): String = context.getString(R.string.tasker_task)
+    override fun retrieveTitle(): String = context.getString(R.string.tasker_task)
     override fun retrieveIcon(): Drawable = taskerIcon
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {

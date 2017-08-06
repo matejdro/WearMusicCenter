@@ -25,8 +25,8 @@ import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.buttonconfig.*
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
-import com.matejdro.wearmusiccenter.config.ActionConfigStorage
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
+import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
@@ -157,7 +157,7 @@ class GesturePickerFragment : DialogFragment() {
         val iconSize = resources.getDimensionPixelSize(R.dimen.action_icon_size)
         icon.setBounds(0, 0, iconSize, iconSize)
 
-        button.text = mutableAction.getName()
+        button.text = mutableAction.getTitle()
         button.setCompoundDrawables(icon, null, null, null)
     }
 
