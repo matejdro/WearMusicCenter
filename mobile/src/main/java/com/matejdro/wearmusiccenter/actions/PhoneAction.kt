@@ -41,7 +41,7 @@ abstract class PhoneAction : Bundlable {
     abstract fun execute(service : MusicService)
     abstract fun onActionPicked(actionPicker : ActionPickerViewModel)
     abstract fun getName() : String
-    abstract fun retrieveIcon() : Drawable
+    abstract protected fun retrieveIcon(): Drawable
 
     fun getIcon() : Drawable {
         val customIconUri = customIconUri ?: return retrieveIcon()

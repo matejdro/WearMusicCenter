@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".view.mainactivity.MainActivityResultReceiver"
+            android:name=".view.mainactivity.MainActivity"
             android:label="@string/app_name_short"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

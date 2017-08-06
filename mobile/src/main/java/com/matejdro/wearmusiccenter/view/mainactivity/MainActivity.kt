@@ -19,11 +19,12 @@ import android.view.MenuItem
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
-import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.TitledActivity
+import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
+import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 
-class MainActivityResultReceiver : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleRegistryOwner,
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleRegistryOwner,
         ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
     private lateinit var viewmodel : MainActivityViewModel
     private lateinit var binding : ActivityMainBinding
@@ -132,6 +133,9 @@ class MainActivityResultReceiver : AppCompatActivity(), NavigationView.OnNavigat
             }
             R.id.stopped_controls -> {
                 swapFragment(ButtonConfigFragment.newInstance(false))
+            }
+            R.id.actions_menu -> {
+                swapFragment(ActionListFragment())
             }
         }
 
