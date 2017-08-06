@@ -9,8 +9,7 @@ import com.google.android.gms.wearable.DataItem
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.WatchActions
-import com.matejdro.wearutils.messages.DataUtils
-import com.matejdro.wearutils.miscutils.BitmapUtils
+import com.matejdro.wearmusiccenter.watch.communication.IconGetter
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -37,6 +36,8 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
             return@Observer
         }
 
+        val dataItem = it
+
         launch(UI) {
             val newConfigMap = SimpleArrayMap<ButtonInfo, ButtonAction>()
 
@@ -48,11 +49,12 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
                     val buttonInfo = ButtonInfo(action)
 
                     val iconKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + buttonInfo.getKey()
-                    val iconAsset = it.assets[iconKey]
-                    val icon = BitmapUtils.deserialize(DataUtils.getByteArrayAsset(iconAsset,
-                            googleApiClient))
-
                     val key = action.actionKey
+
+                    val icon = IconGetter.getIcon(googleApiClient,
+                            dataItem,
+                            iconKey,
+                            key)
 
                     newConfigMap.put(buttonInfo, ButtonAction(key, icon))
                 }

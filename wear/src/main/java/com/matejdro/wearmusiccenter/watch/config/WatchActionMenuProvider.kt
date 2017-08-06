@@ -7,8 +7,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.DataItem
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchList
-import com.matejdro.wearutils.messages.DataUtils
-import com.matejdro.wearutils.miscutils.BitmapUtils
+import com.matejdro.wearmusiccenter.watch.communication.IconGetter
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 
@@ -27,14 +26,14 @@ class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawD
 
             val actions = listProto.actionsList.withIndex().map {
                 val iconKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + it.index
-                val iconAsset = dataItem.assets[iconKey]
-                val icon = BitmapUtils.deserialize(DataUtils.getByteArrayAsset(iconAsset,
-                        googleApiClient))
+                val icon = IconGetter.getIcon(googleApiClient,
+                        dataItem,
+                        iconKey,
+                        it.value.actionKey)
 
                 ButtonAction(it.value.actionKey,
                         icon,
                         it.value.actionTitle)
-
             }.toList()
 
             config.postValue(actions)

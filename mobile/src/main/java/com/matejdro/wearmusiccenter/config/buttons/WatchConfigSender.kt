@@ -10,12 +10,13 @@ import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
+import com.matejdro.wearmusiccenter.common.actions.StandardIcons
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
 
-class WatchConfigSender(private val context : Context, private val watchInfoProvider: WatchInfoProvider, private val endpointPath : String) {
+class WatchConfigSender(private val context: Context, private val watchInfoProvider: WatchInfoProvider, private val endpointPath: String) {
     val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addApi(Wearable.API)
             .build()
@@ -48,6 +49,15 @@ class WatchConfigSender(private val context : Context, private val watchInfoProv
                 // No need to send action images for physical buttons
                 continue
             }
+
+            if (action.customIconUri == null &&
+                    StandardIcons.hasIcon(buttonInfoProto.actionKey)) {
+                // We already have vector icon of this on the watch.
+                // No need to waste bluetooth bandwith by transferring it
+
+                continue
+            }
+
 
             var icon = BitmapUtils.getBitmap(action.getIcon())
             icon = BitmapUtils.shrinkPreservingRatio(icon, targetIconSize, targetIconSize, true)

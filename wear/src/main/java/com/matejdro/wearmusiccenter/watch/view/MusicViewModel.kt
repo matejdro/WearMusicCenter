@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import com.matejdro.wearmusiccenter.common.actions.CommonActions
+import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
@@ -54,17 +54,17 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
 
     private fun executeActionOnWatch(action: ButtonAction): Boolean {
         return when {
-            action.key == CommonActions.ACTION_VOLUME_UP -> {
+            action.key == StandardActions.ACTION_VOLUME_UP -> {
                 updateVolume(Math.min(1f, volume.value!! + (currentConfig.value?.volumeStep ?: 0.1f)))
                 popupVolumeBar.value = popupVolumeBar.value
                 true
             }
-            action.key == CommonActions.ACTION_VOLUME_DOWN -> {
+            action.key == StandardActions.ACTION_VOLUME_DOWN -> {
                 updateVolume(Math.max(0f, volume.value!! - (currentConfig.value?.volumeStep ?: 0.1f)))
                 popupVolumeBar.value = popupVolumeBar.value
                 true
             }
-            action.key == CommonActions.ACTION_OPEN_MENU -> {
+            action.key == StandardActions.ACTION_OPEN_MENU -> {
                 openActionsMenu.value = openActionsMenu.value
                 true
             }

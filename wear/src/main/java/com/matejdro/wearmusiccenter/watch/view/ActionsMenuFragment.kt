@@ -105,7 +105,7 @@ class ActionsMenuFragment : Fragment() {
         override fun onBindViewHolder(holder: MenuItemViewHolder, position: Int) {
             val configItem = menuItems[position]
 
-            holder.icon.setImageBitmap(configItem.icon)
+            holder.icon.setImageDrawable(configItem.icon)
             holder.title.text = configItem.title
         }
 

@@ -197,10 +197,10 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         val leftDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_DOUBLE_TAP))
         val rightDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_DOUBLE_TAP))
 
-        binding.iconTop.setImageBitmap(topSingle?.icon)
-        binding.iconBottom.setImageBitmap(bottomSingle?.icon)
-        binding.iconLeft.setImageBitmap(leftSingle?.icon)
-        binding.iconRight.setImageBitmap(rightSingle?.icon)
+        binding.iconTop.setImageDrawable(topSingle?.icon)
+        binding.iconBottom.setImageDrawable(bottomSingle?.icon)
+        binding.iconLeft.setImageDrawable(leftSingle?.icon)
+        binding.iconRight.setImageDrawable(rightSingle?.icon)
 
         binding.fourWayTouch.enabledDoubleTaps = booleanArrayOf(
                 leftDouble != null,
