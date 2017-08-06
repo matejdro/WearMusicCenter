@@ -28,6 +28,7 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     val volume = MutableLiveData<Float>()
     val popupVolumeBar = MutableLiveData<Unit>()
     val closeActionsMenu = MutableLiveData<Unit>()
+    val openActionsMenu = MutableLiveData<Unit>()
 
     val albumArt
     get() = phoneConnection.albumArt
@@ -52,17 +53,23 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     }
 
     private fun executeActionOnWatch(action: ButtonAction): Boolean {
-        //Special handling for volume actions
-        if (action.key == CommonActions.ACTION_VOLUME_UP) {
-            updateVolume(Math.min(1f, volume.value!! + (currentConfig.value?.volumeStep ?: 0.1f)))
-            popupVolumeBar.value = popupVolumeBar.value
-            return true
-        } else if (action.key == CommonActions.ACTION_VOLUME_DOWN) {
-            updateVolume(Math.max(0f, volume.value!! - (currentConfig.value?.volumeStep ?: 0.1f)))
-            popupVolumeBar.value = popupVolumeBar.value
-            return true
-        } else {
-            return false
+        return when {
+            action.key == CommonActions.ACTION_VOLUME_UP -> {
+                updateVolume(Math.min(1f, volume.value!! + (currentConfig.value?.volumeStep ?: 0.1f)))
+                popupVolumeBar.value = popupVolumeBar.value
+                true
+            }
+            action.key == CommonActions.ACTION_VOLUME_DOWN -> {
+                updateVolume(Math.max(0f, volume.value!! - (currentConfig.value?.volumeStep ?: 0.1f)))
+                popupVolumeBar.value = popupVolumeBar.value
+                true
+            }
+            action.key == CommonActions.ACTION_OPEN_MENU -> {
+                openActionsMenu.value = openActionsMenu.value
+                true
+            }
+
+            else -> false
         }
     }
 

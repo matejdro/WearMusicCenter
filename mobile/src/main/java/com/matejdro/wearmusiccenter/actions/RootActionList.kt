@@ -36,7 +36,8 @@ class RootActionList : PhoneAction {
 
         actions.addAll(listOf(PlaybackActionList(context),
                 VolumeActionList(context),
-                AppPlayPickerAction(context)
+                AppPlayPickerAction(context),
+                OpenMenuAction(context)
         ))
 
         if (isTaskerInstalled()) {

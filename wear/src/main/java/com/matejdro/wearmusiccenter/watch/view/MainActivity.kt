@@ -89,6 +89,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         viewModel.volume.observe(this, phoneVolumeListener)
         viewModel.popupVolumeBar.observe(this, volumeBarPopupListener)
         viewModel.closeActionsMenu.observe(this, closeDrawerListener)
+        viewModel.openActionsMenu.observe(this, openDrawerListener)
 
         val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
@@ -229,6 +230,15 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     fun closeMenuDrawer() {
         binding.actionDrawer.closeDrawer()
     }
+
+    private val openDrawerListener = Observer<Unit> {
+        openMenuDrawer()
+    }
+
+    fun openMenuDrawer() {
+        binding.actionDrawer.openDrawer()
+    }
+
 
     override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
         binding.ambientClock.visibility = android.view.View.VISIBLE
