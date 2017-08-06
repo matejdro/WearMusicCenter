@@ -93,7 +93,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         stemHasDoublePressAction = Array(numStemButtons) { false }
 
         if (alwaysDisplayTime) {
-            binding.ambientClock.setTextColor(Color.WHITE)
             binding.ambientClock.visibility = View.VISIBLE
             binding.iconTop.visibility = android.view.View.GONE
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
@@ -224,7 +223,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
     override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
         binding.ambientClock.visibility = android.view.View.VISIBLE
-        binding.ambientClock.setTextColor(Color.BLACK)
 
         handler.removeMessages(MESSAGE_UPDATE_CLOCK)
         updateClock()
@@ -245,7 +243,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
     override fun onExitAmbient() {
         if (alwaysDisplayTime) {
-            binding.ambientClock.setTextColor(Color.WHITE)
 
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
         } else {
