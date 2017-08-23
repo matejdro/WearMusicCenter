@@ -272,7 +272,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding.volumeBar.visibility = android.view.View.GONE
         binding.loadingIndicator.visibility = View.GONE
 
-        binding.fourWayTouch.background = ColorDrawable(Color.BLACK)
+        binding.root.background = ColorDrawable(Color.BLACK)
 
         binding.actionDrawer.closeDrawer()
         super.onEnterAmbient(ambientDetails)
@@ -293,7 +293,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         binding.albumArt.visibility = android.view.View.VISIBLE
 
-        binding.fourWayTouch.background = null
+        binding.root.background = null
 
         if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
             binding.loadingIndicator.visibility = View.VISIBLE

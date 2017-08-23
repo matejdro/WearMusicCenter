@@ -11,6 +11,59 @@
         tools:context="com.matejdro.wearsandbox.MainActivity"
         tools:deviceIds="wear">
 
+        <ImageView
+            android:id="@+id/album_art"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.333"
+            tools:ignore="ContentDescription" />
+
+        <android.support.wearable.view.BoxInsetLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/music_screen_text_margin">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_box="all">
+
+                <com.lb.auto_fit_textview.AutoResizeTextView
+                    android:id="@+id/text_artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLength="30"
+                    android:textColor="@color/white"
+                    android:textSize="48sp"
+                    tools:text="Artist" />
+
+                <com.lb.auto_fit_textview.AutoResizeTextView
+                    android:id="@+id/text_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLength="40"
+                    android:textColor="@color/white"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    tools:text="Title" />
+
+            </LinearLayout>
+
+        </android.support.wearable.view.BoxInsetLayout>
+
+        <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
+            android:id="@+id/volume_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
         <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
             android:id="@+id/four_way_touch"
             android:layout_width="match_parent"
@@ -20,13 +73,6 @@
             android:focusableInTouchMode="true"
             tools:deviceIds="wear"
             tools:ignore="KeyboardInaccessibleWidget">
-
-            <ImageView
-                android:id="@+id/album_art"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0.333"
-                tools:ignore="ContentDescription"/>
 
             <ImageView
                 android:id="@+id/icon_top"
@@ -73,53 +119,9 @@
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:visibility="gone"/>
-
-            <android.support.wearable.view.BoxInsetLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/music_screen_text_margin">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    app:layout_box="all">
-
-                    <com.lb.auto_fit_textview.AutoResizeTextView
-                        android:id="@+id/text_artist"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:gravity="center"
-                        android:maxLength="30"
-                        android:textColor="@color/white"
-                        android:textSize="48sp" />
-
-                    <com.lb.auto_fit_textview.AutoResizeTextView
-                        android:id="@+id/text_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="2"
-                        android:ellipsize="end"
-                        android:gravity="center"
-                        android:maxLength="40"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-            </android.support.wearable.view.BoxInsetLayout>
-
             <requestFocus />
-        </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
 
-        <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
-            android:id="@+id/volume_bar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
+        </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
 
         <ProgressBar
             android:id="@+id/loading_indicator"
