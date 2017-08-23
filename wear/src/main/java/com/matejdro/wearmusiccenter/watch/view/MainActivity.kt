@@ -12,6 +12,7 @@ import android.os.Build
 import android.support.wearable.activity.WearableActivity
 import android.support.wearable.input.RotaryEncoder
 import android.support.wearable.input.WearableButtons
+import android.support.wearable.view.drawer.WearableDrawerLayout
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -41,6 +42,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
     private lateinit var timeFormat: java.text.DateFormat
     private lateinit var binding: com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
+    private lateinit var drawerContentContainer: View
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -61,6 +63,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         super.onCreate(savedInstanceState)
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
+        drawerContentContainer = findViewById(R.id.drawer_content)
 
         val peekContainer = binding.drawerLayout.findViewById(
                 com.matejdro.wearmusiccenter.R.id.wearable_support_drawer_view_peek_container) as android.view.ViewGroup
@@ -77,6 +80,8 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding.fourWayTouch.listener = this
 
         binding.volumeBar.volumeListener = volumeBarListener
+
+        binding.drawerLayout.setDrawerStateCallback(drawerStateCallback)
 
         timeFormat = android.text.format.DateFormat.getTimeFormat(this)
 
@@ -239,6 +244,18 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding.actionDrawer.openDrawer()
     }
 
+    private val drawerStateCallback = object : WearableDrawerLayout.DrawerStateCallback() {
+        override fun onDrawerClosed(p0: View?) {
+            binding.fourWayTouch.requestFocus()
+        }
+
+        override fun onDrawerOpened(p0: View?) {
+            drawerContentContainer.requestFocus()
+        }
+
+        override fun onDrawerStateChanged(p0: Int) = Unit
+
+    }
 
     override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
         binding.ambientClock.visibility = android.view.View.VISIBLE

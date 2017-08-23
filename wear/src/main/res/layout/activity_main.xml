@@ -16,6 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             tools:deviceIds="wear"
             tools:ignore="KeyboardInaccessibleWidget">
 
@@ -110,6 +112,7 @@
 
             </android.support.wearable.view.BoxInsetLayout>
 
+            <requestFocus />
         </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
 
         <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
