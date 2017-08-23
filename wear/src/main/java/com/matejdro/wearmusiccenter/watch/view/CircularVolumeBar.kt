@@ -7,13 +7,6 @@ class CircularVolumeBar : android.view.View
 
     private val circleBounds = android.graphics.RectF()
     private var viewSize = 0f
-    private var minTouchDistanceSquared = 0f
-    private var maxTouchDistanceSquared = 0f
-
-    private var touchingCircle = false
-
-
-    var volumeListener : ((newVolume: Float) -> Unit)? = null
 
     constructor(context: android.content.Context?) : this(context, null)
     constructor(context: android.content.Context?, attrs: android.util.AttributeSet?) : this(context, attrs, 0)
@@ -46,7 +39,6 @@ class CircularVolumeBar : android.view.View
 
     private fun updateVolume(newVolume : Float) {
         volume = newVolume
-        volumeListener?.invoke(newVolume)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -58,48 +50,6 @@ class CircularVolumeBar : android.view.View
 
         circleBounds.right = circleSize
         circleBounds.bottom = circleSize
-
-        minTouchDistanceSquared = viewSize / 2 - foregroundPaint.strokeWidth
-        minTouchDistanceSquared *= minTouchDistanceSquared
-
-        maxTouchDistanceSquared = viewSize / 2
-        maxTouchDistanceSquared *= maxTouchDistanceSquared
-    }
-
-    override fun onTouchEvent(event: android.view.MotionEvent?): Boolean {
-        if (event == null) {
-            touchingCircle = false
-            return false
-        }
-
-        if (event.actionMasked != android.view.MotionEvent.ACTION_DOWN &&
-                (touchingCircle && event.actionMasked != android.view.MotionEvent.ACTION_MOVE)) {
-            touchingCircle = false
-            return false
-        }
-
-        val xFromCenter = event.x - viewSize / 2
-        val yFromCenter = event.y - viewSize / 2
-        val distFromCenterSquared = xFromCenter * xFromCenter + yFromCenter * yFromCenter
-
-        if (distFromCenterSquared !in minTouchDistanceSquared..maxTouchDistanceSquared) {
-            touchingCircle = false
-            return false
-        }
-
-        touchingCircle = true
-        var circlePosition = Math.atan2(xFromCenter.toDouble(), yFromCenter.toDouble())
-        if (circlePosition < 0) {
-            circlePosition += Math.PI * 2
-        }
-
-        circlePosition = Math.PI * 2 - circlePosition
-        circlePosition = (circlePosition + Math.PI) % (Math.PI * 2)
-
-        val newVolume = circlePosition / Math.PI / 2
-        updateVolume(newVolume.toFloat())
-
-        return true
     }
 
     override fun onDraw(canvas: android.graphics.Canvas?) {

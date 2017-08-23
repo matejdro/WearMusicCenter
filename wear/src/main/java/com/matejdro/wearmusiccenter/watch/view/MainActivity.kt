@@ -79,8 +79,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         binding.fourWayTouch.listener = this
 
-        binding.volumeBar.volumeListener = volumeBarListener
-
         binding.drawerLayout.setDrawerStateCallback(drawerStateCallback)
 
         timeFormat = android.text.format.DateFormat.getTimeFormat(this)
@@ -306,7 +304,10 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
             val delta = -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(this)
 
+            showVolumeBar()
             binding.volumeBar.incrementVolume(delta * 0.0025f)
+            viewModel.updateVolume(binding.volumeBar.volume)
+
 
             return true
         }
@@ -354,12 +355,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         }
 
         return super.onKeyDown(keyCode, event)
-    }
-
-    var volumeBarListener = fun(newVolume: Float) {
-        showVolumeBar()
-
-        viewModel.updateVolume(newVolume)
     }
 
     private fun showVolumeBar() {
