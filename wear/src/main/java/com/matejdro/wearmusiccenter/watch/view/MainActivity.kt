@@ -43,6 +43,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     private lateinit var timeFormat: java.text.DateFormat
     private lateinit var binding: com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
     private lateinit var drawerContentContainer: View
+    private lateinit var actionsMenuFragment: ActionsMenuFragment
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -105,6 +106,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         }
 
         WatchInfoSender(this, true).sendWatchInfoToPhone()
+        actionsMenuFragment = fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
     }
 
     override fun onDestroy() {
@@ -245,6 +247,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     private val drawerStateCallback = object : WearableDrawerLayout.DrawerStateCallback() {
         override fun onDrawerClosed(p0: View?) {
             binding.fourWayTouch.requestFocus()
+            actionsMenuFragment.scrollToTop()
         }
 
         override fun onDrawerOpened(p0: View?) {

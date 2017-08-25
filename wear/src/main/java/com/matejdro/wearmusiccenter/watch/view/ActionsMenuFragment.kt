@@ -86,6 +86,10 @@ class ActionsMenuFragment : Fragment() {
                 .minBy { it.y }?.keycode ?: -1
     }
 
+    fun scrollToTop() {
+        recycler.scrollToPosition(0)
+    }
+
     @Suppress("UNUSED_PARAMETER")
     fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == closeDrawerKeycode) {
