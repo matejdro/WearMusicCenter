@@ -79,7 +79,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
             val result = googleApiClient.blockingConnect()
 
             if (!result.isSuccess) {
-                val errorText = com.google.android.gms.common.internal.zzs.zzg(context, result.errorCode)
+                val errorText = context.getString(R.string.error_play_services)
                 musicState.postValue(Resource.error(errorText, null))
 
                 GoogleApiAvailability.getInstance().showErrorNotification(context, result)

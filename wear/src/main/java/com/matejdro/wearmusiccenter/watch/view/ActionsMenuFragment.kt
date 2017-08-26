@@ -118,8 +118,8 @@ class ActionsMenuFragment : Fragment() {
     }
 
     inner class MenuItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        val icon: ImageView = itemView.findViewById(R.id.icon) as ImageView
-        val title: TextView = itemView.findViewById(R.id.text) as TextView
+        val icon: ImageView = itemView.findViewById(R.id.icon)
+        val title: TextView = itemView.findViewById(R.id.text)
 
         init {
             itemView.tag = this

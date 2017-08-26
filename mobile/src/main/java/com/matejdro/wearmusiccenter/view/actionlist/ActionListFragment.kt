@@ -176,8 +176,8 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
     }
 
     private inner class ListItemHolder(itemView: View) : AbstractDraggableItemViewHolder(itemView) {
-        val icon = itemView.findViewById(R.id.icon) as ImageView
-        val text = itemView.findViewById(R.id.text) as TextView
+        val icon = itemView.findViewById<ImageView>(R.id.icon)
+        val text = itemView.findViewById<TextView>(R.id.text)
 
         init {
             itemView.setOnClickListener {

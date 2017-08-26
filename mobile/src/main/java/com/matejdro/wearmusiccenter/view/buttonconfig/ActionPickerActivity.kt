@@ -129,8 +129,8 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
     }
 
     private inner class ActionsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView : TextView = itemView.findViewById(android.R.id.text1) as TextView
-        val iconView : ImageView = itemView.findViewById(R.id.icon) as ImageView
+        val textView: TextView = itemView.findViewById(android.R.id.text1)
+        val iconView: ImageView = itemView.findViewById(R.id.icon)
 
         init {
             itemView.setOnClickListener {

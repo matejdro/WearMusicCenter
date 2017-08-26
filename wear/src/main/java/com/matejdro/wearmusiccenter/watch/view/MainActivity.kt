@@ -66,8 +66,8 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
         drawerContentContainer = findViewById(R.id.drawer_content)
 
-        val peekContainer = binding.drawerLayout.findViewById(
-                com.matejdro.wearmusiccenter.R.id.wearable_support_drawer_view_peek_container) as android.view.ViewGroup
+        val peekContainer: android.view.ViewGroup = binding.drawerLayout.findViewById(
+                com.matejdro.wearmusiccenter.R.id.wearable_support_drawer_view_peek_container)
         peekContainer.visibility = android.view.View.GONE
         while (peekContainer.childCount > 0) {
             peekContainer.removeViewAt(0)
