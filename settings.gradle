@@ -1,1 +1,3 @@
-include ':mobile', ':wear', ':wearutils', ':common'
+include ':mobile', ':wear', ':wearutils', ':common', ':advancedrecyclerview'
+
+project(':advancedrecyclerview').projectDir = new File('advancedrecyclerview/library')
