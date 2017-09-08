@@ -7,9 +7,10 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
+import android.support.wear.widget.CurvingLayoutCallback
+import android.support.wear.widget.WearableLinearLayoutManager
+import android.support.wear.widget.WearableRecyclerView
 import android.support.wearable.input.WearableButtons
-import android.support.wearable.view.CurvedChildLayoutManager
-import android.support.wearable.view.WearableRecyclerView
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +55,7 @@ class ActionsMenuFragment : Fragment() {
         //TODO also optimize for square devices
         layoutManager = MenuLayoutManager(context)
         recycler.layoutManager = layoutManager
-        recycler.centerEdgeItems = true
+        recycler.isEdgeItemsCenteringEnabled = true
         recycler.adapter = adapter
     }
 
@@ -131,7 +132,7 @@ class ActionsMenuFragment : Fragment() {
         }
     }
 
-    private inner class MenuLayoutManager(context: Context?) : CurvedChildLayoutManager(context) {
+    private inner class MenuLayoutManager(context: Context) : WearableLinearLayoutManager(context) {
         private val roundScreen: Boolean = resources.configuration.isScreenRound
 
         private var closestDistToCenter = Float.MAX_VALUE
@@ -187,23 +188,31 @@ class ActionsMenuFragment : Fragment() {
             finishChildrenLayout()
         }
 
-        override fun updateChild(child: View, parent: WearableRecyclerView) {
-            super.updateChild(child, parent)
+        private val childLayoutCallback = object : CurvingLayoutCallback(context) {
+            override fun onLayoutFinished(child: View, parent: RecyclerView?) {
+                super.onLayoutFinished(child, parent)
 
-            // Figure out % progress from top to bottom
-            val centerOffset = child.height.toFloat() / 2.0f / recycler.height.toFloat()
-            val yRelativeToCenterOffset = child.y / recycler.height + centerOffset
+                // Figure out % progress from top to bottom
+                val centerOffset = child.height.toFloat() / 2.0f / recycler.height.toFloat()
+                val yRelativeToCenterOffset = child.y / recycler.height + centerOffset
 
-            // Normalize for center
-            val progressToCenter = Math.abs(0.5f - yRelativeToCenterOffset)
+                // Normalize for center
+                val progressToCenter = Math.abs(0.5f - yRelativeToCenterOffset)
 
-            val holder = child.tag as MenuItemViewHolder
+                val holder = child.tag as MenuItemViewHolder
 
-            if (closestDistToCenter > progressToCenter) {
-                closestChildViewHolder = holder
-                closestDistToCenter = progressToCenter
+                if (closestDistToCenter > progressToCenter) {
+                    closestChildViewHolder = holder
+                    closestDistToCenter = progressToCenter
+                }
             }
+
+        }
+
+        init {
+            layoutCallback = childLayoutCallback
         }
     }
+
 
 }

@@ -9,10 +9,11 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.support.wear.widget.drawer.WearableDrawerLayout
+import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.activity.WearableActivity
 import android.support.wearable.input.RotaryEncoder
 import android.support.wearable.input.WearableButtons
-import android.support.wearable.view.drawer.WearableDrawerLayout
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -66,8 +67,9 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
         drawerContentContainer = findViewById(R.id.drawer_content)
 
+        // Hide peek container - we only want full blown drawer without peeks
         val peekContainer: android.view.ViewGroup = binding.drawerLayout.findViewById(
-                com.matejdro.wearmusiccenter.R.id.wearable_support_drawer_view_peek_container)
+                R.id.ws_drawer_view_peek_container)
         peekContainer.visibility = android.view.View.GONE
         while (peekContainer.childCount > 0) {
             peekContainer.removeViewAt(0)
@@ -233,7 +235,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     fun closeMenuDrawer() {
-        binding.actionDrawer.closeDrawer()
+        binding.actionDrawer.controller.closeDrawer()
     }
 
     private val openDrawerListener = Observer<Unit> {
@@ -241,21 +243,18 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     fun openMenuDrawer() {
-        binding.actionDrawer.openDrawer()
+        binding.actionDrawer.controller.openDrawer()
     }
 
     private val drawerStateCallback = object : WearableDrawerLayout.DrawerStateCallback() {
-        override fun onDrawerClosed(p0: View?) {
+        override fun onDrawerClosed(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
             binding.fourWayTouch.requestFocus()
             actionsMenuFragment.scrollToTop()
         }
 
-        override fun onDrawerOpened(p0: View?) {
+        override fun onDrawerOpened(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
             drawerContentContainer.requestFocus()
         }
-
-        override fun onDrawerStateChanged(p0: Int) = Unit
-
     }
 
     override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
@@ -275,7 +274,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         binding.root.background = ColorDrawable(Color.BLACK)
 
-        binding.actionDrawer.closeDrawer()
+        binding.actionDrawer.controller.closeDrawer()
         super.onEnterAmbient(ambientDetails)
     }
 
@@ -304,6 +303,10 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     override fun onGenericMotionEvent(ev: android.view.MotionEvent): Boolean {
+        if (binding.actionDrawer.isOpened) {
+            return false
+        }
+
         if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
             val delta = -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(this)
 
@@ -346,8 +349,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         }
 
         if (binding.actionDrawer.isOpened) {
-            return (fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment)
-                    .onKeyDown(keyCode, event)
+            return actionsMenuFragment.onKeyDown(keyCode, event)
         }
 
         if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
@@ -370,7 +372,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     override fun onUpwardsSwipe() {
         timber.log.Timber.d("UpwardsSwipe")
 
-        binding.actionDrawer.openDrawer()
+        binding.actionDrawer.controller.openDrawer()
     }
 
     override fun onSingleTap(quadrant: Int) {

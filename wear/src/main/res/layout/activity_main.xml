@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.wearable.view.drawer.WearableDrawerLayout
+    <android.support.wear.widget.drawer.WearableDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,7 +17,7 @@
             android:alpha="0.333"
             tools:ignore="ContentDescription" />
 
-        <android.support.wearable.view.BoxInsetLayout
+        <android.support.wear.widget.BoxInsetLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/music_screen_text_margin">
@@ -27,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_box="all">
+                app:boxedEdges="all">
 
                 <com.lb.auto_fit_textview.AutoResizeTextView
                     android:id="@+id/text_artist"
@@ -56,7 +55,7 @@
 
             </LinearLayout>
 
-        </android.support.wearable.view.BoxInsetLayout>
+        </android.support.wear.widget.BoxInsetLayout>
 
         <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
             android:id="@+id/volume_bar"
@@ -81,7 +80,7 @@
                 android:layout_gravity="center|top"
                 android:layout_marginTop="@dimen/music_screen_icon_offset"
                 android:src="@drawable/action_volume_up"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/icon_bottom"
@@ -90,7 +89,7 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="@dimen/music_screen_icon_offset"
                 android:src="@drawable/action_volume_down"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription" />
 
             <ImageView
                 android:id="@+id/icon_left"
@@ -99,7 +98,7 @@
                 android:layout_gravity="center|left"
                 android:layout_marginLeft="@dimen/music_screen_icon_offset"
                 android:src="@drawable/action_pause"
-                tools:ignore="ContentDescription,RtlHardcoded"/>
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
             <ImageView
                 android:id="@+id/icon_right"
@@ -108,7 +107,7 @@
                 android:layout_gravity="center|right"
                 android:layout_marginRight="@dimen/music_screen_icon_offset"
                 android:src="@android:mipmap/sym_def_app_icon"
-                tools:ignore="ContentDescription,RtlHardcoded"/>
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/ambient_clock"
@@ -118,7 +117,8 @@
                 android:paddingTop="5sp"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
             <requestFocus />
 
         </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
@@ -129,25 +129,22 @@
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:indeterminate="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
-        <android.support.wearable.view.drawer.WearableDrawerView
+        <android.support.wear.widget.drawer.WearableDrawerView
             android:id="@+id/action_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            app:drawer_content="@+id/drawer_content">
+            app:drawerContent="@+id/drawer_content">
 
             <fragment
-                android:id="@+id/drawer_content"
+                android:id="@id/drawer_content"
                 android:name="com.matejdro.wearmusiccenter.watch.view.ActionsMenuFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-            </fragment>
+        </android.support.wear.widget.drawer.WearableDrawerView>
 
-
-        </android.support.wearable.view.drawer.WearableDrawerView>
-
-    </android.support.wearable.view.drawer.WearableDrawerLayout>
+    </android.support.wear.widget.drawer.WearableDrawerLayout>
 </layout>
