@@ -38,7 +38,7 @@ class ButtonInfo : Bundlable {
 
         bundle.putInt(KEY_PHYSICAL_BUTTON, if (physicalButton) 1 else 0)
         bundle.putInt(KEY_BUTTON_INDEX, buttonIndex)
-        bundle.putInt(KEY_GESTURE, 0)
+        bundle.putInt(KEY_GESTURE, gesture)
     }
 
     fun copy(physicalButton: Boolean = this.physicalButton,
