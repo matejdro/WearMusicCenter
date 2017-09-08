@@ -5,10 +5,13 @@ import android.annotation.TargetApi
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.activity.WearableActivity
@@ -45,6 +48,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     private lateinit var binding: com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
     private lateinit var drawerContentContainer: View
     private lateinit var actionsMenuFragment: ActionsMenuFragment
+    private lateinit var vibrator: Vibrator
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -106,6 +110,8 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
             binding.iconTop.visibility = android.view.View.GONE
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
         }
+
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         WatchInfoSender(this, true).sendWatchInfoToPhone()
         actionsMenuFragment = fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
@@ -369,6 +375,15 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         handler.sendEmptyMessageDelayed(MESSAGE_HIDE_VOLUME, VOLUME_BAR_TIMEOUT)
     }
 
+    fun buzz() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(50, -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(50)
+        }
+    }
+
     override fun onUpwardsSwipe() {
         timber.log.Timber.d("UpwardsSwipe")
 
@@ -376,10 +391,12 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     override fun onSingleTap(quadrant: Int) {
+        buzz()
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_SINGLE_TAP))
     }
 
     override fun onDoubleTap(quadrant: Int) {
+        buzz()
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_DOUBLE_TAP))
     }
 

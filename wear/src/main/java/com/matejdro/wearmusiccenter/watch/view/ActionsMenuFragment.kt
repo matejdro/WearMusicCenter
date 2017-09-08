@@ -32,13 +32,15 @@ class ActionsMenuFragment : Fragment() {
 
     private var closeDrawerKeycode = -1
 
+    private lateinit var activity: MainActivity
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        context as MainActivity
+        activity = context as MainActivity
 
-        viewmodel = context.viewModel
-        viewmodel.actionsMenuConfig.config.observe(context, configListener)
+        viewmodel = activity.viewModel
+        viewmodel.actionsMenuConfig.config.observe(activity, configListener)
 
         findButtons()
     }
@@ -59,7 +61,7 @@ class ActionsMenuFragment : Fragment() {
         recycler.adapter = adapter
     }
 
-    val configListener = Observer<List<ButtonAction>> {
+    private val configListener = Observer<List<ButtonAction>> {
         if (it == null) {
             return@Observer
         }
@@ -128,6 +130,7 @@ class ActionsMenuFragment : Fragment() {
         }
 
         override fun onClick(v: View?) {
+            activity.buzz()
             viewmodel.executeActionFromMenu(adapterPosition)
         }
     }
