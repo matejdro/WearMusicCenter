@@ -9,12 +9,13 @@ import android.content.Intent
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.RootActionList
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
+import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import java.util.*
 
 class ActionPickerViewModel(showNone: Boolean, application: Application) : AndroidViewModel(application) {
     val displayedActions = MutableLiveData<List<PhoneAction>>()
-    val selectedAction = MutableLiveData<PhoneAction>()
-    val activityStarter = MutableLiveData<Intent>()
+    val selectedAction = SingleLiveEvent<PhoneAction>()
+    val activityStarter = SingleLiveEvent<Intent>()
 
     private val backStack = Stack<List<PhoneAction>>()
     private var activityResultReceiver: ActivityResultReceiver? = null

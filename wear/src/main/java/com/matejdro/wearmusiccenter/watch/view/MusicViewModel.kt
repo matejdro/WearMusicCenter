@@ -12,6 +12,7 @@ import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
+import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import timber.log.Timber
 
 class MusicViewModel(application: Application?) : AndroidViewModel(application) {
@@ -26,9 +27,9 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     val preferences = PreferencesBus as LiveData<SharedPreferences>
 
     val volume = MutableLiveData<Float>()
-    val popupVolumeBar = MutableLiveData<Unit>()
-    val closeActionsMenu = MutableLiveData<Unit>()
-    val openActionsMenu = MutableLiveData<Unit>()
+    val popupVolumeBar = SingleLiveEvent<Unit>()
+    val closeActionsMenu = SingleLiveEvent<Unit>()
+    val openActionsMenu = SingleLiveEvent<Unit>()
 
     val albumArt
     get() = phoneConnection.albumArt
@@ -56,16 +57,16 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
         return when {
             action.key == StandardActions.ACTION_VOLUME_UP -> {
                 updateVolume(Math.min(1f, volume.value!! + (currentButtonConfig.value?.volumeStep ?: 0.1f)))
-                popupVolumeBar.value = popupVolumeBar.value
+                popupVolumeBar.call()
                 true
             }
             action.key == StandardActions.ACTION_VOLUME_DOWN -> {
                 updateVolume(Math.max(0f, volume.value!! - (currentButtonConfig.value?.volumeStep ?: 0.1f)))
-                popupVolumeBar.value = popupVolumeBar.value
+                popupVolumeBar.call()
                 true
             }
             action.key == StandardActions.ACTION_OPEN_MENU -> {
-                openActionsMenu.value = openActionsMenu.value
+                openActionsMenu.call()
                 true
             }
 

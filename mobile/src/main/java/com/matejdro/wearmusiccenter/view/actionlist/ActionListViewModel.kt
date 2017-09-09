@@ -9,11 +9,12 @@ import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
 import com.matejdro.wearmusiccenter.di.ConfigActivityComponent
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
+import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import javax.inject.Inject
 
 class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : ViewModel() {
     val actions = MutableLiveData<List<IdentifiedItem<PhoneAction>>>()
-    val openActionEditor = MutableLiveData<Int>()
+    val openActionEditor = SingleLiveEvent<Int>()
     private var actionStore: MutableList<IdentifiedItem<PhoneAction>>
 
     private var lastId = 0
