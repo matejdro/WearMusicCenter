@@ -29,14 +29,14 @@ dependencies {
     compile project(path: ':wearutils')
     compile project(path: ':common')
 
-    provided 'com.google.android.wearable:wearable:2.0.4'
+    provided 'com.google.android.wearable:wearable:2.0.5'
 
     compile "android.arch.lifecycle:runtime:1.0.0-alpha9"
     compile "android.arch.lifecycle:extensions:1.0.0-alpha9"
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha9"
     kapt "com.android.databinding:compiler:$android_plugin_version"
 
-    compile 'com.google.android.gms:play-services-wearable:11.2.0'
+    compile "com.google.android.gms:play-services-wearable:$play_services_version"
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16"

@@ -39,7 +39,7 @@ dependencies {
 
     compile project(path: ':wearutils')
 
-    compile 'com.android.support:appcompat-v7:26.0.1'
+    compile "com.android.support:appcompat-v7:$support_lib_version"
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
