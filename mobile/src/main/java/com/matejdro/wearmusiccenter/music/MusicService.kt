@@ -1,13 +1,18 @@
 package com.matejdro.wearmusiccenter.music
 
+import android.annotation.TargetApi
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.arch.lifecycle.LifecycleService
 import android.arch.lifecycle.Observer
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.support.v4.app.NotificationCompat
@@ -37,6 +42,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         private const val STOP_SELF_PENDING_INTENT_REQUEST_CODE = 333
         private const val ACTION_STOP_SELF = "STOP_SELF"
+        private const val KEY_NOTIFICATION_CHANNEL = "Service_Channel"
     }
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -92,8 +98,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 stopSelfIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
+        createNotificationChannel()
         //TODO fix notification icon and text
-        val persistentNotification = NotificationCompat.Builder(this)
+        val persistentNotification = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
                 .setContentText("Music Service active")
                 .setContentTitle("WearMusicCenter")
                 .setContentIntent(stopSelfPendingIntent)
@@ -248,6 +255,20 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         } else if (event.path == CommPaths.MESSAGE_WATCH_OPENED) {
             buildMusicStateAndTransmit(currentMediaController)
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
+        }
+
+        val channel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
+                getString(R.string.music_control),
+                NotificationManager.IMPORTANCE_LOW)
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
 

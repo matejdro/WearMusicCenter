@@ -41,5 +41,6 @@
     <string name="action_text">Action text</string>
     <string name="swap_action">Swap action</string>
     <string name="open_actions_menu">Open actions menu</string>
+    <string name="music_control">Music control</string>
 
 </resources>
