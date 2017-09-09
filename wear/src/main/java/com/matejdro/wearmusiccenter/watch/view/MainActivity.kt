@@ -11,6 +11,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.Handler
+import android.os.Message
 import android.os.Vibrator
 import android.preference.PreferenceManager
 import android.support.wear.widget.drawer.WearableDrawerLayout
@@ -410,28 +412,37 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     override fun onDoubleTap(quadrant: Int) {
-        buzz()
+        // Single tap vibration has delay, because it needs to wait to see if user presses
+        // for the second time.
+        // Introduce similar delay to double tap vibration to make it more apparent to the user
+        // that he double pressed
+        handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_DOUBLE_TAP))
     }
 
     override fun getLifecycle(): LifecycleRegistry = lifecycleRegistry
 
-    private class TimeoutsHandler(val activity: java.lang.ref.WeakReference<MainActivity>) : android.os.Handler() {
-        override fun dispatchMessage(msg: android.os.Message?) {
-            if (msg?.what == MESSAGE_HIDE_VOLUME) {
-                activity.get()?.binding?.volumeBar?.visibility = android.view.View.GONE
-            } else if (msg?.what == MESSAGE_PRESS_BUTTON) {
-                activity.get()?.viewModel?.executeAction(ButtonInfo(true, msg.arg1, GESTURE_SINGLE_TAP))
-            } else if (msg?.what == MESSAGE_UPDATE_CLOCK) {
-                removeMessages(MESSAGE_UPDATE_CLOCK)
+    private class TimeoutsHandler(val activity: WeakReference<MainActivity>) : Handler() {
+        override fun handleMessage(msg: Message) {
+            when {
+                msg.what == MESSAGE_HIDE_VOLUME -> {
+                    activity.get()?.binding?.volumeBar?.visibility = android.view.View.GONE
+                }
+                msg.what == MESSAGE_PRESS_BUTTON -> {
+                    activity.get()?.viewModel?.executeAction(ButtonInfo(true, msg.arg1,
+                            GESTURE_SINGLE_TAP))
+                }
+                msg.what == MESSAGE_UPDATE_CLOCK -> {
+                    removeMessages(MESSAGE_UPDATE_CLOCK)
 
-                val activity = activity.get() ?: return
+                    val activity = activity.get() ?: return
 
-                activity.updateClock()
+                    activity.updateClock()
 
-                if (!activity.isAmbient &&
-                        Preferences.getBoolean(activity.preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
-                    sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
+                    if (!activity.isAmbient &&
+                            Preferences.getBoolean(activity.preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
+                        sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
+                    }
                 }
             }
 
