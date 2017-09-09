@@ -77,7 +77,7 @@ class ActionEditorActivity : Activity() {
         }
 
         val customTitle = binding.nameBox.text.toString()
-        if (!customTitle.isNullOrBlank() && customTitle != currentAction.getTitle()) {
+        if (!customTitle.isBlank() && customTitle != currentAction.getTitle()) {
             currentAction.customTitle = customTitle
         }
 
@@ -149,7 +149,9 @@ class ActionEditorActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_PICK_ACTION) {
             if (data == null) {
-                cancel()
+                if (currentAction == null) {
+                    cancel()
+                }
                 return
             }
 
