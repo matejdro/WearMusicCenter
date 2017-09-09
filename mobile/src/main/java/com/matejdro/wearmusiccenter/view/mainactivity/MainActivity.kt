@@ -37,9 +37,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var currentFragment: Any? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewmodel = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
-
         super.onCreate(savedInstanceState)
+
+        viewmodel = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
 
         viewmodel.watchInfoProvider.observe(this, watchInfoObserver)
 

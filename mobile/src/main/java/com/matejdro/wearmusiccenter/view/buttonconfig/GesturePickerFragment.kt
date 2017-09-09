@@ -66,37 +66,29 @@ class GesturePickerFragment : DialogFragment() {
     private lateinit var baseButtonInfo: ButtonInfo
     private lateinit var buttonName: String
 
-    private lateinit var actions : Array<PhoneAction?>
+    private lateinit var actions: Array<PhoneAction?>
 
     @Inject
     @field:LocalActivityConfig
     lateinit var configProvider: ActionConfigProvider
 
     @Inject
-    lateinit var customIconStorage : CustomIconStorage
+    lateinit var customIconStorage: CustomIconStorage
 
     private lateinit var buttonConfig: ActionConfigStorage
-    private lateinit var buttons : Array<Button>
-    private lateinit var paletteButtons : Array<ImageButton>
+    private lateinit var buttons: Array<Button>
+    private lateinit var paletteButtons: Array<ImageButton>
     private var anythingChanged = false
     private var storagePermissionRedirectGesture = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (activity as ConfigActivityComponentProvider)
-                .provideConfigActivityComponent().inject(this)
-
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_Short)
 
         baseButtonInfo = ButtonInfo(arguments.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO))
         buttonName = arguments.getString(PARAM_BUTTON_NAME)
         setsPlaybackButtons = arguments.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
-
-        buttonConfig = if (setsPlaybackButtons)
-            configProvider.getPlayingConfig()
-        else
-            configProvider.getStoppedConfig()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -112,31 +104,43 @@ class GesturePickerFragment : DialogFragment() {
         dialog.setCanceledOnTouchOutside(true)
         dialog.setTitle(buttonName)
 
+        buttons = arrayOf(binding.singlePressButton, binding.doublePressButton)
+        paletteButtons = arrayOf(binding.customizeSinglePressIcon, binding.customizeDoublePressIcon)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        (activity as ConfigActivityComponentProvider)
+                .provideConfigActivityComponent().inject(this)
+
+        buttonConfig = if (setsPlaybackButtons)
+            configProvider.getPlayingConfig()
+        else
+            configProvider.getStoppedConfig()
+
         actions = Array(NUM_BUTTON_GESTURES) {
             buttonConfig.getScreenAction(baseButtonInfo.copy(gesture = it))
         }
-
-        buttons = arrayOf(binding.singlePressButton, binding.doublePressButton)
-        paletteButtons = arrayOf(binding.customizeSinglePressIcon, binding.customizeDoublePressIcon)
 
         applyButton(binding.singlePressButton, binding.customizeSinglePressIcon, GESTURE_SINGLE_TAP)
         applyButton(binding.doublePressButton, binding.customizeDoublePressIcon, GESTURE_DOUBLE_TAP)
     }
 
-    fun changeAction(gesture : Int) {
+    fun changeAction(gesture: Int) {
         val requestCode = REQUEST_CODE_PICK_ACTION + gesture
         startActivityForResult(Intent(activity, ActionPickerActivity::class.java), requestCode)
 
     }
 
-    private fun applyButton(button: Button, paletteButton : ImageButton, @ButtonGesture gesture: Int) {
+    private fun applyButton(button: Button, paletteButton: ImageButton, @ButtonGesture gesture: Int) {
         val phoneAction = actions[gesture]
 
 
         applyButton(button, paletteButton, phoneAction)
     }
 
-    private fun applyButton(button: Button, paletteButton : ImageButton, phoneAction: PhoneAction?) {
+    private fun applyButton(button: Button, paletteButton: ImageButton, phoneAction: PhoneAction?) {
         var mutableAction = phoneAction
 
         if (mutableAction == null) {
@@ -176,7 +180,7 @@ class GesturePickerFragment : DialogFragment() {
         dismiss()
     }
 
-    fun startIconSelection(gesture : Int) {
+    fun startIconSelection(gesture: Int) {
         if (actions[gesture] == null) {
             return
         }
@@ -192,7 +196,7 @@ class GesturePickerFragment : DialogFragment() {
             intent.type = "image/*"
 
             startActivityForResult(intent, REQUEST_CODE_PICK_ICON + gesture)
-        } catch(ignored: ActivityNotFoundException) {
+        } catch (ignored: ActivityNotFoundException) {
             AlertDialog.Builder(context)
                     .setTitle(R.string.icon_selection_error_title)
                     .setMessage(R.string.icon_selection_no_icon_pack)
@@ -201,7 +205,7 @@ class GesturePickerFragment : DialogFragment() {
         }
     }
 
-    private fun requestStoragePermission(gesture : Int) {
+    private fun requestStoragePermission(gesture: Int) {
         AlertDialog.Builder(context)
                 .setTitle(R.string.icon_selection_error_title)
                 .setMessage(R.string.icon_selection_no_storage_permission)

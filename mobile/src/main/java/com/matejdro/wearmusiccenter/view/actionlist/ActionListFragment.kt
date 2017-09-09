@@ -46,18 +46,6 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
     private var actions: List<IdentifiedItem<PhoneAction>> = emptyList()
     private var ignoreNextUpdate: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val factory = ActionListViewModelFactory(
-                (activity as ConfigActivityComponentProvider).provideConfigActivityComponent())
-
-        viewModel = ViewModelProviders.of(this, factory)[ActionListViewModel::class.java]
-
-        viewModel.actions.observe(this, actionListListener)
-        viewModel.openActionEditor.observe(this, openEditDialogListener)
-    }
-
     override fun onStart() {
         super.onStart()
 
@@ -94,6 +82,18 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
 
         recycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         dragDropManager.attachRecyclerView(recycler)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        val factory = ActionListViewModelFactory(
+                (activity as ConfigActivityComponentProvider).provideConfigActivityComponent())
+
+        viewModel = ViewModelProviders.of(this, factory)[ActionListViewModel::class.java]
+
+        viewModel.actions.observe(this, actionListListener)
+        viewModel.openActionEditor.observe(this, openEditDialogListener)
     }
 
     override fun onDestroy() {
