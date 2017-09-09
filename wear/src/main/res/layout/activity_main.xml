@@ -28,7 +28,7 @@
                 android:orientation="vertical"
                 app:boxedEdges="all">
 
-                <com.lb.auto_fit_textview.AutoResizeTextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/text_artist"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -37,10 +37,11 @@
                     android:gravity="center"
                     android:maxLength="30"
                     android:textColor="@color/white"
-                    android:textSize="48sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform"
                     tools:text="Artist" />
 
-                <com.lb.auto_fit_textview.AutoResizeTextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/text_title"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -51,6 +52,8 @@
                     android:textColor="@color/white"
                     android:textSize="48sp"
                     android:textStyle="bold"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform"
                     tools:text="Title" />
 
             </LinearLayout>

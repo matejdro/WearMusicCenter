@@ -40,8 +40,6 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16"
-
-    compile 'com.github.AndroidDeveloperLB:AutoFitTextView:4'
 }
 repositories {
     mavenCentral()
