@@ -18,17 +18,17 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 
-class WatchInfoProvider @Inject constructor(private val context : Context) : LiveData<WatchInfoWithIcons>(),
+class WatchInfoProvider @Inject constructor(private val context: Context) : LiveData<WatchInfoWithIcons>(),
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener {
 
-    private val googleApiClient : GoogleApiClient = GoogleApiClient.Builder(context)
+    private val googleApiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addApi(Wearable.API)
             .addConnectionCallbacks(this)
             .addOnConnectionFailedListener(this)
             .build()
 
-    private fun parseDataItem(dataItem : DataItem?) {
+    private fun parseDataItem(dataItem: DataItem?) {
         if (dataItem == null) {
             this.value = null
             return
@@ -39,7 +39,7 @@ class WatchInfoProvider @Inject constructor(private val context : Context) : Liv
 
         val frozenDataItem = dataItem.freeze()
         launch(CommonPool) {
-            for (buttonIndex in 0 until watchInfo.buttonsCount ) {
+            for (buttonIndex in 0 until watchInfo.buttonsCount) {
                 val buttonAssetName = CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonIndex
                 val asset = frozenDataItem.assets[buttonAssetName]
                 if (asset == null) {
@@ -53,13 +53,17 @@ class WatchInfoProvider @Inject constructor(private val context : Context) : Liv
             }
 
             postValue(WatchInfoWithIcons(watchInfo, icons))
+
         }
     }
 
     private fun retrieveCurrentValue() {
         Wearable.DataApi.getDataItems(googleApiClient,
                 Uri.parse("wear://*" + CommPaths.DATA_WATCH_INFO))
-                .setResultCallback { parseDataItem(it.firstOrNull()) }
+                .setResultCallback {
+                    parseDataItem(it.firstOrNull())
+                    it.release()
+                }
     }
 
     private fun registerListener() {
@@ -69,11 +73,13 @@ class WatchInfoProvider @Inject constructor(private val context : Context) : Liv
                 DataApi.FILTER_LITERAL)
     }
 
-    override fun onDataChanged(dataBuffer : DataEventBuffer) {
+    override fun onDataChanged(dataBuffer: DataEventBuffer) {
         dataBuffer
                 .filter { it.type == DataEvent.TYPE_CHANGED }
                 .map { it.dataItem }
                 .firstOrNull()?.also(this::parseDataItem)
+
+        dataBuffer.release()
     }
 
     override fun onConnected(p0: Bundle?) {
