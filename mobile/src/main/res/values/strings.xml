@@ -42,5 +42,18 @@
     <string name="swap_action">Swap action</string>
     <string name="open_actions_menu">Open actions menu</string>
     <string name="music_control">Music control</string>
+    <string name="misc_settings">Misc settings</string>
+
+    <string name="category_about">About</string>
+    <string name="installed_version">Installed version</string>
+    <string name="donate">Donate</string>
+    <string name="donate_description">Buy me a Coke if you really like my app!</string>
+    <string name="get_support">Get support</string>
+    <string name="support_email" translatable="false">mailto:matejdro+support@gmail.com</string>
+    <string name="get_support_description">Send application logs to the developer for the support</string>
+    <string name="licenses">Open source licenses</string>
+    <string name="setting_always_show_time">Always show time</string>
+    <string name="setting_always_show_time_off_description">Current time will only be displayed in ambient mode</string>
+    <string name="setting_always_show_time_on_description">Current time will always be displayed. Top action icon will not be visible (it will be replaced by clock), but action will still function normally.</string>
 
 </resources>

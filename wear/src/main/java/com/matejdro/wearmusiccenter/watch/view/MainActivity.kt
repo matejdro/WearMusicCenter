@@ -6,11 +6,13 @@ import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Vibrator
+import android.preference.PreferenceManager
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.activity.WearableActivity
@@ -20,6 +22,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
@@ -30,6 +33,7 @@ import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.VibratorCompat
+import com.matejdro.wearutils.preferences.definition.Preferences
 import java.lang.ref.WeakReference
 
 class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
@@ -51,14 +55,13 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     private lateinit var vibrator: Vibrator
     private val handler = TimeoutsHandler(WeakReference(this))
 
+    private lateinit var preferences: SharedPreferences
+
     private val lifecycleRegistry = LifecycleRegistry(this)
     lateinit var viewModel: MusicViewModel
 
     private lateinit var lastStemPresses: Array<Long>
     private lateinit var stemHasDoublePressAction: Array<Boolean>
-
-    //TODO
-    val alwaysDisplayTime = true
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         if (storedViewModel == null) {
@@ -93,9 +96,11 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         // Enables Always-on
         setAmbientEnabled()
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         viewModel.albumArt.observe(this, albumArtObserver)
-        viewModel.currentConfig.observe(this, configObserver)
+        viewModel.currentButtonConfig.observe(this, buttonConfigObserver)
+        viewModel.preferences.observe(this, preferencesChangeObserver)
         viewModel.volume.observe(this, phoneVolumeListener)
         viewModel.popupVolumeBar.observe(this, volumeBarPopupListener)
         viewModel.closeActionsMenu.observe(this, closeDrawerListener)
@@ -104,12 +109,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
         stemHasDoublePressAction = Array(numStemButtons) { false }
-
-        if (alwaysDisplayTime) {
-            binding.ambientClock.visibility = View.VISIBLE
-            binding.iconTop.visibility = android.view.View.GONE
-            handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
-        }
 
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
@@ -129,7 +128,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     override fun onStart() {
         super.onStart()
 
-        if (alwaysDisplayTime) {
+        if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
         }
     }
@@ -195,7 +194,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         binding.albumArt.setImageBitmap(it)
     }
 
-    private val configObserver = Observer<WatchActionConfigProvider> {
+    private val buttonConfigObserver = Observer<WatchActionConfigProvider> {
         if (it == null) {
             return@Observer
         }
@@ -225,6 +224,27 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
         val config = it
         stemHasDoublePressAction = Array(lastStemPresses.size) {
             config.isActionActive(ButtonInfo(true, it, GESTURE_DOUBLE_TAP))
+        }
+    }
+
+    private val preferencesChangeObserver = Observer<SharedPreferences> {
+        if (it == null) {
+            return@Observer
+        }
+
+        preferences = it
+
+        if (!isAmbient) {
+            val alwaysDisplayClock = Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)
+
+            if (alwaysDisplayClock) {
+                binding.ambientClock.visibility = View.VISIBLE
+                binding.iconTop.visibility = View.GONE
+                handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
+            } else {
+                binding.iconTop.visibility = View.VISIBLE
+                binding.ambientClock.visibility = View.GONE
+            }
         }
     }
 
@@ -285,8 +305,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     override fun onExitAmbient() {
-        if (alwaysDisplayTime) {
-
+        if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
         } else {
             binding.ambientClock.visibility = android.view.View.GONE
@@ -410,7 +429,8 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
                 activity.updateClock()
 
-                if (!activity.isAmbient && activity.alwaysDisplayTime) {
+                if (!activity.isAmbient &&
+                        Preferences.getBoolean(activity.preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
                     sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
                 }
             }

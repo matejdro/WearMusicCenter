@@ -26,6 +26,6 @@ interface CommPaths {
         const val DATA_STOPPING_ACTION_CONFIG = DATA_ACTION_CONFIG_PREFIX + "/Stopped"
         const val ASSET_BUTTON_ICON_PREFIX = "/Button_Icon_"
 
-
+        const val PREFERENCES_PREFIX = "/Settings"
     }
 }

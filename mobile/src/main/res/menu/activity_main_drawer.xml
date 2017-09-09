@@ -17,6 +17,11 @@
             android:id="@+id/actions_menu"
             android:icon="@drawable/ic_actions_menu"
             android:title="@string/actions_menu"/>
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/misc_settings" />
     </group>
 
 </menu>

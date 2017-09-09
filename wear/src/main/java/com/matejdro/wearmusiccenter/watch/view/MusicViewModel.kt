@@ -1,15 +1,14 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
+import android.arch.lifecycle.*
+import android.content.SharedPreferences
 import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
+import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
@@ -21,9 +20,10 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     private val playbackConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawPlaybackConfig)
     private val stoppedConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawStoppedConfig)
 
-    val currentConfig = MediatorLiveData<WatchActionConfigProvider>()
+    val currentButtonConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
     val actionsMenuConfig = WatchActionMenuProvider(phoneConnection.googleApiClient, phoneConnection.rawActionMenuConfig)
+    val preferences = PreferencesBus as LiveData<SharedPreferences>
 
     val volume = MutableLiveData<Float>()
     val popupVolumeBar = MutableLiveData<Unit>()
@@ -46,7 +46,7 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     }
 
     fun executeAction(buttonInfo: ButtonInfo) {
-        val action = currentConfig.value?.getAction(buttonInfo) ?: return
+        val action = currentButtonConfig.value?.getAction(buttonInfo) ?: return
         if (!executeActionOnWatch(action)) {
             phoneConnection.executeButtonAction(buttonInfo)
         }
@@ -55,12 +55,12 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     private fun executeActionOnWatch(action: ButtonAction): Boolean {
         return when {
             action.key == StandardActions.ACTION_VOLUME_UP -> {
-                updateVolume(Math.min(1f, volume.value!! + (currentConfig.value?.volumeStep ?: 0.1f)))
+                updateVolume(Math.min(1f, volume.value!! + (currentButtonConfig.value?.volumeStep ?: 0.1f)))
                 popupVolumeBar.value = popupVolumeBar.value
                 true
             }
             action.key == StandardActions.ACTION_VOLUME_DOWN -> {
-                updateVolume(Math.max(0f, volume.value!! - (currentConfig.value?.volumeStep ?: 0.1f)))
+                updateVolume(Math.max(0f, volume.value!! - (currentButtonConfig.value?.volumeStep ?: 0.1f)))
                 popupVolumeBar.value = popupVolumeBar.value
                 true
             }
@@ -79,11 +79,11 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     }
 
     private val configChangeListener = Observer<WatchActionConfigProvider> {
-        currentConfig.value = it
+        currentButtonConfig.value = it
     }
 
     private val musicStateListener = Observer<Resource<MusicState>> {
-        val playing = it?.data?.playing ?: false
+        val playing = it?.data?.playing == true
 
         val newMusicState = it?.data
         if (it?.status == Resource.Status.SUCCESS && newMusicState != null) {
@@ -102,13 +102,12 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
     }
 
     private fun swapConfig(newConfig : WatchActionConfigProvider) {
-        Timber.d("SwapConfig %b %b %b %b", newConfig === playbackConfig, newConfig === playbackConfig, currentConfig.value === newConfig, currentConfig.value === null)
-        if (newConfig === currentConfig.value) {
+        if (newConfig === currentButtonConfig.value) {
             return
         }
 
-        currentConfig.removeSource(currentConfig.value?.updateListener)
-        currentConfig.addSource(newConfig.updateListener, configChangeListener)
+        currentButtonConfig.removeSource(currentButtonConfig.value?.updateListener)
+        currentButtonConfig.addSource(newConfig.updateListener, configChangeListener)
     }
 
     override fun onCleared() {
@@ -119,9 +118,6 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
         musicState.addSource(phoneConnection.musicState, musicStateListener)
         swapConfig(stoppedConfig)
 
-        currentConfig.observeForever {
-            Timber.d("CurrentConfigChange %b %b", it === playbackConfig, it == null)
-        }
 
         volume.value = 0.5f
     }

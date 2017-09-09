@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="cat_music_screen"
+        android:title="Music screen">
+
+        <com.matejdro.wearutils.preferences.SwitchPreferenceEx
+            android:defaultValue="false"
+            android:key="always_show_time"
+            android:summaryOff="@string/setting_always_show_time_off_description"
+            android:summaryOn="@string/setting_always_show_time_on_description"
+            android:title="@string/setting_always_show_time" />
+
+    </PreferenceCategory>
+
+
+    <!-- TODO implement all about entries -->
+    <PreferenceCategory
+        android:key="cat_about"
+        android:title="@string/category_about">
+        <Preference
+            android:key="version"
+            android:title="@string/installed_version" />
+        <Preference
+            android:key="supportButton"
+            android:summary="@string/get_support_description"
+            android:title="@string/get_support" />
+        <Preference
+            android:key="licenses"
+            android:title="@string/licenses" />
+        <Preference
+            android:key="donateButton"
+            android:summary="@string/donate_description"
+            android:title="@string/donate" />
+    </PreferenceCategory>
+</PreferenceScreen>
