@@ -53,14 +53,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         binding.navView.setNavigationItemSelectedListener(this)
 
-        watchInfoObserver.onChanged(null)
-
         binding.appBar?.fab?.setOnClickListener {
             val currentFragment = currentFragment ?: return@setOnClickListener
             if (currentFragment is FabFragment) {
                 currentFragment.onFabClicked()
             }
         }
+
+        updateCurrentFragment(supportFragmentManager.findFragmentById(R.id.fragment_container))
     }
 
     private fun disableDrawer() {
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (it != null) {
             enableDrawer()
 
-            if (currentFragment is NoWatchFragment) {
+            if (currentFragment == null || currentFragment is NoWatchFragment) {
                 swapFragment(ButtonConfigFragment.newInstance(true))
                 binding.navView.menu.getItem(0).isChecked = true
 
@@ -93,11 +93,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun swapFragment(newFragment: Fragment) {
-        currentFragment = newFragment
-
         supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, newFragment)
                 .commit()
+
+        updateCurrentFragment(newFragment)
+    }
+
+    private fun updateCurrentFragment(newFragment: Fragment?) {
+        if (newFragment == null) {
+            return
+        }
+
+        currentFragment = newFragment
 
         if (newFragment is FabFragment) {
             binding.appBar?.fab?.let {
