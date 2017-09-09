@@ -142,7 +142,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     }
 
     private fun executeAction(buttonInfo: ButtonInfo) {
-        val playing = currentMediaController?.isPlaying() ?: false
+        val playing = currentMediaController?.isPlaying() == true
 
         val config = if (playing)
             configProvider.getPlayingConfig()
@@ -183,7 +183,11 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
             val meta = mediaController.metadata
             if (meta != null) {
-                musicStateBuilder.artist = meta.getString(MediaMetadata.METADATA_KEY_ARTIST)
+                val artist = meta.getString(MediaMetadata.METADATA_KEY_ARTIST)
+                if (artist != null) {
+                    // Even optional protobuf fields cannot take in null. Only fill if not null.
+                    musicStateBuilder.artist = artist
+                }
                 musicStateBuilder.title = meta.getString(MediaMetadata.METADATA_KEY_TITLE)
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             }
