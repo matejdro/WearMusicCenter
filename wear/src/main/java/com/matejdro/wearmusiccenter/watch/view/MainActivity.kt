@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.os.VibrationEffect
 import android.os.Vibrator
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
@@ -30,6 +29,7 @@ import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearutils.lifecycle.Resource
+import com.matejdro.wearutils.miscutils.VibratorCompat
 import java.lang.ref.WeakReference
 
 class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
@@ -376,12 +376,7 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
     }
 
     fun buzz() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(50, -1))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(50)
-        }
+        VibratorCompat.vibrate(vibrator, 50)
     }
 
     override fun onUpwardsSwipe() {

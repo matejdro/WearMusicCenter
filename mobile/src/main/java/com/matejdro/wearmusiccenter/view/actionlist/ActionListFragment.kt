@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
@@ -11,6 +12,8 @@ import android.graphics.drawable.NinePatchDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.os.Vibrator
+import android.provider.Settings
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -32,8 +35,9 @@ import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
+import com.matejdro.wearutils.miscutils.VibratorCompat
 
-class ActionListFragment : LifecycleFragment(), FabFragment {
+class ActionListFragment : LifecycleFragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
     companion object {
         const val REQUEST_CODE_EDIT_WINDOW = 1031
     }
@@ -42,9 +46,16 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
     private lateinit var binding: FragmentActionListBinding
     private lateinit var adapter: RecyclerView.Adapter<ListItemHolder>
     private lateinit var dragDropManager: RecyclerViewDragDropManager
+    private lateinit var vibrator: Vibrator
 
     private var actions: List<IdentifiedItem<PhoneAction>> = emptyList()
     private var ignoreNextUpdate: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
 
     override fun onStart() {
         super.onStart()
@@ -69,6 +80,7 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
         dragDropManager.setInitiateOnLongPress(true)
         dragDropManager.setInitiateOnMove(false)
         dragDropManager.setInitiateOnTouch(false)
+        dragDropManager.onItemDragEventListener = this
         dragDropManager.setDraggingItemShadowDrawable(ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.material_shadow_z3,
@@ -107,7 +119,7 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
         startActivityForResult(intent, REQUEST_CODE_EDIT_WINDOW)
     }
 
-    val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>> {
+    private val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>> {
         if (it == null) {
             return@Observer
         }
@@ -120,7 +132,7 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
         ignoreNextUpdate = false
     }
 
-    val openEditDialogListener = Observer<Int> {
+    private val openEditDialogListener = Observer<Int> {
         if (it == null || it < 0) {
             return@Observer
         }
@@ -129,6 +141,33 @@ class ActionListFragment : LifecycleFragment(), FabFragment {
         intent.putExtra(ActionEditorActivity.EXTRA_ACTION, actions[it].item.serialize())
         startActivityForResult(intent, REQUEST_CODE_EDIT_WINDOW)
     }
+
+    private fun buzz() {
+        if (isHapticEnabled()) {
+            VibratorCompat.vibrate(vibrator, 25)
+        }
+    }
+
+    private fun isHapticEnabled(): Boolean {
+        val contentResolver = activity.contentResolver
+
+        val setting = Settings.System.getInt(contentResolver,
+                Settings.System.HAPTIC_FEEDBACK_ENABLED, 0)
+        return setting != 0
+    }
+
+    override fun onItemDragStarted(position: Int) {
+        buzz()
+    }
+
+    override fun onItemDragPositionChanged(fromPosition: Int, toPosition: Int) = Unit
+
+    override fun onItemDragFinished(fromPosition: Int, toPosition: Int, result: Boolean) {
+        buzz()
+    }
+
+    override fun onItemDragMoveDistanceUpdated(offsetX: Int, offsetY: Int) = Unit
+
 
     private inner class ListItemAdapter : RecyclerView.Adapter<ListItemHolder>(),
             DraggableItemAdapter<ListItemHolder> {
