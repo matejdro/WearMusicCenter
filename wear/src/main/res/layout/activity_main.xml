@@ -82,8 +82,8 @@
                 android:layout_height="@dimen/music_screen_icon_size"
                 android:layout_gravity="center|top"
                 android:layout_marginTop="@dimen/music_screen_icon_offset"
-                android:src="@drawable/action_volume_up"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/action_volume_up" />
 
             <ImageView
                 android:id="@+id/icon_bottom"
@@ -91,8 +91,8 @@
                 android:layout_height="@dimen/music_screen_icon_size"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="@dimen/music_screen_icon_offset"
-                android:src="@drawable/action_volume_down"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/action_volume_down" />
 
             <ImageView
                 android:id="@+id/icon_left"
@@ -100,8 +100,8 @@
                 android:layout_height="@dimen/music_screen_icon_size"
                 android:layout_gravity="center|left"
                 android:layout_marginLeft="@dimen/music_screen_icon_offset"
-                android:src="@drawable/action_pause"
-                tools:ignore="ContentDescription,RtlHardcoded" />
+                tools:ignore="ContentDescription,RtlHardcoded"
+                tools:src="@drawable/action_pause" />
 
             <ImageView
                 android:id="@+id/icon_right"
@@ -109,8 +109,8 @@
                 android:layout_height="@dimen/music_screen_icon_size"
                 android:layout_gravity="center|right"
                 android:layout_marginRight="@dimen/music_screen_icon_offset"
-                android:src="@android:mipmap/sym_def_app_icon"
-                tools:ignore="ContentDescription,RtlHardcoded" />
+                tools:ignore="ContentDescription,RtlHardcoded"
+                tools:src="@android:mipmap/sym_def_app_icon" />
 
             <TextView
                 android:id="@+id/ambient_clock"
