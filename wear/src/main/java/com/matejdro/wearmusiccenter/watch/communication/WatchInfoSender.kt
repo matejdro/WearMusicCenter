@@ -23,7 +23,7 @@ class WatchInfoSender(val context: Context, val urgent : Boolean) {
         googleApiClient.connect()
     }
 
-    val connectionCallback = object : GoogleApiClient.ConnectionCallbacks {
+    private val connectionCallback = object : GoogleApiClient.ConnectionCallbacks {
         override fun onConnected(p0: Bundle?) {
             val builder = WatchInfo.newBuilder()
 
@@ -34,6 +34,7 @@ class WatchInfoSender(val context: Context, val urgent : Boolean) {
             val displaySize = Point()
             display.getSize(displaySize)
 
+            builder.time = System.currentTimeMillis()
             builder.roundWatch = context.resources.configuration.isScreenRound
             builder.displayDensity = context.resources.displayMetrics.density
             builder.displayWidth = displaySize.x

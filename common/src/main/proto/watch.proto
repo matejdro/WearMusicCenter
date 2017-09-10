@@ -12,6 +12,7 @@ message WatchInfo {
   repeated WatchButton buttons = 3;
   required int32 displayWidth = 4;
   required int32 displayHeight = 5;
+  optional int64 time = 6;
 
   message WatchButton {
     required string label = 1;

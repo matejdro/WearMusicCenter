@@ -61,7 +61,8 @@ class WatchInfoProvider @Inject constructor(private val context: Context) : Live
         Wearable.DataApi.getDataItems(googleApiClient,
                 Uri.parse("wear://*" + CommPaths.DATA_WATCH_INFO))
                 .setResultCallback {
-                    parseDataItem(it.firstOrNull())
+                    val latestWatchData = it.maxBy { WatchInfo.parseFrom(it.data).time }
+                    parseDataItem(latestWatchData)
                     it.release()
                 }
     }
