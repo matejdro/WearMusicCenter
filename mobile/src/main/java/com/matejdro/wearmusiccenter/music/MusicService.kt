@@ -1,6 +1,7 @@
 package com.matejdro.wearmusiccenter.music
 
 import android.annotation.TargetApi
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -99,15 +100,18 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
         createNotificationChannel()
-        //TODO fix notification icon and text
-        val persistentNotification = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
-                .setContentText("Music Service active")
-                .setContentTitle("WearMusicCenter")
+        val notificationBuilder = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
+                .setContentTitle(getString(R.string.music_control_active))
+                .setContentText(getString(R.string.tap_to_force_stop))
                 .setContentIntent(stopSelfPendingIntent)
                 .setSmallIcon(R.drawable.ic_notification)
-                .build()
 
-        startForeground(1, persistentNotification)
+
+        // This is still needed for Pre-O versions, so it must be used, even if it is deprecated.
+        @Suppress("DEPRECATION")
+        notificationBuilder.priority = Notification.PRIORITY_MIN
+
+        startForeground(1, notificationBuilder.build())
 
         Timber.d("Service started")
     }
@@ -265,7 +269,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         val channel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
                 getString(R.string.music_control),
-                NotificationManager.IMPORTANCE_LOW)
+                NotificationManager.IMPORTANCE_MIN)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
