@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.DefaultActionConfigProvider
+import com.matejdro.wearmusiccenter.config.DefaultConfigGenerator
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import dagger.Module
 import dagger.Provides
@@ -13,15 +14,17 @@ import javax.inject.Singleton
 class AppModule(private val application: Application) {
     @Provides
     @Singleton
-    fun provideApplicationContext() : Context = application
+    fun provideApplicationContext(): Context = application
 
     @Provides
     @Singleton
-    fun provideWatchStateProvider(context : Context) = WatchInfoProvider(context)
+    fun provideWatchStateProvider(context: Context) = WatchInfoProvider(context)
 
     @Provides
     @Singleton
     @GlobalConfig
-    fun provideConfigStorage(context : Context, watchInfoProvider: WatchInfoProvider) : ActionConfigProvider
-            = DefaultActionConfigProvider(context, watchInfoProvider)
+    fun provideConfigStorage(context: Context,
+                             watchInfoProvider: WatchInfoProvider,
+                             defaultConfigGenerator: DefaultConfigGenerator): ActionConfigProvider
+            = DefaultActionConfigProvider(context, watchInfoProvider, defaultConfigGenerator)
 }

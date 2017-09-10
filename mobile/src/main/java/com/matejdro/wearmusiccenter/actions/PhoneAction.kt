@@ -12,6 +12,7 @@ import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.serialization.Bundlable
+import dagger.Lazy
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,7 +22,7 @@ abstract class PhoneAction : Bundlable {
     var customTitle: String? = null
 
     @Inject
-    protected lateinit var customIconStorage : CustomIconStorage
+    protected lateinit var customIconStorage : Lazy<CustomIconStorage>
 
     constructor(context : Context) : super() {
         this.context = context
@@ -52,7 +53,7 @@ abstract class PhoneAction : Bundlable {
 
     fun getIcon() : Drawable {
         val customIconUri = customIconUri ?: return retrieveIcon()
-        val newIcon = customIconStorage.getIcon(customIconUri)
+        val newIcon = customIconStorage.get().getIcon(customIconUri)
 
         if (newIcon == null) {
             this.customIconUri = null
