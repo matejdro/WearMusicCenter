@@ -54,7 +54,6 @@ class ActionsMenuFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         adapter = MenuAdapter()
 
-        //TODO also optimize for square devices
         layoutManager = MenuLayoutManager(context)
         recycler.layoutManager = layoutManager
         recycler.isEdgeItemsCenteringEnabled = true
