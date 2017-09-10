@@ -104,7 +104,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 .setContentText("Music Service active")
                 .setContentTitle("WearMusicCenter")
                 .setContentIntent(stopSelfPendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_notification)
                 .build()
 
         startForeground(1, persistentNotification)

@@ -1,2 +1,4 @@
 <resources>
+    <string name="app_name">Music Center for Wear</string>
+    <string name="app_name_short">Music Center</string>
 </resources>
