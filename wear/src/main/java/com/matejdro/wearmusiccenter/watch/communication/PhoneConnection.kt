@@ -92,7 +92,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
             if (phoneNode != null) {
                 Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_OPENED, null).await()
             } else {
-                musicState.value = Resource.error(context.getString(R.string.no_phone), null)
+                musicState.postValue(Resource.error(context.getString(R.string.no_phone), null))
             }
 
             loadCurrentActionConfig(CommPaths.DATA_PLAYING_ACTION_CONFIG, rawPlaybackConfig)
