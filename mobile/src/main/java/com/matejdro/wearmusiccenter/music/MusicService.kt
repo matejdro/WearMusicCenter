@@ -237,7 +237,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
 
-            ackTimeoutHandler.sendEmptyMessageDelayed(0, ACK_TIMEOUT_MS)
+            ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
         }
     }
 
@@ -246,18 +246,25 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             return
         }
 
-        if (event.path == CommPaths.MESSAGE_WATCH_CLOSED) {
-            stopSelf()
-        } else if (event.path == CommPaths.MESSAGE_ACK) {
-            ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
-        } else if (event.path == CommPaths.MESSAGE_CHANGE_VOLUME) {
-            updateVolume(FloatPacker.unpackFloat(event.data))
-        } else if (event.path == CommPaths.MESSAGE_EXECUTE_ACTION) {
-            executeAction(ButtonInfo(WatchActions.ProtoButtonInfo.parseFrom(event.data)))
-        } else if (event.path == CommPaths.MESSAGE_EXECUTE_MENU_ACTION) {
-            executeMenuAction(ByteBuffer.wrap(event.data).int)
-        } else if (event.path == CommPaths.MESSAGE_WATCH_OPENED) {
-            buildMusicStateAndTransmit(currentMediaController)
+        when {
+            event.path == CommPaths.MESSAGE_WATCH_CLOSED -> {
+                stopSelf()
+            }
+            event.path == CommPaths.MESSAGE_ACK || event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+                ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
+            }
+            event.path == CommPaths.MESSAGE_CHANGE_VOLUME -> {
+                updateVolume(FloatPacker.unpackFloat(event.data))
+            }
+            event.path == CommPaths.MESSAGE_EXECUTE_ACTION -> {
+                executeAction(ButtonInfo(WatchActions.ProtoButtonInfo.parseFrom(event.data)))
+            }
+            event.path == CommPaths.MESSAGE_EXECUTE_MENU_ACTION -> {
+                executeMenuAction(ByteBuffer.wrap(event.data).int)
+            }
+            event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+                buildMusicStateAndTransmit(currentMediaController)
+            }
         }
     }
 
