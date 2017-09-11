@@ -70,7 +70,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         musicState.value = Resource.loading(null)
     }
 
-    fun start() {
+    private fun start() {
         if (running) {
             return
         }
@@ -239,6 +239,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
 
         closeHandler.removeMessages(MESSAGE_CLOSE_CONNECTION)
         closeHandler.sendEmptyMessageDelayed(MESSAGE_CLOSE_CONNECTION, CONNECTION_CLOSE_DELAY)
+
+        musicState.value = Resource.loading(null)
     }
 
     override fun onActive() {
