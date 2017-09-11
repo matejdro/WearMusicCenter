@@ -32,7 +32,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
 
     companion object {
         const val MESSAGE_CLOSE_CONNECTION = 0
-        const val CONNECTION_CLOSE_DELAY = 3000L
+        const val CONNECTION_CLOSE_DELAY_MS = 15_000L
     }
 
     val musicState = ListenableLiveData<Resource<MusicState>>()
@@ -66,8 +66,6 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
 
         lifecycleObserver.addLiveData(musicState)
         lifecycleObserver.addLiveData(albumArt)
-
-        musicState.value = Resource.loading(null)
     }
 
     private fun start() {
@@ -101,6 +99,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         }
 
         running = true
+        musicState.value = Resource.loading(null)
+
         Timber.d("Running")
     }
 
@@ -238,9 +238,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         // Delay connection closing for a bit to make sure it is not just brief configuration change
 
         closeHandler.removeMessages(MESSAGE_CLOSE_CONNECTION)
-        closeHandler.sendEmptyMessageDelayed(MESSAGE_CLOSE_CONNECTION, CONNECTION_CLOSE_DELAY)
-
-        musicState.value = Resource.loading(null)
+        closeHandler.sendEmptyMessageDelayed(MESSAGE_CLOSE_CONNECTION, CONNECTION_CLOSE_DELAY_MS)
     }
 
     override fun onActive() {
