@@ -1,10 +1,7 @@
 package com.matejdro.wearmusiccenter.music
 
 import android.annotation.TargetApi
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.arch.lifecycle.LifecycleService
 import android.arch.lifecycle.Observer
 import android.content.Context
@@ -17,6 +14,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
@@ -30,6 +29,7 @@ import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.di.GlobalConfig
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
+import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -38,12 +38,19 @@ import javax.inject.Inject
 
 class MusicService : LifecycleService(), MessageApi.MessageListener {
     companion object {
+        const val ACTION_START_FROM_WATCH = "START_FROM_WATCH"
+        const val ACTION_NOTIFICATION_SERVICE_ACTIVATED = "NOTIFICATION_SERVICE_ACTIVATED"
+
         private const val MESSAGE_STOP_SELF = 0
         private const val ACK_TIMEOUT_MS = 10_000L
 
         private const val STOP_SELF_PENDING_INTENT_REQUEST_CODE = 333
         private const val ACTION_STOP_SELF = "STOP_SELF"
         private const val KEY_NOTIFICATION_CHANNEL = "Service_Channel"
+        private const val KEY_NOTIFICATION_CHANNEL_ERRORS = "Error notifications"
+
+        private const val NOTIFICATION_ID_PERSISTENT = 1
+        private const val NOTIFICATION_ID_SERVICE_ERROR = 2
     }
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -66,6 +73,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     var currentMediaController: MediaController? = null
     private var firstMessage = true
 
+    private var startedFromWatch = false
+
     override fun onCreate() {
         super.onCreate()
 
@@ -79,8 +88,12 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 .build()
 
         connectionHandler.post {
-            //TODO check for errors
-            googleApiClient.blockingConnect()
+            val connectionStatus = googleApiClient.blockingConnect()
+            if (!connectionStatus.isSuccess) {
+                GoogleApiAvailability.getInstance().showErrorNotification(this, connectionStatus)
+                stopSelf()
+                return@post
+            }
 
             Wearable.MessageApi.addListener(googleApiClient, this, Uri.parse(CommPaths.MESSAGES_PREFIX), MessageApi
                     .FILTER_PREFIX)
@@ -111,17 +124,24 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         @Suppress("DEPRECATION")
         notificationBuilder.priority = Notification.PRIORITY_MIN
 
-        startForeground(1, notificationBuilder.build())
+        startForeground(NOTIFICATION_ID_PERSISTENT, notificationBuilder.build())
 
         Timber.d("Service started")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_STOP_SELF) {
+        if ((intent?.action) == ACTION_START_FROM_WATCH) {
+            startedFromWatch = true
+        } else if (intent?.action == ACTION_STOP_SELF || !startedFromWatch) {
             stopSelf()
+            return Service.START_NOT_STICKY
+        } else if (intent?.action == ACTION_NOTIFICATION_SERVICE_ACTIVATED) {
+            mediaSessionProvider.updateControllerIfNeeded()
+            NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID_SERVICE_ERROR)
         }
 
-        return super.onStartCommand(intent, flags, startId)
+        super.onStartCommand(intent, flags, startId)
+        return Service.START_STICKY
     }
 
     override fun onDestroy() {
@@ -137,12 +157,24 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         super.onDestroy()
     }
 
-    private val mediaCallback = android.arch.lifecycle.Observer<MediaController?> {
-        buildMusicStateAndTransmit(it)
+    private val mediaCallback = Observer<Resource<MediaController>?> {
+        when {
+            it == null -> {
+                buildMusicStateAndTransmit(null)
+            }
+            it.status == Resource.Status.ERROR -> {
+                transmitError(it.message ?: "")
 
-        if (it != null) {
-            currentMediaController = it
+                if (it.message == getString(R.string.error_notification_access)) {
+                    showNotificationServiceErrorNotification()
+                }
+            }
+            else -> {
+                currentMediaController = it.data
+                buildMusicStateAndTransmit(currentMediaController)
+            }
         }
+
     }
 
     private fun updateVolume(newVolume: Float) {
@@ -215,8 +247,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         transmitToWear(musicState, albumArt)
     }
 
-    private fun transmitToWear(musicState: MusicState, originalAlbumArt: Bitmap?) {
-        connectionHandler.post {
+    private fun transmitToWear(musicState: MusicState, originalAlbumArt: Bitmap?) = connectionHandler.post {
             val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
 
             var albumArt = originalAlbumArt
@@ -239,7 +270,51 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
 
             ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
+    }
+
+    private fun transmitError(error: String) = connectionHandler.post {
+        val musicStateBuilder = MusicState.newBuilder()
+
+        if (firstMessage) {
+            // Add time to the first message to make sure it gets transmitted even if it is
+            // identical to the previous one
+            musicStateBuilder.time = System.currentTimeMillis().toInt()
+            firstMessage = false
         }
+
+        musicStateBuilder.error = true
+        musicStateBuilder.title = error
+        musicStateBuilder.playing = false
+
+        val musicState = musicStateBuilder.build()
+
+        Timber.d("TransmittingErrorToWear")
+        val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
+
+        putDataRequest.data = musicState.toByteArray()
+        putDataRequest.setUrgent()
+
+        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
+    }
+
+    private fun showNotificationServiceErrorNotification() {
+        val notificationManagerIntent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+
+        val notificationManagerPendingIntent = PendingIntent.getActivity(this,
+                STOP_SELF_PENDING_INTENT_REQUEST_CODE,
+                notificationManagerIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+
+        createNotificationChannel()
+        val notificationBuilder = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL_ERRORS)
+                .setContentTitle(getString(R.string.notification_access_notification_title))
+                .setContentText(getString(R.string.notification_access_notification_title_description))
+                .setContentIntent(notificationManagerPendingIntent)
+                .setSmallIcon(R.drawable.ic_notification)
+
+
+        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID_SERVICE_ERROR,
+                notificationBuilder.build())
     }
 
     override fun onMessageReceived(event: MessageEvent?) {
@@ -276,12 +351,18 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             return
         }
 
-        val channel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
+        val persistentChannel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
                 getString(R.string.music_control),
                 NotificationManager.IMPORTANCE_MIN)
+        notificationManager.createNotificationChannel(persistentChannel)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
+        val errorChannel = NotificationChannel(KEY_NOTIFICATION_CHANNEL_ERRORS,
+                getString(R.string.error_notifications),
+                NotificationManager.IMPORTANCE_DEFAULT)
+        notificationManager.createNotificationChannel(errorChannel)
     }
 
 

@@ -198,16 +198,20 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
                         connectionHandler.post {
                             val receivedMusicState = MusicState.parseFrom(dataItem.data)
 
-                            musicState.postValue(Resource.success(receivedMusicState))
+                            if (receivedMusicState.error) {
+                                musicState.postValue(Resource.error(receivedMusicState.title, null))
+                            } else {
+                                musicState.postValue(Resource.success(receivedMusicState))
 
-                            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
-                            if (phoneNode != null) {
-                                Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
+                                val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+                                if (phoneNode != null) {
+                                    Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
+                                }
+
+                                val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
+                                        googleApiClient)
+                                albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                             }
-
-                            val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
-                                    googleApiClient)
-                            albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                         }
                     } else if (it.uri.path == CommPaths.DATA_PLAYING_ACTION_CONFIG) {
                         rawPlaybackConfig.postValue(it.freeze())

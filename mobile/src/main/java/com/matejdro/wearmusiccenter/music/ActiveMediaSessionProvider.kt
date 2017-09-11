@@ -6,31 +6,32 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import com.matejdro.wearmusiccenter.DummyNotificationService
-import timber.log.Timber
+import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearutils.lifecycle.Resource
 import javax.inject.Inject
 
-class ActiveMediaSessionProvider @Inject constructor(context: Context) : android.arch.lifecycle.LiveData<MediaController?>(), MediaSessionManager.OnActiveSessionsChangedListener {
+class ActiveMediaSessionProvider @Inject constructor(private val context: Context) :
+        android.arch.lifecycle.LiveData<Resource<MediaController>>(),
+        MediaSessionManager.OnActiveSessionsChangedListener {
 
-    val notificationListenerComponent: ComponentName =
+    private val notificationListenerComponent: ComponentName =
             ComponentName(context, DummyNotificationService::class.java)
 
-    val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+    private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
     var currentController : MediaController? = null
 
-    val idlePlayers: ArrayList<OwnedPlaybackCallback>
+    private val idlePlayers: ArrayList<OwnedPlaybackCallback>
 
     private fun findPlayingMediaController() {
         val activeSessions: MutableList<MediaController>
         try {
             activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
         } catch(e: SecurityException) {
-            Timber.e("Notification service not active!")
+            value = Resource.error(context.getString(R.string.error_notification_access), null)
             return
         }
 
-        val newController = activeSessions
-                .filter {it.isPlaying()}
-                .firstOrNull()
+        val newController = activeSessions.firstOrNull { it.isPlaying() }
 
         var reportedController = newController
         if (newController == null) {
@@ -51,7 +52,7 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) : android
             currentController?.registerCallback(mediaCallback)
         }
 
-        value = reportedController
+        setReportedController(reportedController)
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
@@ -62,7 +63,7 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) : android
         try {
             mediaSessionManager.addOnActiveSessionsChangedListener(this, notificationListenerComponent)
         } catch(e: SecurityException) {
-            Timber.e("Notification service not active!")
+            value = Resource.error(context.getString(R.string.error_notification_access), null)
         }
 
         updateControllerIfNeeded()
@@ -82,12 +83,12 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) : android
         }
     }
 
-    fun removeCurrentController() {
+    private fun removeCurrentController() {
         currentController?.unregisterCallback(mediaCallback)
         currentController = null
     }
 
-    val mediaCallback: MediaController.Callback
+    private val mediaCallback: MediaController.Callback
 
     inner class OwnedPlaybackCallback(val controller : MediaController) : MediaController.Callback() {
         init {
@@ -109,6 +110,14 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) : android
         }
     }
 
+    private fun setReportedController(mediaController: MediaController?) {
+        value = if (mediaController == null) {
+            null
+        } else {
+            Resource.success(mediaController)
+        }
+    }
+
     init {
         this.idlePlayers = ArrayList<OwnedPlaybackCallback>()
         this.mediaCallback = object : MediaController.Callback() {
@@ -117,7 +126,7 @@ class ActiveMediaSessionProvider @Inject constructor(context: Context) : android
             }
 
             override fun onMetadataChanged(metadata: android.media.MediaMetadata?) {
-                value = currentController
+                setReportedController(currentController)
             }
         }
     }

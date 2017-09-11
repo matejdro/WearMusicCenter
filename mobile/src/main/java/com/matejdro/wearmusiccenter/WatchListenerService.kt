@@ -12,6 +12,8 @@ class WatchListenerService : WearableListenerService() {
             return
         }
 
-        startService(Intent(this, MusicService::class.java))
+        val musicServiceIntent = Intent(this, MusicService::class.java)
+        musicServiceIntent.action = MusicService.ACTION_START_FROM_WATCH
+        startService(musicServiceIntent)
     }
 }

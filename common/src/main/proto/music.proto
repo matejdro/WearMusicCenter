@@ -12,5 +12,6 @@ message MusicState {
   required bool playing = 3;
   optional int32 time = 4;
   optional float volume = 5;
+  optional bool error = 6 [default = false];
 }
 
