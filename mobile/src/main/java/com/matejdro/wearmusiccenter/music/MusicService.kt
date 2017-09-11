@@ -194,12 +194,13 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
             val meta = mediaController.metadata
             if (meta != null) {
-                val artist = meta.getString(MediaMetadata.METADATA_KEY_ARTIST)
-                if (artist != null) {
-                    // Even optional protobuf fields cannot take in null. Only fill if not null.
-                    musicStateBuilder.artist = artist
+                meta.getString(MediaMetadata.METADATA_KEY_ARTIST)?.let {
+                    musicStateBuilder.artist = it
                 }
-                musicStateBuilder.title = meta.getString(MediaMetadata.METADATA_KEY_TITLE)
+                meta.getString(MediaMetadata.METADATA_KEY_TITLE)?.let {
+                    musicStateBuilder.title = it
+                }
+
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             }
 
