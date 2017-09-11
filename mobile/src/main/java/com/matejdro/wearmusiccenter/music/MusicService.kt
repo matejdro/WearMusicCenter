@@ -137,7 +137,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         super.onDestroy()
     }
 
-    val mediaCallback = android.arch.lifecycle.Observer<MediaController?> {
+    private val mediaCallback = android.arch.lifecycle.Observer<MediaController?> {
         buildMusicStateAndTransmit(it)
 
         if (it != null) {
@@ -251,7 +251,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             event.path == CommPaths.MESSAGE_WATCH_CLOSED -> {
                 stopSelf()
             }
-            event.path == CommPaths.MESSAGE_ACK || event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+            event.path == CommPaths.MESSAGE_ACK -> {
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
             }
             event.path == CommPaths.MESSAGE_CHANGE_VOLUME -> {
@@ -264,6 +264,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 executeMenuAction(ByteBuffer.wrap(event.data).int)
             }
             event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+                ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
                 buildMusicStateAndTransmit(currentMediaController)
             }
         }
