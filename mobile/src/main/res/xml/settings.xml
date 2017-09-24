@@ -13,8 +13,6 @@
 
     </PreferenceCategory>
 
-
-    <!-- TODO implement all about entries -->
     <PreferenceCategory
         android:key="cat_about"
         android:title="@string/category_about">

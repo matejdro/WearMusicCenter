@@ -1,7 +1,9 @@
 package com.matejdro.wearmusiccenter.view
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -16,6 +18,7 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearutils.logging.LogRetrievalTask
 import com.matejdro.wearutils.preferencesync.PreferencePusher
+import de.psdev.licensesdialog.LicensesDialog
 import java.io.File
 
 
@@ -28,6 +31,28 @@ class MiscSettingsFragment : PreferenceFragment() {
 
         findPreference("supportButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
             sendLogs()
+            true
+        }
+
+        try {
+            findPreference("version").summary =
+                    activity.packageManager.getPackageInfo(activity.packageName, 0).versionName
+        } catch (ignored: PackageManager.NameNotFoundException) {
+        }
+
+        findPreference("donateButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JAFYXYH2PDRAW")
+            startActivity(intent)
+            true
+        }
+
+        findPreference("licenses").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            LicensesDialog.Builder(activity)
+                    .setNotices(R.raw.notices)
+                    .setIncludeOwnLicense(true)
+                    .build()
+                    .show()
             true
         }
 

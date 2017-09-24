@@ -55,6 +55,7 @@ dependencies {
 //        transitive=true
 //    }
     compile project(path: ':advancedrecyclerview')
+    compile 'de.psdev.licensesdialog:licensesdialog:1.8.0'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
