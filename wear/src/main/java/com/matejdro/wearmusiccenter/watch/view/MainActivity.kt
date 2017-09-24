@@ -39,6 +39,7 @@ import com.matejdro.wearutils.miscutils.VibratorCompat
 import com.matejdro.wearutils.preferences.definition.Preferences
 import java.lang.ref.WeakReference
 
+// LifecycleRegistryOwner must be used, because there is no alternative for non-compat activities
 class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0

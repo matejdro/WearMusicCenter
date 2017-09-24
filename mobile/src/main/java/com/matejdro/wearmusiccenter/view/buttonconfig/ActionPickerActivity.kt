@@ -1,14 +1,13 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -20,14 +19,13 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
 
-class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), LifecycleRegistryOwner {
+class ActionPickerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_ACTION_BUNDLE = "Action"
         const val VIEW_MODEL_REQUEST_CODE = 7961
         const val EXTRA_DISPLAY_NONE = "DisplayNone"
     }
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
     private lateinit var viewModel : ActionPickerViewModel
     private lateinit var recycler : RecyclerView
     private lateinit var adapter : ActionsAdapter
@@ -138,6 +136,4 @@ class ActionPickerActivity : android.support.v7.app.AppCompatActivity(), Lifecyc
             }
         }
     }
-
-    override fun getLifecycle(): LifecycleRegistry = lifecycleRegistry
 }
