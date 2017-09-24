@@ -136,7 +136,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             stopSelf()
             return Service.START_NOT_STICKY
         } else if (intent?.action == ACTION_NOTIFICATION_SERVICE_ACTIVATED) {
-            mediaSessionProvider.updateControllerIfNeeded()
+            mediaSessionProvider.activate()
             NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID_SERVICE_ERROR)
         }
 

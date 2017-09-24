@@ -55,18 +55,22 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
         setReportedController(reportedController)
     }
 
+    fun activate() {
+        try {
+            mediaSessionManager.addOnActiveSessionsChangedListener(this, notificationListenerComponent)
+        } catch (e: SecurityException) {
+            value = Resource.error(context.getString(R.string.error_notification_access), null)
+        }
+
+        updateControllerIfNeeded()
+    }
+
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
         updateControllerIfNeeded()
     }
 
     override fun onActive() {
-        try {
-            mediaSessionManager.addOnActiveSessionsChangedListener(this, notificationListenerComponent)
-        } catch(e: SecurityException) {
-            value = Resource.error(context.getString(R.string.error_notification_access), null)
-        }
-
-        updateControllerIfNeeded()
+        activate()
     }
 
     override fun onInactive() {
