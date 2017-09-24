@@ -1,7 +1,6 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.app.Activity
-import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -14,6 +13,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.os.Vibrator
 import android.provider.Settings
+import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -37,7 +37,7 @@ import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 import com.matejdro.wearutils.miscutils.VibratorCompat
 
-class ActionListFragment : LifecycleFragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
+class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
     companion object {
         const val REQUEST_CODE_EDIT_WINDOW = 1031
     }

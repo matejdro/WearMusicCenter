@@ -1,7 +1,5 @@
 package com.matejdro.wearmusiccenter.view.mainactivity
 
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -26,15 +24,12 @@ import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearutils.ui.DualFragmentManagerActivity
 
-class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleRegistryOwner,
+class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationItemSelectedListener,
         ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
     private lateinit var viewmodel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
-
-    private val lifecycleRegistry = LifecycleRegistry(this)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,10 +140,6 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
-    }
-
-    override fun getLifecycle(): LifecycleRegistry {
-        return lifecycleRegistry
     }
 
     override fun provideConfigActivityComponent() = viewmodel.configActivityComponent

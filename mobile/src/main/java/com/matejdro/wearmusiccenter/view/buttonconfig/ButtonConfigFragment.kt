@@ -1,13 +1,13 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
-import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +23,7 @@ import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 
-class ButtonConfigFragment : LifecycleFragment(), FourWayTouchLayout.UserActionListener {
+class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     companion object {
         private const val ARGUMENT_SETS_PLAYBACK_ACTIONS = "SetsPlaybackActions"
 
