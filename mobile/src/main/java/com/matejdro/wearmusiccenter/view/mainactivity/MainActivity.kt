@@ -10,8 +10,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import com.matejdro.wearmusiccenter.DummyNotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
@@ -23,6 +25,7 @@ import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearutils.ui.DualFragmentManagerActivity
+
 
 class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationItemSelectedListener,
         ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
@@ -57,6 +60,12 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
 
         updateCurrentFragment(supportFragmentManager.findFragmentById(R.id.fragment_container))
         updateCurrentFragment(fragmentManager.findFragmentById(R.id.fragment_container))
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        showNotificationServiceWarning()
     }
 
     private fun disableDrawer() {
@@ -100,8 +109,27 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
         } else {
             binding.appBar?.fab?.hide()
         }
-
     }
+
+    private fun showNotificationServiceWarning() {
+        if (DummyNotificationService.isEnabled(this)) {
+            return
+        }
+
+        val builder = AlertDialog.Builder(this)
+
+        builder
+                .setTitle(getString(R.string.error_service_not_enabled))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage(getString(R.string.error_service_not_enabled_description))
+                .setPositiveButton(getString(R.string.action_open_settings),
+                        { _, _ ->
+                            startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
+                        })
+
+        builder.show()
+    }
+
 
     override fun onBackPressed() {
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
