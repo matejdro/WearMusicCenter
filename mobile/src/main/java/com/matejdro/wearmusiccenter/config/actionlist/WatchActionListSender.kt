@@ -39,14 +39,15 @@ class WatchActionListSender(actionListStorage: ActionListStorage,
 
     private fun resendIfNeeded(actionListStorage: ActionListStorage) {
         launch(CommonPool) {
-            val anyDataOnWatch = Wearable.DataApi.getDataItems(apiClient,
+            val dataOnWatch = Wearable.DataApi.getDataItems(apiClient,
                     Uri.parse("wear://*${CommPaths.DATA_LIST_ITEMS}"))
                     .await()
-                    .any()
 
-            if (!anyDataOnWatch) {
+            if (!dataOnWatch.any()) {
                 sendConfigToWatch(actionListStorage.actions)
             }
+
+            dataOnWatch.release()
         }
     }
 
