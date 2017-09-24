@@ -40,6 +40,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.matejdro.wearutils.companionnotice.PhoneAppNoticeActivity" />
+
         <service
             android:name=".watch.communication.PreferencesReceiver"
             tools:ignore="ExportedService">

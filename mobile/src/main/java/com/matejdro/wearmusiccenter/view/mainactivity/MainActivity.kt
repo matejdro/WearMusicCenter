@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
@@ -159,4 +160,6 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
     override fun getFragmentContainerId(): Int {
         return R.id.fragment_container
     }
+
+    override fun getWatchAppPresenceCapability(): String = CommPaths.WATCH_APP_CAPABILITY
 }

@@ -17,13 +17,13 @@ import android.os.Vibrator
 import android.preference.PreferenceManager
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
-import android.support.wearable.activity.WearableActivity
 import android.support.wearable.input.RotaryEncoder
 import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
@@ -33,12 +33,13 @@ import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
+import com.matejdro.wearutils.companionnotice.WearCompanionWatchActivity
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.VibratorCompat
 import com.matejdro.wearutils.preferences.definition.Preferences
 import java.lang.ref.WeakReference
 
-class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
+class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0
         private const val MESSAGE_PRESS_BUTTON = 1
@@ -448,4 +449,6 @@ class MainActivity : WearableActivity(), FourWayTouchLayout.UserActionListener, 
 
         }
     }
+
+    override fun getPhoneAppPresenceCapability(): String = CommPaths.PHONE_APP_CAPABILITY
 }
