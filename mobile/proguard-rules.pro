@@ -32,3 +32,11 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
+
+-keepclassmembers public class * extends com.matejdro.wearmusiccenter.actions.PhoneAction {
+   public <init>(android.content.Context, android.os.PersistableBundle);
+}
+
+-keepclassmembers public class * extends com.matejdro.wearutils.serialization.Bundlable {
+   public <init>(android.os.PersistableBundle);
+}
