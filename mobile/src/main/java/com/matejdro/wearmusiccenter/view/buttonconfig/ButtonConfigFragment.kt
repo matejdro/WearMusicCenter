@@ -22,7 +22,6 @@ import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
 import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
-import timber.log.Timber
 
 class ButtonConfigFragment : LifecycleFragment(), FourWayTouchLayout.UserActionListener {
     companion object {
@@ -131,8 +130,6 @@ class ButtonConfigFragment : LifecycleFragment(), FourWayTouchLayout.UserActionL
         if (it == null) {
             return@Observer
         }
-
-        Timber.d("Buttons Config change")
 
         val topAction = it.getScreenAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP))
         binding.iconTop.setImageDrawable(topAction?.getIcon())

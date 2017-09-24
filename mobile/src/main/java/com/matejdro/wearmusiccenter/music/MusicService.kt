@@ -288,7 +288,6 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         val musicState = musicStateBuilder.build()
 
-        Timber.d("TransmittingErrorToWear")
         val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
 
         putDataRequest.data = musicState.toByteArray()

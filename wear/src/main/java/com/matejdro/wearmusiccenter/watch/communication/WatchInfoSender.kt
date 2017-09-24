@@ -14,7 +14,6 @@ import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import timber.log.Timber
 
 class WatchInfoSender(val context: Context, val urgent : Boolean) {
     lateinit var googleApiClient: GoogleApiClient
@@ -45,8 +44,6 @@ class WatchInfoSender(val context: Context, val urgent : Boolean) {
                 val buttonCount = WearableButtons.getButtonCount(context) - 1
                 for (buttonIndex in 0 until buttonCount) {
                     val buttonLabel = WearableButtons.getButtonLabel(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
-
-                    Timber.d("Button %d %d %s", buttonCount, buttonIndex, buttonLabel)
 
                     builder.addButtons(WatchInfo.WatchButton
                             .newBuilder()

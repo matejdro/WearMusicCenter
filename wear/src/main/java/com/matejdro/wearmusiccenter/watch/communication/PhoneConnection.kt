@@ -24,7 +24,6 @@ import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 
@@ -100,8 +99,6 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
 
         running = true
         musicState.value = Resource.loading(null)
-
-        Timber.d("Running")
     }
 
     fun stop() {

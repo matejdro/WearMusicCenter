@@ -13,7 +13,6 @@ import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
-import timber.log.Timber
 
 class MusicViewModel(application: Application?) : AndroidViewModel(application) {
     private val phoneConnection = PhoneConnection(getApplication())
@@ -88,13 +87,10 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
 
         val newMusicState = it?.data
         if (it?.status == Resource.Status.SUCCESS && newMusicState != null) {
-            Timber.d("Volume value %f", newMusicState.volume)
             if (volume.value != newMusicState.volume) {
                 volume.value = newMusicState.volume
             }
         }
-
-        Timber.d("UpdateMusicConfig " + playing)
 
         val newConfig = if (playing) playbackConfig else stoppedConfig
         swapConfig(newConfig)
