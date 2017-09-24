@@ -28,6 +28,8 @@ class ActionEditorActivity : Activity() {
         const val EXTRA_ACTION = "Action"
         const val EXTRA_DELETING = "Deleting"
 
+        const val STATE_ACTION = "Action"
+
         private const val REQUEST_CODE_PICK_ACTION = 8764
         private const val REQUEST_CODE_PICK_ICON = 5991
     }
@@ -46,16 +48,32 @@ class ActionEditorActivity : Activity() {
         binding = DataBindingUtil.setContentView(this, R.layout.popup_action_editor)
         binding.view = this
 
-        val currentActionBundle = intent.getParcelableExtra<PersistableBundle?>(EXTRA_ACTION)
+        val currentActionBundle: PersistableBundle?
+        if (savedInstanceState != null) {
+            currentActionBundle = savedInstanceState.getParcelable<PersistableBundle>(STATE_ACTION)
+        } else {
+            currentActionBundle = intent.getParcelableExtra<PersistableBundle?>(EXTRA_ACTION)
+        }
+
         if (currentActionBundle != null) {
             currentAction = PhoneAction.deserialize(this, currentActionBundle)
         }
+
 
         if (currentAction == null) {
             swapAction()
         } else {
             populateFields()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        val currentAction = currentAction
+        if (currentAction != null) {
+            outState.putParcelable(STATE_ACTION, currentAction.serialize())
+        }
+
+        super.onSaveInstanceState(outState)
     }
 
     fun swapAction() {
