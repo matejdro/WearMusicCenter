@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: "kotlin-kapt"
 apply plugin: 'kotlin-android'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 26
@@ -54,6 +55,10 @@ dependencies {
 //        transitive=true
 //    }
     compile project(path: ':advancedrecyclerview')
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true
+    }
 
     testCompile 'junit:junit:4.12'
 }

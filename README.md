@@ -19,3 +19,5 @@ Project is still work in progress (not ready a for release yet).
 Run command `git submodule update --init`
 
 #### 3. Open the project in the Android Studio and wait for its dependencies to resolve
+
+#### 4. Either comment out Fabric plugin from mobile/gradle.build or [generate your own Fabric API key](https://docs.fabric.io/android/fabric/settings/api-keys.html)

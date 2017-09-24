@@ -53,6 +53,8 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
+
+        <service android:name="pl.tajchert.exceptionwear.ExceptionService" />
     </application>
 
 </manifest>

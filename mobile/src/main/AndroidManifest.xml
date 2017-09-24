@@ -47,6 +47,19 @@
         </service>
         <service android:name=".music.MusicService"/>
 
+        <service
+            android:name="pl.tajchert.exceptionwear.ExceptionDataListenerService"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/exceptionwear/wear_error"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+
+
         <activity
             android:name=".view.buttonconfig.ActionPickerActivity"
             android:label="@string/pick_action"
