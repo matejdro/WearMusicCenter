@@ -1,6 +1,8 @@
 package com.matejdro.wearmusiccenter.config.actionlist
 
 import android.content.Context
+import android.net.Uri
+import android.os.Bundle
 import android.support.annotation.WorkerThread
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
@@ -14,15 +16,40 @@ import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.proto.WatchList
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 
-class WatchActionListSender(private val context: Context, private val watchInfoProvider: WatchInfoProvider) {
-    val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
+class WatchActionListSender(actionListStorage: ActionListStorage,
+                            private val context: Context,
+                            private val watchInfoProvider: WatchInfoProvider) {
+    private val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
+            .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
+                override fun onConnected(p0: Bundle?) {
+                    resendIfNeeded(actionListStorage)
+                }
+
+                override fun onConnectionSuspended(p0: Int) = Unit
+            })
             .addApi(Wearable.API)
             .build()
 
     init {
         apiClient.connect()
     }
+
+    private fun resendIfNeeded(actionListStorage: ActionListStorage) {
+        launch(CommonPool) {
+            val anyDataOnWatch = Wearable.DataApi.getDataItems(apiClient,
+                    Uri.parse("wear://*${CommPaths.DATA_LIST_ITEMS}"))
+                    .await()
+                    .any()
+
+            if (!anyDataOnWatch) {
+                sendConfigToWatch(actionListStorage.actions)
+            }
+        }
+    }
+
 
     @WorkerThread
     fun sendConfigToWatch(actions: List<PhoneAction>): Boolean {

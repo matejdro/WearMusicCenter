@@ -47,10 +47,10 @@ constructor(playbackConfig: Boolean, context : Context, watchInfoProvider: Watch
             watchSenderPath = CommPaths.DATA_STOPPING_ACTION_CONFIG
         }
 
-        watchSender = WatchConfigSender(context, watchInfoProvider, watchSenderPath)
-
         diskStorage = DiskConfigStorage(context, diskSuffix)
         diskStorage.loadButtons(this)
+
+        watchSender = WatchConfigSender(this, context, watchInfoProvider, watchSenderPath)
     }
 
 

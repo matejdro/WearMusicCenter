@@ -15,10 +15,12 @@ class DefaultActionListStorage(context: Context, watchInfoProvider: WatchInfoPro
     private var commitAgain: Boolean = false
 
 
-    private val watchSender = WatchActionListSender(context, watchInfoProvider)
+    private val watchSender: WatchActionListSender
 
     init {
         diskStorage.loadActions(this)
+
+        watchSender = WatchActionListSender(this, context, watchInfoProvider)
     }
 
     override fun commit() {
