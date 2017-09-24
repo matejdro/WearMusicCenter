@@ -13,6 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        wearAppUnbundled true
     }
     buildTypes {
         release {
@@ -30,7 +31,6 @@ dependencies {
 
     compile project(path: ':wearutils')
     compile project(path: ':common')
-    wearApp project(':wear')
 
     compile "com.android.support:preference-v7:$support_lib_version"
     compile "com.android.support:appcompat-v7:$support_lib_version"
