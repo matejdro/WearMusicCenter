@@ -16,6 +16,9 @@ interface CommPaths {
         const val MESSAGE_CHANGE_VOLUME = "/Messages/SetVolume"
         const val MESSAGE_EXECUTE_ACTION = "/Messages/Action"
         const val MESSAGE_EXECUTE_MENU_ACTION = "/Messages/MenuAction"
+        const val MESSAGE_SEND_LOGS = "/SendLogs"
+
+        const val CHANNEL_LOGS = "/Channel/Logs"
 
         const val ASSET_ALBUM_ART = "AlbumArt"
 

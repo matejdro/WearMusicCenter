@@ -8,6 +8,7 @@ import com.matejdro.wearmusiccenter.di.AppModule
 import com.matejdro.wearmusiccenter.di.DaggerAppComponent
 import com.matejdro.wearmusiccenter.logging.CrashlyticsExceptionWearHandler
 import com.matejdro.wearmusiccenter.logging.TimberCrashlytics
+import com.matejdro.wearutils.logging.FileLogger
 import io.fabric.sdk.android.Fabric
 import pl.tajchert.exceptionwear.ExceptionDataListenerService
 import timber.log.Timber
@@ -28,6 +29,10 @@ class WearMusicCenter : Application() {
             Timber.plant(TimberCrashlytics())
             ExceptionDataListenerService.setHandler(CrashlyticsExceptionWearHandler())
         }
+
+        val fileLogger = FileLogger.getInstance(this)
+        fileLogger.activate()
+        Timber.plant(fileLogger)
 
         diComponent = DaggerAppComponent.builder()
                 .appModule(AppModule(this))

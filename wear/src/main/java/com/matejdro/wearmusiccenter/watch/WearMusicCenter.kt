@@ -1,24 +1,31 @@
 package com.matejdro.wearmusiccenter.watch
 
+import android.content.pm.ApplicationInfo
 import android.preference.PreferenceManager
 import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
+import com.matejdro.wearutils.logging.FileLogger
 import com.matejdro.wearutils.logging.TimberExceptionWear
 import pl.tajchert.exceptionwear.ExceptionWear
 import timber.log.Timber
+
 
 class WearMusicCenter : android.app.Application() {
     override fun onCreate() {
         super.onCreate()
 
-        timber.log.Timber.setAppTag("WearMusicCenter")
 
-        val isDebuggable = applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
-        Timber.plant(timber.log.Timber.AndroidDebugTree(isDebuggable))
+        val isDebuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+        Timber.setAppTag("WearMusicCenter")
+        Timber.plant(Timber.AndroidDebugTree(isDebuggable))
 
         if (isDebuggable) {
             ExceptionWear.initialize(this)
             Timber.plant(TimberExceptionWear(this))
         }
+
+        val fileLogger = FileLogger.getInstance(this)
+        fileLogger.activate()
+        Timber.plant(fileLogger)
 
         PreferencesBus.value = PreferenceManager.getDefaultSharedPreferences(this)
     }

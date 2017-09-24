@@ -46,7 +46,6 @@
     <string name="donate">Donate</string>
     <string name="donate_description">Buy me a Coke if you really like my app!</string>
     <string name="get_support">Get support</string>
-    <string name="support_email" translatable="false">mailto:matejdro+support@gmail.com</string>
     <string name="get_support_description">Send application logs to the developer for the support</string>
     <string name="licenses">Open source licenses</string>
     <string name="setting_always_show_time">Always show time</string>
@@ -61,5 +60,8 @@
     <string name="error_service_not_enabled">Service not enabled</string>
     <string name="error_service_not_enabled_description">Notification service is not enabled. You must enable it to get this app to work!</string>
     <string name="action_open_settings">Open Settings</string>
+    <string name="required_permission">Required permission</string>
+    <string name="logs_storage_permission_explanation">To save logs, Music Center needs storage permission first.</string>
+
 
 </resources>
