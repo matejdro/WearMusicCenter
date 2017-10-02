@@ -13,6 +13,7 @@ android {
         versionCode 2
         versionName "0.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        wearAppUnbundled true
     }
     buildTypes {
         release {
@@ -27,8 +28,6 @@ android {
 }
 
 dependencies {
-    wearApp project(path: ':wear')
-
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile project(path: ':wearutils')
