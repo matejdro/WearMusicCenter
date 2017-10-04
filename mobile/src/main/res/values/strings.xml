@@ -29,7 +29,7 @@
     <string name="tasker_task">Tasker Task</string>
     <string name="customize_single_press_icon">Customize single press icon</string>
     <string name="customize_double_press_icon">Customize double press icon</string>
-    <string name="icon_selection_error_title">Icon selection</string>
+    <string name="icon_selection_title">Icon selection</string>
     <string name="icon_selection_no_icon_pack">This feature allows you to pick custom icon for your action from
         installed icon pack.\n\nUnfortunately it appears you do not have any icon packs installed.</string>
     <string name="icon_selection_no_storage_permission">This feature allows you to pick custom icon for your action from

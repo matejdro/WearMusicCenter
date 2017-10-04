@@ -121,13 +121,15 @@ class ActionEditorActivity : Activity() {
         }
 
         try {
-            val intent = Intent(Intent.ACTION_PICK)
+            var intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
+
+            intent = Intent.createChooser(intent, getString(R.string.icon_selection_title))
 
             startActivityForResult(intent, REQUEST_CODE_PICK_ICON)
         } catch(ignored: ActivityNotFoundException) {
             AlertDialog.Builder(this)
-                    .setTitle(R.string.icon_selection_error_title)
+                    .setTitle(R.string.icon_selection_title)
                     .setMessage(R.string.icon_selection_no_icon_pack)
                     .setPositiveButton(android.R.string.ok, null)
                     .show()
@@ -137,7 +139,7 @@ class ActionEditorActivity : Activity() {
 
     private fun requestStoragePermission() {
         AlertDialog.Builder(this)
-                .setTitle(R.string.icon_selection_error_title)
+                .setTitle(R.string.icon_selection_title)
                 .setMessage(R.string.icon_selection_no_storage_permission)
                 .setPositiveButton(android.R.string.ok, null)
                 .setOnDismissListener {
