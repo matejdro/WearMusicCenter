@@ -101,6 +101,10 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
     override fun updateCurrentFragment(newFragment: Any?) {
         super.updateCurrentFragment(newFragment)
 
+        if (newFragment == null) {
+            return
+        }
+
         if (newFragment is FabFragment) {
             binding.appBar?.fab?.let {
                 it.show()
