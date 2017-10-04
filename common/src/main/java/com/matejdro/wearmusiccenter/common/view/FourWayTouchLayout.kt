@@ -1,5 +1,7 @@
 package com.matejdro.wearmusiccenter.common.view
 
+import android.annotation.SuppressLint
+import android.support.v4.content.res.ResourcesCompat
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.matejdro.common.R
@@ -19,7 +21,8 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
         this.gestureDetector = android.support.v4.view.GestureDetectorCompat(context, this)
         gestureDetector.setOnDoubleTapListener(this)
 
-        val rippleColor = android.content.res.ColorStateList.valueOf(resources.getColor(R.color.music_screen_ripple))
+        val rippleColor = android.content.res.ColorStateList.valueOf(
+                ResourcesCompat.getColor(context.resources, R.color.music_screen_ripple, null))
 
         quadrantRipples = Array<android.graphics.drawable.Drawable>(4) { TriangleRippleDrawable(it, rippleColor) }
 
@@ -35,6 +38,7 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
 
     constructor(context: android.content.Context, attrs: android.util.AttributeSet?) : this(context, attrs, 0)
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: android.view.MotionEvent): Boolean {
         if (event.actionMasked == android.view.MotionEvent.ACTION_UP || event.actionMasked == android.view.MotionEvent.ACTION_CANCEL) {
             quadrantRipples.forEach { it.state = IntArray(0) }
