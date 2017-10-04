@@ -18,7 +18,6 @@ class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : Vi
     private var actionStore: MutableList<IdentifiedItem<PhoneAction>>
 
     private var lastId = 0
-    private var lastEditedActionPosition = -1
 
     @Inject
     @field:LocalActivityConfig
@@ -43,36 +42,24 @@ class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : Vi
     }
 
 
-    fun deleteLastEditedAction() {
-        if (lastEditedActionPosition == -1) {
-            return
-        }
-
-        actionStore.removeAt(lastEditedActionPosition)
-        lastEditedActionPosition = -1
+    fun deleteAction(position: Int) {
+        actionStore.removeAt(position)
         saveActions()
     }
 
-    fun actionEditFinished(newAction: PhoneAction) {
-        if (lastEditedActionPosition == -1) {
-            addAction(newAction)
-        } else {
-            actionStore[lastEditedActionPosition].item = newAction
-        }
-        lastEditedActionPosition = -1
-
+    fun actionEditFinished(newAction: PhoneAction, editPosition: Int) {
+        actionStore[editPosition].item = newAction
         saveActions()
     }
 
     fun editAction(position: Int) {
-        lastEditedActionPosition = position
-
         openActionEditor.value = position
         openActionEditor.value = null
     }
 
-    private fun addAction(action: PhoneAction) {
+    fun addAction(action: PhoneAction) {
         actionStore.add(itemFromPhoneAction(action))
+        saveActions()
     }
 
     private fun itemFromPhoneAction(action: PhoneAction): IdentifiedItem<PhoneAction>

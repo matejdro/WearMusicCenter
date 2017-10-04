@@ -40,6 +40,8 @@ import com.matejdro.wearutils.miscutils.VibratorCompat
 class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
     companion object {
         const val REQUEST_CODE_EDIT_WINDOW = 1031
+
+        private const val STATE_LAST_EDITED_ACTION_POSITION = "LastEditedActionPosition"
     }
 
     private lateinit var viewModel: ActionListViewModel
@@ -50,11 +52,23 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
 
     private var actions: List<IdentifiedItem<PhoneAction>> = emptyList()
     private var ignoreNextUpdate: Boolean = false
+    private var lastEditedActionPosition = -1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState != null) {
+            lastEditedActionPosition = savedInstanceState.getInt(STATE_LAST_EDITED_ACTION_POSITION)
+        }
+
         vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(STATE_LAST_EDITED_ACTION_POSITION, lastEditedActionPosition)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onStart() {
@@ -136,6 +150,8 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         if (it == null || it < 0) {
             return@Observer
         }
+
+        lastEditedActionPosition = it
 
         val intent = Intent(context, ActionEditorActivity::class.java)
         intent.putExtra(ActionEditorActivity.EXTRA_ACTION, actions[it].item.serialize())
@@ -230,7 +246,8 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
                 resultCode == Activity.RESULT_OK &&
                 data != null) {
             if (data.getBooleanExtra(ActionEditorActivity.EXTRA_DELETING, false)) {
-                viewModel.deleteLastEditedAction()
+                viewModel.deleteAction(lastEditedActionPosition)
+                lastEditedActionPosition = -1
                 return
             }
 
@@ -239,7 +256,13 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
 
             val newAction = PhoneAction.deserialize<PhoneAction>(context, actionBundle) ?: return
 
-            viewModel.actionEditFinished(newAction)
+            if (lastEditedActionPosition < 0) {
+                viewModel.addAction(newAction)
+            } else {
+                viewModel.actionEditFinished(newAction, lastEditedActionPosition)
+            }
+
+            lastEditedActionPosition = -1
         }
 
         super.onActivityResult(requestCode, resultCode, data)
