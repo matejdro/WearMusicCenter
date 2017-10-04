@@ -62,6 +62,8 @@
     <string name="action_open_settings">Open Settings</string>
     <string name="required_permission">Required permission</string>
     <string name="logs_storage_permission_explanation">To save logs, Music Center needs storage permission first.</string>
+    <string name="setting_pause_on_swipe_exit">Pause playback on swipe exit</string>
+    <string name="setting_pause_on_swipe_exit_description">Automatically pause any playback when exiting Music Center on the watch via swipe-left gesture.\n\nExiting via power button is not affected and it will never auto-pause.</string>
 
 
 </resources>

@@ -78,6 +78,10 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
         phoneConnection.sendVolume(newVolume)
     }
 
+    fun sendManualCloseMessage() {
+        phoneConnection.sendManualCloseMessage()
+    }
+
     private val configChangeListener = Observer<WatchActionConfigProvider> {
         currentButtonConfig.value = it
     }

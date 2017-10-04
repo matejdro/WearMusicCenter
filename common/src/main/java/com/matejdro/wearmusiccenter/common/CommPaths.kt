@@ -12,6 +12,7 @@ interface CommPaths {
         const val MESSAGES_PREFIX = "wear://*/Messages/"
         const val MESSAGE_WATCH_OPENED = "/Messages/WatchOpened"
         const val MESSAGE_WATCH_CLOSED = "/Messages/WatchClosed"
+        const val MESSAGE_WATCH_CLOSED_MANUALLY = "/Messages/WatchClosedManually"
         const val MESSAGE_ACK = "/Messages/ACK"
         const val MESSAGE_CHANGE_VOLUME = "/Messages/SetVolume"
         const val MESSAGE_EXECUTE_ACTION = "/Messages/Action"

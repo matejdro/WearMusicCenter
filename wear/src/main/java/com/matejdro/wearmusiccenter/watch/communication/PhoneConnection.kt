@@ -120,6 +120,15 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         running = false
     }
 
+    fun sendManualCloseMessage() {
+        connectionHandler.post {
+            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            if (phoneNode != null) {
+                Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
+            }
+        }
+    }
+
     fun close() {
         stop()
         connectionThread.quitSafely()

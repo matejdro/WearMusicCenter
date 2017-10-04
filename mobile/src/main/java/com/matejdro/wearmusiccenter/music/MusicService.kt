@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleService
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -13,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.google.android.gms.common.GoogleApiAvailability
@@ -21,6 +23,7 @@ import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.WearMusicCenter
 import com.matejdro.wearmusiccenter.common.CommPaths
+import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.util.FloatPacker
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
@@ -31,6 +34,7 @@ import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import com.matejdro.wearutils.preferences.definition.Preferences
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -57,6 +61,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     private val connectionThread: HandlerThread = HandlerThread("Phone Connection")
     private lateinit var connectionHandler: Handler
 
+    private lateinit var preferences: SharedPreferences
+
     @Inject
     lateinit var mediaSessionProvider: ActiveMediaSessionProvider
 
@@ -79,6 +85,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         super.onCreate()
 
         WearMusicCenter.getAppComponent().inject(this)
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         connectionThread.start()
         connectionHandler = Handler(connectionThread.looper)
@@ -316,6 +324,16 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 notificationBuilder.build())
     }
 
+    private fun onWatchSwipeExited() {
+        if (!Preferences.getBoolean(preferences, MiscPreferences.PAUSE_ON_SWIPE_EXIT)) {
+            return
+        }
+
+        if (currentMediaController?.isPlaying() == true) {
+            currentMediaController?.transportControls?.pause()
+        }
+    }
+
     override fun onMessageReceived(event: MessageEvent?) {
         if (event == null) {
             return
@@ -340,6 +358,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
                 buildMusicStateAndTransmit(currentMediaController)
+            }
+            event.path == CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY -> {
+                onWatchSwipeExited()
             }
         }
     }

@@ -138,6 +138,10 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
     }
 
     override fun onStop() {
+        if (isFinishing) {
+            viewModel.sendManualCloseMessage()
+        }
+
         super.onStop()
 
         handler.removeMessages(MESSAGE_UPDATE_CLOCK)
