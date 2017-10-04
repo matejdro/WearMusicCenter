@@ -40,7 +40,13 @@ class AppPlayPickerAction : PhoneAction {
                         val activityInfo = it.activityInfo
                         ComponentName(activityInfo.packageName, activityInfo.name)
                     }
-                    .distinctBy { it.packageName }
+
+                    // Some non-media apps can also register media keys (such as Telegram or Chrome),
+                    // but they for some reason always register more than one receiver, so it is easy
+                    // to filter them out
+                    .groupBy { it.packageName }
+                    .filter { it.value.size == 1 }
+                    .map { it.value.first() }
         }
     }
 }
