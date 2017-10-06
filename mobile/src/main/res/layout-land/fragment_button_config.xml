@@ -39,6 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     tools:ignore="ContentDescription"
+                    android:layout_margin="5dp"
                     tools:src="@drawable/watch_square_background"/>
 
                 <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
@@ -133,7 +134,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/physical_buttons" />
+                android:text="@string/physical_buttons"
+                tools:ignore="RelativeOverlap" />
 
             <LinearLayout
                 android:id="@+id/watch_button_container"
@@ -141,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/caption_physical_buttons"
-                android:layout_toRightOf="@id/watch_display"
+                android:layout_toEndOf="@id/watch_display"
                 android:gravity="end"
                 android:orientation="vertical" />
         </RelativeLayout>

@@ -1,11 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item>
-        <shape android:shape="oval">
-            <solid android:color="#232E33" />
-        </shape>
-    </item>
-
-    <item android:drawable="@drawable/four_way_cross_section" />
-</layer-list>
+<vector android:height="24dp"
+    android:viewportHeight="354.33072"
+    android:viewportWidth="354.33072"
+    android:width="24dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path
+        android:fillAlpha="1"
+        android:fillColor="#232e33"
+        android:pathData="M177.2,177.2m-177.2,0a177.2,177.2 0,1 1,354.3 0a177.2,177.2 0,1 1,-354.3 0"
+        android:strokeAlpha="0.49803922"
+        android:strokeColor="#00000000"
+        android:strokeLineJoin="miter"
+        android:strokeWidth="3.98896265" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M302.3,51.9 L51.9,302.4"
+        android:strokeAlpha="1"
+        android:strokeColor="#ffffff"
+        android:strokeLineCap="butt"
+        android:strokeLineJoin="miter"
+        android:strokeWidth="3" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M52,51.9 L302.4,302.4"
+        android:strokeAlpha="1"
+        android:strokeColor="#ffffff"
+        android:strokeLineCap="butt"
+        android:strokeLineJoin="miter"
+        android:strokeWidth="3" />
+</vector>
