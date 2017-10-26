@@ -5,8 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.preference.Preference
-import android.preference.PreferenceFragment
+import android.support.v7.preference.Preference
+import android.support.v7.preference.PreferenceFragmentCompat
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
@@ -16,11 +16,20 @@ import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
 
 
-class MiscSettingsFragment : PreferenceFragment() {
+class MiscSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var googleApiClient: GoogleApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        googleApiClient = GoogleApiClient.Builder(context!!)
+                .addApi(Wearable.API)
+                .build()
+
+        googleApiClient.connect()
+    }
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
         findPreference("supportButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -30,7 +39,7 @@ class MiscSettingsFragment : PreferenceFragment() {
 
         try {
             findPreference("version").summary =
-                    activity.packageManager.getPackageInfo(activity.packageName, 0).versionName
+                    activity!!.packageManager.getPackageInfo(activity!!.packageName, 0).versionName
         } catch (ignored: PackageManager.NameNotFoundException) {
         }
 
@@ -49,12 +58,6 @@ class MiscSettingsFragment : PreferenceFragment() {
                     .show()
             true
         }
-
-        googleApiClient = GoogleApiClient.Builder(activity)
-                .addApi(Wearable.API)
-                .build()
-
-        googleApiClient.connect()
     }
 
     private fun sendLogs() {

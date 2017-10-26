@@ -24,15 +24,17 @@ import com.matejdro.wearmusiccenter.view.MiscSettingsFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
-import com.matejdro.wearutils.ui.DualFragmentManagerActivity
+import com.matejdro.wearutils.companionnotice.WearCompanionPhoneActivity
 
 
-class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationItemSelectedListener,
+class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationItemSelectedListener,
         ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
     private lateinit var viewmodel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
+
+    private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +61,6 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
         }
 
         updateCurrentFragment(supportFragmentManager.findFragmentById(R.id.fragment_container))
-        updateCurrentFragment(fragmentManager.findFragmentById(R.id.fragment_container))
     }
 
     override fun onResume() {
@@ -97,9 +98,17 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
         }
     }
 
+    private fun swapFragment(newFragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, newFragment)
+                .commit()
 
-    override fun updateCurrentFragment(newFragment: Any?) {
-        super.updateCurrentFragment(newFragment)
+        updateCurrentFragment(newFragment)
+    }
+
+
+    private fun updateCurrentFragment(newFragment: Fragment?) {
+        currentFragment = newFragment
 
         if (newFragment == null) {
             return
@@ -178,10 +187,6 @@ class MainActivity : DualFragmentManagerActivity(), NavigationView.OnNavigationI
 
     override fun updateActivityTitle(newTitle: String) {
         supportActionBar!!.title = newTitle
-    }
-
-    override fun getFragmentContainerId(): Int {
-        return R.id.fragment_container
     }
 
     override fun getWatchAppPresenceCapability(): String = CommPaths.WATCH_APP_CAPABILITY

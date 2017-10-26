@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="cat_music_screen"
         android:title="Music screen">
 
-        <com.matejdro.wearutils.preferences.SwitchPreferenceEx
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
             android:defaultValue="false"
             android:key="always_show_time"
             android:summaryOff="@string/setting_always_show_time_off_description"
             android:summaryOn="@string/setting_always_show_time_on_description"
             android:title="@string/setting_always_show_time" />
 
-        <SwitchPreference
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
             android:defaultValue="false"
             android:key="pause_on_swipe_exit"
             android:title="@string/setting_pause_on_swipe_exit"
