@@ -1,20 +1,17 @@
 package com.matejdro.wearmusiccenter.watch.view
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
-import android.os.Handler
-import android.os.Message
-import android.os.Vibrator
+import android.os.*
 import android.preference.PreferenceManager
+import android.support.wear.ambient.AmbientMode
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.input.RotaryEncoder
@@ -40,16 +37,16 @@ import com.matejdro.wearutils.preferences.definition.Preferences
 import java.lang.ref.WeakReference
 
 // LifecycleRegistryOwner must be used, because there is no alternative for non-compat activities
-class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserActionListener, LifecycleRegistryOwner {
+class MainActivity : WearCompanionWatchActivity(),
+        FourWayTouchLayout.UserActionListener,
+        AmbientMode.AmbientCallbackProvider {
+
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0
         private const val MESSAGE_PRESS_BUTTON = 1
         private const val MESSAGE_UPDATE_CLOCK = 2
 
         private const val VOLUME_BAR_TIMEOUT = 1000L
-
-        @SuppressLint("StaticFieldLeak")
-        private var storedViewModel: MusicViewModel? = null
     }
 
     private lateinit var timeFormat: java.text.DateFormat
@@ -57,6 +54,7 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
     private lateinit var drawerContentContainer: View
     private lateinit var actionsMenuFragment: ActionsMenuFragment
     private lateinit var vibrator: Vibrator
+    private lateinit var ambientController: AmbientMode.AmbientController
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private lateinit var preferences: SharedPreferences
@@ -68,11 +66,7 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
     private lateinit var stemHasDoublePressAction: Array<Boolean>
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
-        if (storedViewModel == null) {
-            storedViewModel = MusicViewModel(application)
-        }
-
-        viewModel = storedViewModel as MusicViewModel
+        viewModel = ViewModelProviders.of(this)[MusicViewModel::class.java]
 
         super.onCreate(savedInstanceState)
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
@@ -97,10 +91,9 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
 
         timeFormat = android.text.format.DateFormat.getTimeFormat(this)
 
-        // Enables Always-on
-        setAmbientEnabled()
-
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        ambientController = AmbientMode.attachAmbientSupport(this)
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         viewModel.albumArt.observe(this, albumArtObserver)
         viewModel.currentButtonConfig.observe(this, buttonConfigObserver)
@@ -114,19 +107,9 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
         stemHasDoublePressAction = Array(numStemButtons) { false }
 
-        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         WatchInfoSender(this, true).sendWatchInfoToPhone()
         actionsMenuFragment = fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        if (isDestroyed) {
-            storedViewModel?.close()
-            storedViewModel = null
-        }
     }
 
     override fun onStart() {
@@ -160,11 +143,6 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
         } else {
             viewModel.musicState.removeObserver(musicStateObserver)
         }
-    }
-
-    override fun onUpdateAmbient() {
-        updateClock()
-        super.onUpdateAmbient()
     }
 
     private fun updateClock() {
@@ -242,7 +220,7 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
 
         preferences = it
 
-        if (!isAmbient) {
+        if (!ambientController.isAmbient) {
             val alwaysDisplayClock = Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)
 
             if (alwaysDisplayClock) {
@@ -291,48 +269,52 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
         }
     }
 
-    override fun onEnterAmbient(ambientDetails: android.os.Bundle?) {
-        binding.ambientClock.visibility = android.view.View.VISIBLE
+    override fun getAmbientCallback(): AmbientMode.AmbientCallback = object : AmbientMode.AmbientCallback() {
+        override fun onEnterAmbient(ambientDetails: Bundle?) {
+            binding.ambientClock.visibility = android.view.View.VISIBLE
 
-        handler.removeMessages(MESSAGE_UPDATE_CLOCK)
-        updateClock()
+            handler.removeMessages(MESSAGE_UPDATE_CLOCK)
+            updateClock()
 
-        binding.iconTop.visibility = android.view.View.GONE
-        binding.iconBottom.visibility = android.view.View.GONE
-        binding.iconLeft.visibility = android.view.View.GONE
-        binding.iconRight.visibility = android.view.View.GONE
+            binding.iconTop.visibility = android.view.View.GONE
+            binding.iconBottom.visibility = android.view.View.GONE
+            binding.iconLeft.visibility = android.view.View.GONE
+            binding.iconRight.visibility = android.view.View.GONE
 
-        binding.albumArt.visibility = android.view.View.GONE
-        binding.volumeBar.visibility = android.view.View.GONE
-        binding.loadingIndicator.visibility = View.GONE
+            binding.albumArt.visibility = android.view.View.GONE
+            binding.volumeBar.visibility = android.view.View.GONE
+            binding.loadingIndicator.visibility = View.GONE
 
-        binding.root.background = ColorDrawable(Color.BLACK)
+            binding.root.background = ColorDrawable(Color.BLACK)
 
-        binding.actionDrawer.controller.closeDrawer()
-        super.onEnterAmbient(ambientDetails)
-    }
-
-    override fun onExitAmbient() {
-        if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
-            handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
-        } else {
-            binding.ambientClock.visibility = android.view.View.GONE
-            binding.iconTop.visibility = android.view.View.VISIBLE
+            binding.actionDrawer.controller.closeDrawer()
         }
 
-        binding.iconBottom.visibility = android.view.View.VISIBLE
-        binding.iconLeft.visibility = android.view.View.VISIBLE
-        binding.iconRight.visibility = android.view.View.VISIBLE
-
-        binding.albumArt.visibility = android.view.View.VISIBLE
-
-        binding.root.background = null
-
-        if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
-            binding.loadingIndicator.visibility = View.VISIBLE
+        override fun onUpdateAmbient() {
+            updateClock()
         }
 
-        super.onExitAmbient()
+        override fun onExitAmbient() {
+            if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
+                handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
+            } else {
+                binding.ambientClock.visibility = android.view.View.GONE
+                binding.iconTop.visibility = android.view.View.VISIBLE
+            }
+
+            binding.iconBottom.visibility = android.view.View.VISIBLE
+            binding.iconLeft.visibility = android.view.View.VISIBLE
+            binding.iconRight.visibility = android.view.View.VISIBLE
+
+            binding.albumArt.visibility = android.view.View.VISIBLE
+
+            binding.root.background = null
+
+            if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
+                binding.loadingIndicator.visibility = View.VISIBLE
+            }
+        }
+
     }
 
     override fun onGenericMotionEvent(ev: android.view.MotionEvent): Boolean {
@@ -445,7 +427,7 @@ class MainActivity : WearCompanionWatchActivity(), FourWayTouchLayout.UserAction
 
                     activity.updateClock()
 
-                    if (!activity.isAmbient &&
+                    if (!activity.ambientController.isAmbient &&
                             Preferences.getBoolean(activity.preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
                         sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
                     }
