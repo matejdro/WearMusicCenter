@@ -14,7 +14,7 @@ import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 
-class MusicViewModel(application: Application?) : AndroidViewModel(application) {
+class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val phoneConnection = PhoneConnection(getApplication())
 
     private val playbackConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawPlaybackConfig)
@@ -107,7 +107,8 @@ class MusicViewModel(application: Application?) : AndroidViewModel(application) 
             return
         }
 
-        currentButtonConfig.removeSource(currentButtonConfig.value?.updateListener)
+
+        currentButtonConfig.value?.updateListener?.let { currentButtonConfig.removeSource(it) }
         currentButtonConfig.addSource(newConfig.updateListener, configChangeListener)
     }
 
