@@ -17,6 +17,13 @@
             android:title="@string/setting_pause_on_swipe_exit"
             android:summary="@string/setting_pause_on_swipe_exit_description" />
 
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
+            android:defaultValue="true"
+            android:key="haptic_feedback"
+            android:title="@string/setting_haptic_feedback"
+            android:summary="@string/setting_haptic_feedback_description" />
+
+
         <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
             android:defaultValue="300"
             android:key="rotating_crown_off_period"

@@ -400,6 +400,10 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     fun buzz() {
+        if (!Preferences.getBoolean(preferences, MiscPreferences.HAPTIC_FEEDBACK)) {
+            return
+        }
+
         VibratorCompat.vibrate(vibrator, 50)
     }
 
