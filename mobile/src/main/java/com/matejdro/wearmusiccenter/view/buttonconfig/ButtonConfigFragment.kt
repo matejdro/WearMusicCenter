@@ -61,7 +61,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setsPlaybackActions = arguments.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
+        setsPlaybackActions = arguments!!.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
 
         val configActivityComponent = (activity as ConfigActivityComponentProvider).provideConfigActivityComponent()
         val viewModelFactory = ButtonConfigViewModelFactory(setsPlaybackActions, configActivityComponent)
@@ -72,12 +72,12 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         viewModel.buttonConfig.observe(this, buttonsConfigObserver)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_button_config, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.fourWayTouch.listener = this
     }
 

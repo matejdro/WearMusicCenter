@@ -62,7 +62,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             lastEditedActionPosition = savedInstanceState.getInt(STATE_LAST_EDITED_ACTION_POSITION)
         }
 
-        vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -85,7 +85,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val recycler = binding.recycler
@@ -165,7 +165,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     }
 
     private fun isHapticEnabled(): Boolean {
-        val contentResolver = activity.contentResolver
+        val contentResolver = activity!!.contentResolver
 
         val setting = Settings.System.getInt(contentResolver,
                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 0)
@@ -258,7 +258,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             val actionBundle = data.getParcelableExtra<PersistableBundle>(
                     ActionEditorActivity.EXTRA_ACTION) ?: return
 
-            val newAction = PhoneAction.deserialize<PhoneAction>(context, actionBundle) ?: return
+            val newAction = PhoneAction.deserialize<PhoneAction>(context!!, actionBundle) ?: return
 
             if (lastEditedActionPosition < 0) {
                 viewModel.addAction(newAction)

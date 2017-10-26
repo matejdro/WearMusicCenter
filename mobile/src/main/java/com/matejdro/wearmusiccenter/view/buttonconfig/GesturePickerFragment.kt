@@ -86,9 +86,9 @@ class GesturePickerFragment : DialogFragment() {
 
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_Short)
 
-        baseButtonInfo = ButtonInfo(arguments.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO))
-        buttonName = arguments.getString(PARAM_BUTTON_NAME)
-        setsPlaybackButtons = arguments.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
+        baseButtonInfo = ButtonInfo(arguments!!.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO))
+        buttonName = arguments!!.getString(PARAM_BUTTON_NAME)
+        setsPlaybackButtons = arguments!!.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -98,7 +98,7 @@ class GesturePickerFragment : DialogFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         dialog.setCanceledOnTouchOutside(true)
@@ -144,7 +144,7 @@ class GesturePickerFragment : DialogFragment() {
         var mutableAction = phoneAction
 
         if (mutableAction == null) {
-            mutableAction = NullAction(activity)
+            mutableAction = NullAction(activity!!)
         }
 
         paletteButton.isEnabled = mutableAction !is NullAction
@@ -185,7 +185,7 @@ class GesturePickerFragment : DialogFragment() {
             return
         }
 
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestStoragePermission(gesture)
             return
@@ -199,7 +199,7 @@ class GesturePickerFragment : DialogFragment() {
 
             startActivityForResult(intent, REQUEST_CODE_PICK_ICON + gesture)
         } catch (ignored: ActivityNotFoundException) {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context!!)
                     .setTitle(R.string.icon_selection_title)
                     .setMessage(R.string.icon_selection_no_icon_pack)
                     .setPositiveButton(android.R.string.ok, null)
@@ -208,7 +208,7 @@ class GesturePickerFragment : DialogFragment() {
     }
 
     private fun requestStoragePermission(gesture: Int) {
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(context!!)
                 .setTitle(R.string.icon_selection_title)
                 .setMessage(R.string.icon_selection_no_storage_permission)
                 .setPositiveButton(android.R.string.ok, null)
@@ -229,7 +229,7 @@ class GesturePickerFragment : DialogFragment() {
         if (requestCode in REQUEST_CODE_PICK_ACTION until REQUEST_CODE_PICK_ACTION_TO) {
             val gesture = requestCode - REQUEST_CODE_PICK_ACTION
             val actionBundle = data.getParcelableExtra<PersistableBundle>(ActionPickerActivity.EXTRA_ACTION_BUNDLE)
-            val action = PhoneAction.deserialize<PhoneAction>(activity, actionBundle)
+            val action = PhoneAction.deserialize<PhoneAction>(activity!!, actionBundle)
 
             anythingChanged = anythingChanged || action != actions[gesture]
 

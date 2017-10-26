@@ -16,6 +16,7 @@ class NoWatchFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        val activity = activity
         if (activity is TitledActivity) {
             activity.title = getString(R.string.app_name_short)
         }
