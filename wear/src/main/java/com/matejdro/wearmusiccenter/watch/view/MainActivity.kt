@@ -67,9 +67,10 @@ class MainActivity : WearCompanionWatchActivity(),
     private var rotatingInputDisabledUntil = 0L
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+
         viewModel = ViewModelProviders.of(this)[MusicViewModel::class.java]
 
-        super.onCreate(savedInstanceState)
         binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
         drawerContentContainer = findViewById(R.id.drawer_content)
 
