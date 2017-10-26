@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.0"
     defaultConfig {
         applicationId "com.matejdro.wearmusiccenter"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 5
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -42,7 +42,7 @@ dependencies {
     kapt "com.android.databinding:compiler:$android_plugin_version"
 
     compile "com.google.android.gms:play-services-wearable:$play_services_version"
-    provided 'com.google.android.wearable:wearable:2.0.5'
+    provided 'com.google.android.wearable:wearable:2.1.0'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16"
