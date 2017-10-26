@@ -65,10 +65,10 @@
     <string name="required_permission">Required permission</string>
     <string name="setting_pause_on_swipe_exit">Pause playback on swipe exit</string>
     <string name="setting_pause_on_swipe_exit_description">Automatically pause any playback when exiting Music Center on the watch via swipe-left gesture.\n\nExiting via power button is not affected and it will never auto-pause.</string>
-    <string name="setting_rotating_crown_off_period">Rotary input disabled time</string>
-    <string name="setting_rotating_crown_off_period_description">Rotating inputs (e.g. rotating crowns) can be oversensitive on some devices. To prevent accidental volume changes, rotary input will be disabled for <![CDATA[<b>%1$s milliseconds</b>]]> after you turn the screen on.</string>
+    <string name="setting_rotating_crown_off_period">Rotary input screen on delay</string>
+    <string name="setting_rotating_crown_off_period_description">Rotating inputs (for example rotating crowns) can be oversensitive on some devices. To prevent accidental volume changes, rotary input will be disabled for <![CDATA[<b>%1$s milliseconds</b>]]> after you turn the screen on.</string>
     <string name="setting_haptic_feedback">Haptic feedback</string>
-    <string name="setting_haptic_feedback_description">Vibrate the watch when tapping on music control options.</string>
+    <string name="setting_haptic_feedback_description">Vibrate the watch when tapping on-screen buttons.</string>
     <string name="setting_auto_start">Open Music Center automatically</string>
     <string name="setting_auto_start_description">Automatically open the Music Center on the watch when music playback is started on the phone.</string>
     <string name="setting_close_timeout">Close timeout</string>
