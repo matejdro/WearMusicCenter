@@ -61,7 +61,7 @@ class WatchActionListSender(actionListStorage: ActionListStorage,
         }
 
         val density = watchInfoProvider.value?.watchInfo?.displayDensity ?: 1f
-        val targetIconSize = (ConfigConstants.ICON_SIZE_DP * density).toInt()
+        val targetIconSize = (ConfigConstants.MENU_ICON_SIZE_DP * density).toInt()
 
         val putDataRequest = PutDataRequest.create(CommPaths.DATA_LIST_ITEMS)
         val protoBuilder = WatchList.newBuilder()

@@ -62,7 +62,7 @@ class WatchConfigSender(actionConfigStorage: ActionConfigStorage,
         }
 
         val density = watchInfoProvider.value?.watchInfo?.displayDensity ?: 1f
-        val targetIconSize = (ConfigConstants.ICON_SIZE_DP * density).toInt()
+        val targetIconSize = (ConfigConstants.BUTTON_ICON_SIZE_DP * density).toInt()
 
         val putDataRequest = PutDataRequest.create(endpointPath)
         val protoBuilder = WatchActions.newBuilder()
