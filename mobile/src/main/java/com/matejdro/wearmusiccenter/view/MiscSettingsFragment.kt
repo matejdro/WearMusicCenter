@@ -4,14 +4,9 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.os.Environment
 import android.preference.Preference
 import android.preference.PreferenceFragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
@@ -19,7 +14,6 @@ import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearutils.logging.LogRetrievalTask
 import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
-import java.io.File
 
 
 class MiscSettingsFragment : PreferenceFragment() {
@@ -64,26 +58,10 @@ class MiscSettingsFragment : PreferenceFragment() {
     }
 
     private fun sendLogs() {
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.M &&
-                ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            val permissionExplanationDialog = AlertDialog.Builder(activity)
-                    .setTitle(R.string.required_permission)
-                    .setMessage(R.string.logs_storage_permission_explanation)
-                    .setPositiveButton(android.R.string.ok, { _, _ ->
-                        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
-                    })
-                    .create()
-
-            permissionExplanationDialog.show()
-            return
-        }
-
-        val targetFile = File(Environment.getExternalStorageDirectory(), "MusicCenterLogs.log_zip")
         LogRetrievalTask(activity,
                 CommPaths.MESSAGE_SEND_LOGS,
                 "matejdro+support@gmail.com",
-                targetFile).execute(null as Void?)
+                "com.matejdro.wearmusiccenter.logs").execute(null as Void?)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
