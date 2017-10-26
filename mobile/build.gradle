@@ -51,12 +51,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:2.9"
     kapt "com.google.dagger:dagger-compiler:2.9"
 
-    // Use dev version of advanced recycler view that does not crashes on Support 26 until it gets
-    // fixed in release
-//    compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.6@aar'){
-//        transitive=true
-//    }
-    compile project(path: ':advancedrecyclerview')
+    compile 'com.github.h6ah4i:android-advancedrecyclerview:develop-SNAPSHOT'
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.0'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {

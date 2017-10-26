@@ -228,6 +228,10 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             ignoreNextUpdate = true
             viewModel.moveItem(fromPosition, toPosition)
         }
+
+        override fun onItemDragStarted(position: Int) = Unit
+
+        override fun onItemDragFinished(fromPosition: Int, toPosition: Int, result: Boolean) = Unit
     }
 
     private inner class ListItemHolder(itemView: View) : AbstractDraggableItemViewHolder(itemView) {

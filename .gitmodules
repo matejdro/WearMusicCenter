@@ -1,7 +1,3 @@
 [submodule "wearutils"]
 	path = wearutils
 	url = https://github.com/matejdro/WearUtils
-[submodule "advancedrecyclerview"]
-	path = advancedrecyclerview
-	url = https://github.com/h6ah4i/android-advancedrecyclerview
-	branch = feature/support_libraries_v26
