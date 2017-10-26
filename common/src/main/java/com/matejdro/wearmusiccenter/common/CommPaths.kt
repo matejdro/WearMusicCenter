@@ -18,6 +18,7 @@ interface CommPaths {
         const val MESSAGE_EXECUTE_ACTION = "/Messages/Action"
         const val MESSAGE_EXECUTE_MENU_ACTION = "/Messages/MenuAction"
         const val MESSAGE_SEND_LOGS = "/SendLogs"
+        const val MESSAGE_OPEN_APP = "/IdleMessages/OpenApp"
 
         const val CHANNEL_LOGS = "/Channel/Logs"
 

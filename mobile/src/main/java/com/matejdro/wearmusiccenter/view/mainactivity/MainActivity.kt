@@ -13,7 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
-import com.matejdro.wearmusiccenter.DummyNotificationService
+import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
@@ -125,7 +125,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
     }
 
     private fun showNotificationServiceWarning() {
-        if (DummyNotificationService.isEnabled(this)) {
+        if (NotificationService.isEnabled(this)) {
             return
         }
 

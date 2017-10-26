@@ -5,7 +5,7 @@ import android.content.Context
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
-import com.matejdro.wearmusiccenter.DummyNotificationService
+import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.lifecycle.Resource
 import javax.inject.Inject
@@ -15,7 +15,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
         MediaSessionManager.OnActiveSessionsChangedListener {
 
     private val notificationListenerComponent: ComponentName =
-            ComponentName(context, DummyNotificationService::class.java)
+            ComponentName(context, NotificationService::class.java)
 
     private val mediaSessionManager: MediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
     var currentController : MediaController? = null

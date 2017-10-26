@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!--suppress AndroidElementNotAllowed -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
         android:key="cat_music_screen"
-        android:title="Music screen">
+        android:title="@string/category_music_screen">
 
         <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
             android:defaultValue="false"
@@ -23,13 +24,21 @@
             android:title="@string/setting_haptic_feedback"
             android:summary="@string/setting_haptic_feedback_description" />
 
-
         <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
             android:defaultValue="300"
             android:key="rotating_crown_off_period"
             android:title="@string/setting_rotating_crown_off_period"
             android:summary="@string/setting_rotating_crown_off_period_description" />
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="cat_automation"
+        android:title="@string/category_automation">
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
+            android:defaultValue="false"
+            android:key="auto_start"
+            android:title="@string/setting_auto_start"
+            android:summary="@string/setting_auto_start_description" />
     </PreferenceCategory>
 
     <PreferenceCategory

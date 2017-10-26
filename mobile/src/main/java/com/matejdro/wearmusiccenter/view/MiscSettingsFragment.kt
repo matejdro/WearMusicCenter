@@ -1,13 +1,17 @@
 package com.matejdro.wearmusiccenter.view
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.service.notification.NotificationListenerService
 import android.support.v7.preference.Preference
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
+import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearutils.logging.LogRetrievalTask
@@ -32,6 +36,36 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
+        initAutomationSection()
+        initAboutSection()
+    }
+
+    private fun initAutomationSection() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // On Android N and above we unbind notification service when autostart is disabled and
+            // rebind when enabled
+
+            findPreference("auto_start").onPreferenceChangeListener =
+                    Preference.OnPreferenceChangeListener { _, newValue ->
+                        newValue as Boolean
+
+                        if (newValue) {
+                            NotificationListenerService.requestRebind(
+                                    ComponentName(context!!, NotificationService::class.java)
+                            )
+                        } else {
+                            val serviceStopIntent = Intent(context!!, NotificationService::class.java)
+                            serviceStopIntent.action = NotificationService.ACTION_UNBIND_SERVICE
+                            context!!.startService(serviceStopIntent)
+                        }
+
+                        true
+                    }
+
+        }
+    }
+
+    private fun initAboutSection() {
         findPreference("supportButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
             sendLogs()
             true

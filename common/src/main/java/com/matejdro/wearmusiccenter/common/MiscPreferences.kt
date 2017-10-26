@@ -15,4 +15,8 @@ object MiscPreferences {
 
     val HAPTIC_FEEDBACK: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("haptic_feedback", true)
+
+    val AUTO_START: PreferenceDefinition<Boolean>
+            = SimplePreferenceDefinition("auto_start", false)
+
 }

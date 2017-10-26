@@ -55,6 +55,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         private const val NOTIFICATION_ID_PERSISTENT = 1
         private const val NOTIFICATION_ID_SERVICE_ERROR = 2
+
+        var active = false
+            private set
     }
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -134,6 +137,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         startForeground(NOTIFICATION_ID_PERSISTENT, notificationBuilder.build())
 
+        active = true
         Timber.d("Service started")
     }
 
@@ -161,6 +165,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         }
         connectionThread.quitSafely()
 
+        active = false
 
         super.onDestroy()
     }
