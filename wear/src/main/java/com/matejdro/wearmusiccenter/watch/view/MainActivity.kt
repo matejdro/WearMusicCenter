@@ -64,6 +64,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private lateinit var lastStemPresses: Array<Long>
     private lateinit var stemHasDoublePressAction: Array<Boolean>
+    private var rotatingInputDisabledUntil = 0L
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         viewModel = ViewModelProviders.of(this)[MusicViewModel::class.java]
@@ -117,6 +118,11 @@ class MainActivity : WearCompanionWatchActivity(),
 
         if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
             handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
+        }
+
+        val crownDisableTime = Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
+        if (crownDisableTime > 0) {
+            rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
         }
     }
 
@@ -313,12 +319,21 @@ class MainActivity : WearCompanionWatchActivity(),
             if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
                 binding.loadingIndicator.visibility = View.VISIBLE
             }
+
+            val crownDisableTime = Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
+            if (crownDisableTime > 0) {
+                rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
+            }
         }
 
     }
 
     override fun onGenericMotionEvent(ev: android.view.MotionEvent): Boolean {
         if (binding.actionDrawer.isOpened) {
+            return false
+        }
+
+        if (rotatingInputDisabledUntil > System.currentTimeMillis()) {
             return false
         }
 

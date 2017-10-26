@@ -6,17 +6,17 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearutils.logging.LogRetrievalTask
+import com.matejdro.wearutils.preferences.compat.PreferenceFragmentCompatEx
 import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
 
 
-class MiscSettingsFragment : PreferenceFragmentCompat() {
+class MiscSettingsFragment : PreferenceFragmentCompatEx() {
     private lateinit var googleApiClient: GoogleApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {

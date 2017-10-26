@@ -17,6 +17,12 @@
             android:title="@string/setting_pause_on_swipe_exit"
             android:summary="@string/setting_pause_on_swipe_exit_description" />
 
+        <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
+            android:defaultValue="300"
+            android:key="rotating_crown_off_period"
+            android:title="@string/setting_rotating_crown_off_period"
+            android:summary="@string/setting_rotating_crown_off_period_description" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
