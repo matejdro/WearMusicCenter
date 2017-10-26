@@ -40,5 +40,5 @@ class ButtonConfigViewModel(setsPlaybackActions : Boolean, configActivityCompone
 
 class ButtonConfigViewModelFactory(private val setsPlaybackActions : Boolean, private val configActivityComponent: ConfigActivityComponent) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(p0: Class<T>?): T = ButtonConfigViewModel(setsPlaybackActions, configActivityComponent) as T
+    override fun <T : ViewModel?> create(p0: Class<T>): T = ButtonConfigViewModel(setsPlaybackActions, configActivityComponent) as T
 }

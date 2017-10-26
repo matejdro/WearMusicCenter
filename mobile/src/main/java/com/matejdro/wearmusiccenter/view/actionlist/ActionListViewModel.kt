@@ -75,5 +75,5 @@ class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : Vi
 
 class ActionListViewModelFactory(private val configActivityComponent: ConfigActivityComponent) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>?): T = ActionListViewModel(configActivityComponent) as T
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T = ActionListViewModel(configActivityComponent) as T
 }

@@ -61,7 +61,7 @@ class ActionPickerViewModel(showNone: Boolean, application: Application) : Andro
 
 class ActionPickerViewModelFactory(private val application: Application, private val showNone: Boolean) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>?): T
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T
             = ActionPickerViewModel(showNone, application) as T
 
 }
