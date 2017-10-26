@@ -12,7 +12,7 @@ See Play Store's description for more information.
 
 ### Prerequisites
 
-* [Android Studio 3.0 or newer](https://developer.android.com/studio/preview/index.html)
+* [Android Studio 3.0 or newer](https://developer.android.com/studio/index.html)
 
 ### Build process
 
