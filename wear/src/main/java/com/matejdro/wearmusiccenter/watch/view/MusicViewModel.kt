@@ -3,6 +3,8 @@ package com.matejdro.wearmusiccenter.watch.view
 import android.app.Application
 import android.arch.lifecycle.*
 import android.content.SharedPreferences
+import android.os.Handler
+import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.MusicState
@@ -13,12 +15,15 @@ import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
+import com.matejdro.wearutils.preferences.definition.Preferences
 
 class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val phoneConnection = PhoneConnection(getApplication())
 
     private val playbackConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawPlaybackConfig)
     private val stoppedConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawStoppedConfig)
+
+    private val handler = Handler()
 
     val currentButtonConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
@@ -29,6 +34,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val popupVolumeBar = SingleLiveEvent<Unit>()
     val closeActionsMenu = SingleLiveEvent<Unit>()
     val openActionsMenu = SingleLiveEvent<Unit>()
+    val closeApp = SingleLiveEvent<Unit>()
 
     val albumArt
     get() = phoneConnection.albumArt
@@ -89,6 +95,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val musicStateListener = Observer<Resource<MusicState>> {
         val playing = it?.data?.playing == true
 
+        handler.removeCallbacks(closeRunnable)
+        if (!playing) {
+            val timeout = Preferences.getInt(preferences.value!!, MiscPreferences.CLOSE_TIMEOUT)
+            if (timeout > 0) {
+                handler.postDelayed(closeRunnable, timeout * 1000L)
+            }
+        }
+
         val newMusicState = it?.data
         if (it?.status == Resource.Status.SUCCESS && newMusicState != null) {
             if (volume.value != newMusicState.volume) {
@@ -126,5 +140,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     fun close() {
         onCleared()
+    }
+
+    private val closeRunnable = Runnable {
+        closeApp.call()
     }
 }

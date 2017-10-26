@@ -104,6 +104,7 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.popupVolumeBar.observe(this, volumeBarPopupListener)
         viewModel.closeActionsMenu.observe(this, closeDrawerListener)
         viewModel.openActionsMenu.observe(this, openDrawerListener)
+        viewModel.closeApp.observe(this, closeAppListener)
 
         val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
@@ -260,6 +261,11 @@ class MainActivity : WearCompanionWatchActivity(),
     private val openDrawerListener = Observer<Unit> {
         openMenuDrawer()
     }
+
+    private val closeAppListener = Observer<Unit> {
+        finish()
+    }
+
 
     fun openMenuDrawer() {
         binding.actionDrawer.controller.openDrawer()

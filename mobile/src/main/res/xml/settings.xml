@@ -39,6 +39,11 @@
             android:key="auto_start"
             android:title="@string/setting_auto_start"
             android:summary="@string/setting_auto_start_description" />
+        <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
+            android:defaultValue="0"
+            android:key="close_timeout"
+            android:title="@string/setting_close_timeout"
+            android:summary="@string/setting_close_timeout_description" />
     </PreferenceCategory>
 
     <PreferenceCategory

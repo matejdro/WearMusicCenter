@@ -19,4 +19,6 @@ object MiscPreferences {
     val AUTO_START: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("auto_start", false)
 
+    val CLOSE_TIMEOUT: PreferenceDefinition<Int>
+            = SimplePreferenceDefinition("close_timeout", 0)
 }
