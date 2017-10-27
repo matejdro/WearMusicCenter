@@ -3,8 +3,6 @@ package com.matejdro.wearmusiccenter.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Parcel
-import android.os.Parcelable
 import android.os.PersistableBundle
 import android.support.annotation.CallSuper
 import com.matejdro.wearmusiccenter.WearMusicCenter
@@ -107,25 +105,4 @@ abstract class PhoneAction : Bundlable {
             }
         }
     }
-
-    class test(val a : Int) : Parcelable {
-        companion object {
-            @JvmField val CREATOR: Parcelable.Creator<test> = object : Parcelable.Creator<test> {
-                override fun createFromParcel(source: Parcel): test = test(source)
-                override fun newArray(size: Int): Array<test?> = arrayOfNulls(size)
-            }
-        }
-
-        constructor(source: Parcel) : this(
-        source.readInt()
-        )
-
-        override fun describeContents() = 0
-
-        override fun writeToParcel(dest: Parcel, flags: Int) {
-            dest.writeInt(a)
-        }
-    }
-
-
 }

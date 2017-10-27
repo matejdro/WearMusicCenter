@@ -189,7 +189,6 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
     }
 
 
-
     override fun onDataChanged(data: DataEventBuffer?) {
         if (data == null) {
             return
@@ -198,33 +197,32 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         data.filter { it.type == DataEvent.TYPE_CHANGED }
                 .map { it.dataItem }
                 .forEach {
-                    if (it.uri.path == CommPaths.DATA_MUSIC_STATE) {
-                        val dataItem = it.freeze()
+                    when (it.uri.path) {
+                        CommPaths.DATA_MUSIC_STATE -> {
+                            val dataItem = it.freeze()
 
-                        connectionHandler.post {
-                            val receivedMusicState = MusicState.parseFrom(dataItem.data)
+                            connectionHandler.post {
+                                val receivedMusicState = MusicState.parseFrom(dataItem.data)
 
-                            if (receivedMusicState.error) {
-                                musicState.postValue(Resource.error(receivedMusicState.title, null))
-                            } else {
-                                musicState.postValue(Resource.success(receivedMusicState))
+                                if (receivedMusicState.error) {
+                                    musicState.postValue(Resource.error(receivedMusicState.title, null))
+                                } else {
+                                    musicState.postValue(Resource.success(receivedMusicState))
 
-                                val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
-                                if (phoneNode != null) {
-                                    Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
+                                    val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+                                    if (phoneNode != null) {
+                                        Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
+                                    }
+
+                                    val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
+                                            googleApiClient)
+                                    albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                                 }
-
-                                val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
-                                        googleApiClient)
-                                albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                             }
                         }
-                    } else if (it.uri.path == CommPaths.DATA_PLAYING_ACTION_CONFIG) {
-                        rawPlaybackConfig.postValue(it.freeze())
-                    } else if (it.uri.path == CommPaths.DATA_STOPPING_ACTION_CONFIG) {
-                        rawStoppedConfig.postValue(it.freeze())
-                    } else if (it.uri.path == CommPaths.DATA_LIST_ITEMS) {
-                        rawActionMenuConfig.postValue(it.freeze())
+                        CommPaths.DATA_PLAYING_ACTION_CONFIG -> rawPlaybackConfig.postValue(it.freeze())
+                        CommPaths.DATA_STOPPING_ACTION_CONFIG -> rawStoppedConfig.postValue(it.freeze())
+                        CommPaths.DATA_LIST_ITEMS -> rawActionMenuConfig.postValue(it.freeze())
                     }
                 }
 

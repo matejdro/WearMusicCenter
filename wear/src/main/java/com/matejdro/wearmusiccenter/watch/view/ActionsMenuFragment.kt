@@ -83,8 +83,7 @@ class ActionsMenuFragment : Fragment() {
 
         //Find button with lowest Y value (furthest from user) - that will be close button
         closeDrawerKeycode = (KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3)
-                .map { WearableButtons.getButtonInfo(context, it) }
-                .filterNotNull()
+                .mapNotNull { WearableButtons.getButtonInfo(context, it) }
                 .minBy { it.y }?.keycode ?: -1
     }
 

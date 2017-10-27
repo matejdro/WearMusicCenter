@@ -117,15 +117,13 @@ class CustomIconStorage @Inject constructor(val context: Context,
 
     private fun getAllCustomUriFiles(config: ActionConfigStorage): Collection<String> {
         return config.getAllActions()
-                .map { it.value.customIconUri }
-                .filterNotNull()
+                .mapNotNull { it.value.customIconUri }
                 .map { getFileForUri(it).name }
     }
 
     private fun getAllCustomUriFiles(config: ActionListStorage): Collection<String> {
         return config.actions
-                .map { it.customIconUri }
-                .filterNotNull()
+                .mapNotNull { it.customIconUri }
                 .map { getFileForUri(it).name }
     }
 

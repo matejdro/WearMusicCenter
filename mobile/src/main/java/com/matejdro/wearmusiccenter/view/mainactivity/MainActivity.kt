@@ -157,9 +157,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
         super.onActivityResult(requestCode, resultCode, data)
 
         val currentFragment = currentFragment
-        if (currentFragment is Fragment) {
-            currentFragment.onActivityResult(requestCode, resultCode, data)
-        }
+        currentFragment?.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

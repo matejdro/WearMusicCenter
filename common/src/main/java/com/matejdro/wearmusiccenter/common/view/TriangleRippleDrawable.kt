@@ -15,22 +15,27 @@ class TriangleRippleDrawable(var quadrant: Int, color: android.content.res.Color
 
         path.reset()
 
-        if (quadrant == ScreenQuadrant.LEFT) {
-            path.moveTo(0f, 0f)
-            path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
-            path.lineTo(0f, size.toFloat())
-        } else if (quadrant == ScreenQuadrant.RIGHT) {
-            path.moveTo(size.toFloat(), 0f)
-            path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
-            path.lineTo(size.toFloat(), size.toFloat())
-        } else if (quadrant == ScreenQuadrant.BOTTOM) {
-            path.moveTo(0f, size.toFloat())
-            path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
-            path.lineTo(size.toFloat(), size.toFloat())
-        } else {
-            path.moveTo(0f, 0f)
-            path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
-            path.lineTo(size.toFloat(), 0f)
+        when (quadrant) {
+            ScreenQuadrant.LEFT -> {
+                path.moveTo(0f, 0f)
+                path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
+                path.lineTo(0f, size.toFloat())
+            }
+            ScreenQuadrant.RIGHT -> {
+                path.moveTo(size.toFloat(), 0f)
+                path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
+                path.lineTo(size.toFloat(), size.toFloat())
+            }
+            ScreenQuadrant.BOTTOM -> {
+                path.moveTo(0f, size.toFloat())
+                path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
+                path.lineTo(size.toFloat(), size.toFloat())
+            }
+            else -> {
+                path.moveTo(0f, 0f)
+                path.lineTo((size / 2).toFloat(), (size / 2).toFloat())
+                path.lineTo(size.toFloat(), 0f)
+            }
         }
 
         path.close()
