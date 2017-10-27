@@ -126,6 +126,8 @@ class MainActivity : WearCompanionWatchActivity(),
         if (crownDisableTime > 0) {
             rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
         }
+
+        viewModel.updateTimers()
     }
 
     override fun onStop() {
@@ -305,6 +307,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
         override fun onUpdateAmbient() {
             updateClock()
+            viewModel.updateTimers()
         }
 
         override fun onExitAmbient() {

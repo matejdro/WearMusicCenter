@@ -24,6 +24,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val stoppedConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawStoppedConfig)
 
     private val handler = Handler()
+    private var closeDeadline = Long.MAX_VALUE
 
     val currentButtonConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
@@ -38,6 +39,12 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     val albumArt
     get() = phoneConnection.albumArt
+
+    fun updateTimers() {
+        if (closeDeadline < System.currentTimeMillis()) {
+            closeApp.call()
+        }
+    }
 
     fun executeActionFromMenu(index: Int) {
         val action = actionsMenuConfig.config.value?.get(index) ?: return
@@ -95,11 +102,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val musicStateListener = Observer<Resource<MusicState>> {
         val playing = it?.data?.playing == true
 
+        closeDeadline = Long.MAX_VALUE
         handler.removeCallbacks(closeRunnable)
         if (!playing) {
             val timeout = Preferences.getInt(preferences.value!!, MiscPreferences.CLOSE_TIMEOUT)
             if (timeout > 0) {
-                handler.postDelayed(closeRunnable, timeout * 1000L)
+                val timeoutMs = timeout * 1000L
+                closeDeadline = System.currentTimeMillis() + timeoutMs
+                handler.postDelayed(closeRunnable, timeoutMs)
             }
         }
 
