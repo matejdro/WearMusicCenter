@@ -249,7 +249,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         if (requestCode == REQUEST_CODE_EDIT_WINDOW &&
                 resultCode == Activity.RESULT_OK &&
                 data != null) {
-            if (data.getBooleanExtra(ActionEditorActivity.EXTRA_DELETING, false)) {
+            if (data.getBooleanExtra(ActionEditorActivity.EXTRA_DELETING, false) && lastEditedActionPosition >= 0) {
                 viewModel.deleteAction(lastEditedActionPosition)
                 lastEditedActionPosition = -1
                 return
