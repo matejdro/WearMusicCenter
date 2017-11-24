@@ -132,6 +132,10 @@ class ActionPickerActivity : AppCompatActivity() {
 
         init {
             itemView.setOnClickListener {
+                if (adapterPosition == RecyclerView.NO_POSITION) {
+                    return@setOnClickListener
+                }
+
                 viewModel.onActionTapped(adapterPosition)
             }
         }
