@@ -34,6 +34,7 @@ import com.matejdro.wearutils.companionnotice.WearCompanionWatchActivity
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.VibratorCompat
 import com.matejdro.wearutils.preferences.definition.Preferences
+import timber.log.Timber
 import java.lang.ref.WeakReference
 
 // LifecycleRegistryOwner must be used, because there is no alternative for non-compat activities
@@ -160,6 +161,7 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private val musicStateObserver = Observer<Resource<MusicState>> {
+        Timber.d("GUI Music State %s %s", it?.status, it?.data)
         if (it == null || it.status == Resource.Status.LOADING) {
             binding.loadingIndicator.visibility = View.VISIBLE
             return@Observer

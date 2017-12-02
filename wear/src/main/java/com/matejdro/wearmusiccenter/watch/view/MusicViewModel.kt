@@ -16,6 +16,7 @@ import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import com.matejdro.wearutils.preferences.definition.Preferences
+import timber.log.Timber
 
 class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val phoneConnection = PhoneConnection(getApplication())
@@ -100,6 +101,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private val musicStateListener = Observer<Resource<MusicState>> {
+        Timber.d("Received MusicState %s", it?.data)
         val playing = it?.data?.playing == true
 
         closeDeadline = Long.MAX_VALUE

@@ -256,7 +256,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
         val musicState = musicStateBuilder.build()
 
-        Timber.d("TransmittingToWear")
+        Timber.d("TransmittingToWear %s", musicState)
         transmitToWear(musicState, albumArt)
     }
 

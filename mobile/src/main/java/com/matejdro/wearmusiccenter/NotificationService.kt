@@ -20,6 +20,7 @@ import com.matejdro.wearmusiccenter.music.isPlaying
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.messages.MessagingUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
+import timber.log.Timber
 
 class NotificationService : NotificationListenerService() {
     lateinit var preferences: SharedPreferences
@@ -32,6 +33,7 @@ class NotificationService : NotificationListenerService() {
         super.onCreate()
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        Timber.d("Service started")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -39,6 +41,7 @@ class NotificationService : NotificationListenerService() {
                 bound &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             requestUnbind()
+            Timber.d("Unbind on command")
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -47,12 +50,16 @@ class NotificationService : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
 
+        Timber.d("Listener connected")
+
         val musicServiceNotifyIntent = Intent(this, MusicService::class.java)
         musicServiceNotifyIntent.action = MusicService.ACTION_NOTIFICATION_SERVICE_ACTIVATED
         startService(musicServiceNotifyIntent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !shouldRun()) {
             //Running notification service is not needed for this app to run, it only needs to be enabled.
+
+            Timber.d("Unbind on start")
 
             // On N+ we can turn off the service
             requestUnbind()
@@ -80,6 +87,8 @@ class NotificationService : NotificationListenerService() {
     }
 
     override fun onDestroy() {
+        Timber.d("Service destroyed")
+
         activeMediaProvider?.removeObserver(mediaObserver)
 
         super.onDestroy()
@@ -90,14 +99,20 @@ class NotificationService : NotificationListenerService() {
     }
 
     private fun startAppOnWatch() {
+        Timber.d("AttemptToStartApp %s", googleApiClient?.isConnected)
         if (googleApiClient?.isConnected == true) {
+            Timber.d("Starting app")
             MessagingUtils.sendSingleMessage(googleApiClient,
                     CommPaths.MESSAGE_OPEN_APP,
-                    null)
+                    null) {
+                Timber.d("Start success: %b", it.status.isSuccess)
+            }
         }
     }
 
     private val mediaObserver = Observer<Resource<MediaController>> {
+        Timber.d("Playback update %b %s", MusicService.active, it?.data?.playbackState?.state)
+
         if (!MusicService.active && it?.data?.playbackState?.isPlaying() == true) {
             startAppOnWatch()
         }
