@@ -207,8 +207,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             val putDataRequest = PutDataRequest.create(CommPaths.DATA_NOTIFICATION)
 
             val protoNotification = com.matejdro.wearmusiccenter.proto.Notification.newBuilder()
-                    .setTitle(it.title)
-                    .setDescription(it.description)
+                    .setTitle(it.title.trim())
+                    .setDescription(it.description.trim())
                     .setTime(System.currentTimeMillis().toInt())
                     .build()
 

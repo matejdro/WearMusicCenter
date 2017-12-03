@@ -54,10 +54,10 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:gravity="center"
-                    android:maxHeight="80dp"
+                    android:maxHeight="90dp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    app:autoSizeMinTextSize="20sp"
+                    app:autoSizeMinTextSize="15sp"
                     app:autoSizeStepGranularity="1sp"
                     app:autoSizeTextType="uniform" />
 
