@@ -21,7 +21,8 @@
             app:cardCornerRadius="5dp"
             app:cardElevation="5dp"
             android:scaleX="0"
-            android:scaleY="0">
+            android:scaleY="0"
+            android:visibility="gone">
 
             <FrameLayout
                 android:id="@+id/solid_background"

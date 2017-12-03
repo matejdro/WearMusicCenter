@@ -434,13 +434,17 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private fun hideNotification() {
         val card = binding.notificationPopup!!.notificationCard
-        card.animate().scaleX(0f).scaleY(0f).setDuration(200).start()
+        card.animate().scaleX(0f).scaleY(0f).setDuration(200).withEndAction {
+            card.visibility = View.GONE
+        }.start()
         handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
     }
 
     private fun showNotification() {
         val card = binding.notificationPopup!!.notificationCard
-        card.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+        card.animate().scaleX(1f).scaleY(1f).setDuration(200).withStartAction {
+            card.visibility = View.VISIBLE
+        }.start()
 
         val timeout = Preferences.getInt(preferences, MiscPreferences.NOTIFICATION_TIMEOUT)
 
