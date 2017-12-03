@@ -81,6 +81,7 @@ class NotificationService : NotificationListenerService() {
     }
 
     override fun onListenerDisconnected() {
+        Timber.d("Listener disconnected")
         activeMediaProvider?.removeObserver(mediaObserver)
 
         super.onListenerDisconnected()

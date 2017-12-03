@@ -9,6 +9,10 @@ interface CommPaths {
         const val DATA_WATCH_INFO = "/WatchInfo"
         const val ASSET_WATCH_INFO_BUTTON_PREFIX = "/WatchInfo/Button"
 
+        const val DATA_NOTIFICATION = "/Notification"
+        const val ASSET_NOTIFICATION_BACKGROUND = "/Notification/Background"
+
+
         const val MESSAGES_PREFIX = "wear://*/Messages/"
         const val MESSAGE_WATCH_OPENED = "/Messages/WatchOpened"
         const val MESSAGE_WATCH_CLOSED = "/Messages/WatchClosed"

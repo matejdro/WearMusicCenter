@@ -2,12 +2,14 @@ package com.matejdro.wearmusiccenter.view
 
 import android.Manifest
 import android.content.ComponentName
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
+import android.support.v7.app.AlertDialog
 import android.support.v7.preference.Preference
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
@@ -21,6 +23,10 @@ import de.psdev.licensesdialog.LicensesDialog
 
 
 class MiscSettingsFragment : PreferenceFragmentCompatEx() {
+    companion object {
+        private const val VIBRATION_CENTER_PACKAGE = "com.matejdro.wearvibrationcenter"
+    }
+
     private lateinit var googleApiClient: GoogleApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +43,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
         addPreferencesFromResource(R.xml.settings)
 
         initAutomationSection()
+        initNotificationsSection()
         initAboutSection()
     }
 
@@ -62,6 +69,27 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
                         true
                     }
 
+        }
+    }
+
+    private fun initNotificationsSection() {
+        findPreference("enable_notification_popup").onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference, value: Any ->
+            if (value == false) {
+                return@OnPreferenceChangeListener true
+            }
+
+            if (!isVibrationCenterInstalledAndEnabled()) {
+                AlertDialog.Builder(context!!)
+                        .setTitle(R.string.app_required)
+                        .setMessage(R.string.vibration_center_required_description)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(R.string.open_play_store) { _: DialogInterface, _: Int -> openVibrationCenterPlayStore() }
+                        .show()
+
+                return@OnPreferenceChangeListener false
+            }
+
+            true
         }
     }
 
@@ -91,6 +119,23 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
                     .build()
                     .show()
             true
+        }
+    }
+
+    private fun isVibrationCenterInstalledAndEnabled(): Boolean {
+        try {
+            val appInfo = context!!.packageManager.getApplicationInfo(VIBRATION_CENTER_PACKAGE, 0)
+            return appInfo.enabled
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+    }
+
+    private fun openVibrationCenterPlayStore() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + VIBRATION_CENTER_PACKAGE)))
+        } catch (_: android.content.ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + VIBRATION_CENTER_PACKAGE)))
         }
     }
 

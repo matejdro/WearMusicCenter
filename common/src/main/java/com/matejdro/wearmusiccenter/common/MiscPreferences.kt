@@ -21,4 +21,10 @@ object MiscPreferences {
 
     val CLOSE_TIMEOUT: PreferenceDefinition<Int>
             = SimplePreferenceDefinition("close_timeout", 0)
+
+    val ENABLE_NOTIFICATION_POPUP: PreferenceDefinition<Boolean>
+            = SimplePreferenceDefinition("enable_notification_popup", false)
+
+    val NOTIFICATION_TIMEOUT: PreferenceDefinition<Int>
+            = SimplePreferenceDefinition("notification_timeout", 10)
 }

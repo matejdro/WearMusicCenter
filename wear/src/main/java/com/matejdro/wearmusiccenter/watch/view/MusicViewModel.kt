@@ -13,6 +13,7 @@ import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
+import com.matejdro.wearmusiccenter.watch.model.Notification
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import com.matejdro.wearutils.preferences.definition.Preferences
@@ -31,6 +32,8 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val musicState = MediatorLiveData<Resource<MusicState>>()
     val actionsMenuConfig = WatchActionMenuProvider(phoneConnection.googleApiClient, phoneConnection.rawActionMenuConfig)
     val preferences = PreferencesBus as LiveData<SharedPreferences>
+
+    val notification: LiveData<Notification> = phoneConnection.notification
 
     val volume = MutableLiveData<Float>()
     val popupVolumeBar = SingleLiveEvent<Unit>()

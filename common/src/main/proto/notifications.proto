@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package com.matejdro.wearmusiccenter.proto;
+
+option java_package = "com.matejdro.wearmusiccenter.proto";
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+message Notification {
+    required string title = 1;
+    optional string description = 2;
+    required int32 time = 3;
+}

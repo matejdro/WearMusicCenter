@@ -73,5 +73,12 @@
     <string name="setting_auto_start_description">Automatically open the Music Center on the watch when music playback is started on the phone.</string>
     <string name="setting_close_timeout">Close timeout</string>
     <string name="setting_close_timeout_description">Music Center will automatically close itself when there is no music playing for <![CDATA[<b>%1$s seconds</b>]]>. Feature is disabled when timeout is set to 0 seconds. Please not that, to save battery, this option may not be too accurate at times and it might delay the closing for up to a minute.</string>
-
+    <string name="category_notifications">Notification popup</string>
+    <string name="setting_enable_notifications">Show notification popup</string>
+    <string name="setting_enable_notifications_description">This feature requires another app to manage notifications (Vibration Center for Wear).\n\nWhenever Vibration Center vibrates the watch, Music Center will display popup of the notification text, allowing you to glance at notification quickly without leaving Music Center.</string>
+    <string name="setting_notification_timeout">Notification popup timeout</string>
+    <string name="setting_notification_timeout_description">Notification popup will automatically close itself after <![CDATA[<b>%1$s seconds</b>]]>. Enter 0 to disable auto-close.</string>
+    <string name="app_required">App required</string>
+    <string name="vibration_center_required_description">To use this feature, you will need to install another (free) app: Vibration Center for Wear.</string>
+    <string name="open_play_store">Open play store</string>
 </resources>

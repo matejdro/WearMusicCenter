@@ -4,4 +4,6 @@
     <dimen name="music_screen_icon_size">24dp</dimen>
     <dimen name="music_screen_text_margin">30dp</dimen>
     <dimen name="music_screen_volume_bar_width">30dp</dimen>
+
+    <dimen name="notification_margin">6dp</dimen>
 </resources>

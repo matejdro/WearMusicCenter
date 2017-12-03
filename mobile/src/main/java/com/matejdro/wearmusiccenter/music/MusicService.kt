@@ -30,11 +30,13 @@ import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.di.GlobalConfig
+import com.matejdro.wearmusiccenter.notifications.NotificationProvider
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
+import com.matejdro.wearvibrationcenter.notificationprovider.ReceivedNotification
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -76,6 +78,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     @Inject
     lateinit var watchInfoProvider: WatchInfoProvider
 
+    @Inject
+    lateinit var notificationProvider: NotificationProvider
+
     private var ackTimeoutHandler = AckTimeoutHandler(WeakReference(this))
 
     private var previousMusicState: MusicState? = null
@@ -114,6 +119,10 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         mediaSessionProvider.observe(this, mediaCallback)
 
         watchInfoProvider.observe(this, Observer<WatchInfoWithIcons> {})
+
+        if (Preferences.getBoolean(preferences, MiscPreferences.ENABLE_NOTIFICATION_POPUP)) {
+            notificationProvider.observe(this, notificationCallback)
+        }
 
         val stopSelfIntent = Intent(this, MusicService::class.java)
         stopSelfIntent.action = ACTION_STOP_SELF
@@ -187,7 +196,33 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 buildMusicStateAndTransmit(currentMediaController)
             }
         }
+    }
 
+    private val notificationCallback = Observer<ReceivedNotification> {
+        if (it == null) {
+            return@Observer
+        }
+
+        connectionHandler.post {
+            val putDataRequest = PutDataRequest.create(CommPaths.DATA_NOTIFICATION)
+
+            val protoNotification = com.matejdro.wearmusiccenter.proto.Notification.newBuilder()
+                    .setTitle(it.title)
+                    .setDescription(it.description)
+                    .setTime(System.currentTimeMillis().toInt())
+                    .build()
+
+            it.imageDataPng?.let {
+                val albumArtAsset = Asset.createFromBytes(it)
+                putDataRequest.putAsset(CommPaths.ASSET_NOTIFICATION_BACKGROUND, albumArtAsset)
+            }
+
+            putDataRequest.data = protoNotification.toByteArray()
+            putDataRequest.setUrgent()
+
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest)
+            ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
+        }
     }
 
     private fun updateVolume(newVolume: Float) {

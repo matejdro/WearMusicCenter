@@ -47,6 +47,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="cat_notifications"
+        android:title="@string/category_notifications">
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
+            android:defaultValue="false"
+            android:key="enable_notification_popup"
+            android:title="@string/setting_enable_notifications"
+            android:summary="@string/setting_enable_notifications_description" />
+        <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
+            android:defaultValue="10"
+            android:key="notification_timeout"
+            android:title="@string/setting_notification_timeout"
+            android:summary="@string/setting_notification_timeout_description" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
         android:key="cat_about"
         android:title="@string/category_about">
         <Preference

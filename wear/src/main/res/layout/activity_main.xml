@@ -134,6 +134,10 @@
             android:indeterminate="true"
             android:visibility="gone" />
 
+        <include
+            android:id="@+id/notification_popup"
+            layout="@layout/popup_notification" />
+
         <com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView
             android:id="@+id/action_drawer"
             android:layout_width="match_parent"

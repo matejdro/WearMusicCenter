@@ -30,6 +30,7 @@ import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
+import com.matejdro.wearmusiccenter.watch.model.Notification
 import com.matejdro.wearutils.companionnotice.WearCompanionWatchActivity
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.VibratorCompat
@@ -46,6 +47,7 @@ class MainActivity : WearCompanionWatchActivity(),
         private const val MESSAGE_HIDE_VOLUME = 0
         private const val MESSAGE_PRESS_BUTTON = 1
         private const val MESSAGE_UPDATE_CLOCK = 2
+        private const val MESSAGE_DISMISS_NOTIFICATION = 3
 
         private const val VOLUME_BAR_TIMEOUT = 1000L
     }
@@ -91,6 +93,7 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.fourWayTouch.listener = this
 
         binding.drawerLayout.setDrawerStateCallback(drawerStateCallback)
+        binding.notificationPopup!!.clickableFrame.setOnClickListener { onNotificationTapped() }
 
         timeFormat = android.text.format.DateFormat.getTimeFormat(this)
 
@@ -106,6 +109,7 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.closeActionsMenu.observe(this, closeDrawerListener)
         viewModel.openActionsMenu.observe(this, openDrawerListener)
         viewModel.closeApp.observe(this, closeAppListener)
+        viewModel.notification.observe(this, notificationObserver)
 
         val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
         lastStemPresses = Array<Long>(numStemButtons) { 0 }
@@ -246,6 +250,20 @@ class MainActivity : WearCompanionWatchActivity(),
         }
     }
 
+    private val notificationObserver = Observer<Notification> {
+        if (it == null) {
+            return@Observer
+        }
+
+        val notificationPopup = binding.notificationPopup!!
+
+        notificationPopup.title.text = it.title
+        notificationPopup.body.text = it.description
+        notificationPopup.backgroundImage.setImageBitmap(it.background)
+
+        showNotification()
+    }
+
     private val phoneVolumeListener = Observer<Float> {
         binding.volumeBar.volume = it!!
     }
@@ -304,6 +322,9 @@ class MainActivity : WearCompanionWatchActivity(),
 
             binding.root.background = ColorDrawable(Color.BLACK)
 
+            binding.notificationPopup!!.backgroundImage.visibility = View.GONE
+            binding.notificationPopup!!.solidBackground.background = ColorDrawable(Color.BLACK)
+
             binding.actionDrawer.controller.closeDrawer()
         }
 
@@ -327,6 +348,9 @@ class MainActivity : WearCompanionWatchActivity(),
             binding.albumArt.visibility = android.view.View.VISIBLE
 
             binding.root.background = null
+
+            binding.notificationPopup!!.backgroundImage.visibility = View.VISIBLE
+            binding.notificationPopup!!.solidBackground.background = getDrawable(R.drawable.notification_popup_background)
 
             if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
                 binding.loadingIndicator.visibility = View.VISIBLE
@@ -404,6 +428,28 @@ class MainActivity : WearCompanionWatchActivity(),
         return super.onKeyDown(keyCode, event)
     }
 
+    private fun onNotificationTapped() {
+        hideNotification()
+    }
+
+    private fun hideNotification() {
+        val card = binding.notificationPopup!!.notificationCard
+        card.animate().scaleX(0f).scaleY(0f).setDuration(200).start()
+        handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
+    }
+
+    private fun showNotification() {
+        val card = binding.notificationPopup!!.notificationCard
+        card.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+
+        val timeout = Preferences.getInt(preferences, MiscPreferences.NOTIFICATION_TIMEOUT)
+
+        handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
+        if (timeout > 0) {
+            handler.sendEmptyMessageDelayed(MESSAGE_DISMISS_NOTIFICATION, (timeout * 1000).toLong())
+        }
+    }
+
     private fun showVolumeBar() {
         binding.volumeBar.visibility = android.view.View.VISIBLE
 
@@ -462,6 +508,9 @@ class MainActivity : WearCompanionWatchActivity(),
                             Preferences.getBoolean(activity.preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
                         sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
                     }
+                }
+                msg.what == MESSAGE_DISMISS_NOTIFICATION -> {
+                    activity.get()?.hideNotification()
                 }
             }
 

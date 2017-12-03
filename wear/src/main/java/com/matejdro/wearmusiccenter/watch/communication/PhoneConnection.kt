@@ -14,10 +14,8 @@ import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.util.FloatPacker
 import com.matejdro.wearmusiccenter.proto.MusicState
-import com.matejdro.wearutils.lifecycle.ListenableLiveData
-import com.matejdro.wearutils.lifecycle.LiveDataLifecycleCombiner
-import com.matejdro.wearutils.lifecycle.LiveDataLifecycleListener
-import com.matejdro.wearutils.lifecycle.Resource
+import com.matejdro.wearmusiccenter.proto.Notification
+import com.matejdro.wearutils.lifecycle.*
 import com.matejdro.wearutils.messages.DataUtils
 import com.matejdro.wearutils.messages.MessagingUtils
 import com.matejdro.wearutils.miscutils.BitmapUtils
@@ -36,6 +34,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
 
     val musicState = ListenableLiveData<Resource<MusicState>>()
     val albumArt = ListenableLiveData<Bitmap?>()
+
+    val notification = SingleLiveEvent<com.matejdro.wearmusiccenter.watch.model.Notification>()
 
     val rawPlaybackConfig = MutableLiveData<DataItem>()
     val rawStoppedConfig = MutableLiveData<DataItem>()
@@ -188,6 +188,13 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         }
     }
 
+    private fun sendAck() {
+        val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+        if (phoneNode != null) {
+            Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
+        }
+    }
+
 
     override fun onDataChanged(data: DataEventBuffer?) {
         if (data == null) {
@@ -209,15 +216,32 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
                                 } else {
                                     musicState.postValue(Resource.success(receivedMusicState))
 
-                                    val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
-                                    if (phoneNode != null) {
-                                        Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
-                                    }
+                                    sendAck()
 
                                     val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
                                             googleApiClient)
                                     albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                                 }
+                            }
+                        }
+                        CommPaths.DATA_NOTIFICATION -> {
+                            val dataItem = it.freeze()
+                            connectionHandler.post {
+                                val receivedNotification = Notification.parseFrom(dataItem.data)
+
+                                sendAck()
+
+                                val pictureData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_NOTIFICATION_BACKGROUND],
+                                        googleApiClient)
+                                val picture = BitmapUtils.deserialize(pictureData)
+
+                                val mergedNotification = com.matejdro.wearmusiccenter.watch.model.Notification(
+                                        receivedNotification.title,
+                                        receivedNotification.description,
+                                        picture
+                                )
+
+                                notification.postValue(mergedNotification)
                             }
                         }
                         CommPaths.DATA_PLAYING_ACTION_CONFIG -> rawPlaybackConfig.postValue(it.freeze())
