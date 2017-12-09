@@ -316,8 +316,6 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             putDataRequest.setUrgent()
 
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
-
-            ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
     }
 
     private fun transmitError(error: String) = connectionHandler.post {
@@ -379,6 +377,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             return
         }
 
+        Timber.d("Message %s", event.path)
+
         when {
             event.path == CommPaths.MESSAGE_WATCH_CLOSED -> {
                 stopSelf()
@@ -396,6 +396,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 executeMenuAction(ByteBuffer.wrap(event.data).int)
             }
             event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+                firstMessage = true
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
                 buildMusicStateAndTransmit(currentMediaController)
             }
