@@ -158,6 +158,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private val closeRunnable = Runnable {
+        phoneConnection.stop()
         closeApp.call()
     }
 }

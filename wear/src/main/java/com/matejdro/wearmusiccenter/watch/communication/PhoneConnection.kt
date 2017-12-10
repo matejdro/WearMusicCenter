@@ -109,6 +109,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
             return
         }
 
+        running = false
+
         connectionHandler.post {
             Wearable.DataApi.removeListener(googleApiClient, this)
 
@@ -119,8 +121,6 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
             googleApiClient.disconnect()
         }
-
-        running = false
     }
 
     private fun onWatchConnectionUpdated(capabilityInfo: CapabilityInfo) {
@@ -134,6 +134,10 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
     }
 
     fun sendManualCloseMessage() {
+        if (!running) {
+            return
+        }
+
         connectionHandler.post {
             val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
