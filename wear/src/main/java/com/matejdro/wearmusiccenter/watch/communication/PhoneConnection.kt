@@ -25,7 +25,7 @@ import kotlinx.coroutines.experimental.launch
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 
-class PhoneConnection(private val context: Context) : DataApi.DataListener, LiveDataLifecycleListener {
+class PhoneConnection(private val context: Context) : DataApi.DataListener, CapabilityApi.CapabilityListener, LiveDataLifecycleListener {
 
     companion object {
         const val MESSAGE_CLOSE_CONNECTION = 0
@@ -83,14 +83,17 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
                 return@post
             }
 
+            val capabilities = Wearable.CapabilityApi.getCapability(googleApiClient,
+                    CommPaths.PHONE_APP_CAPABILITY,
+                    CapabilityApi.FILTER_REACHABLE)
+                    .await()
+                    .capability
+
+            onWatchConnectionUpdated(capabilities)
+
             Wearable.DataApi.addListener(googleApiClient, this)
 
-            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_OPENED, null).await()
-            } else {
-                musicState.postValue(Resource.error(context.getString(R.string.no_phone), null))
-            }
+            Wearable.CapabilityApi.addCapabilityListener(googleApiClient, this, CommPaths.PHONE_APP_CAPABILITY)
 
             loadCurrentActionConfig(CommPaths.DATA_PLAYING_ACTION_CONFIG, rawPlaybackConfig)
             loadCurrentActionConfig(CommPaths.DATA_STOPPING_ACTION_CONFIG, rawStoppedConfig)
@@ -118,6 +121,16 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
         }
 
         running = false
+    }
+
+    private fun onWatchConnectionUpdated(capabilityInfo: CapabilityInfo) {
+        val watchConnected = capabilityInfo.nodes.first()?.isNearby == true
+
+        if (watchConnected) {
+            Wearable.MessageApi.sendMessage(googleApiClient, capabilityInfo.nodes.first()!!.id, CommPaths.MESSAGE_WATCH_OPENED, null).await()
+        } else {
+            musicState.postValue(Resource.error(context.getString(R.string.no_phone), null))
+        }
     }
 
     fun sendManualCloseMessage() {
@@ -251,6 +264,10 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Live
                 }
 
         data.release()
+    }
+
+    override fun onCapabilityChanged(capability: CapabilityInfo) {
+        connectionHandler.post { onWatchConnectionUpdated(capability) }
     }
 
     private fun loadCurrentActionConfig(configPath: String, targetLiveData: MutableLiveData<DataItem>) {
