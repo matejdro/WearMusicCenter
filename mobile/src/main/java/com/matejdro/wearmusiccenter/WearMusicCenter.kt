@@ -5,7 +5,6 @@ import android.app.Application
 import android.app.Service
 import android.content.pm.ApplicationInfo
 import com.crashlytics.android.Crashlytics
-import com.matejdro.wearmusiccenter.di.AppComponent
 import com.matejdro.wearmusiccenter.di.DaggerAppComponent
 import com.matejdro.wearmusiccenter.logging.CrashlyticsExceptionWearHandler
 import com.matejdro.wearmusiccenter.logging.TimberCrashlytics
@@ -21,8 +20,6 @@ import javax.inject.Inject
 
 
 class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
-    private lateinit var diComponent: AppComponent
-
     @field:Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
 
@@ -30,10 +27,10 @@ class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
     override fun onCreate() {
-        diComponent = DaggerAppComponent.builder()
+        DaggerAppComponent.builder()
                 .application(this)
                 .build()
-        diComponent.inject(this)
+                .inject(this)
 
         super.onCreate()
 
@@ -51,8 +48,6 @@ class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
         val fileLogger = FileLogger.getInstance(this)
         fileLogger.activate()
         Timber.plant(fileLogger)
-
-        instance = this
     }
 
     override fun activityInjector(): AndroidInjector<Activity>
@@ -60,10 +55,4 @@ class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
 
     override fun serviceInjector(): AndroidInjector<Service>
             = serviceInjector
-
-    companion object {
-        private lateinit var instance: WearMusicCenter
-
-        fun getAppComponent(): AppComponent = instance.diComponent
-    }
 }

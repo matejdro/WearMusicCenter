@@ -12,6 +12,7 @@ import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.actions.StandardIcons
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.proto.WatchList
@@ -20,6 +21,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 
 class WatchActionListSender(actionListStorage: ActionListStorage,
+                            private val customIconStorage: CustomIconStorage,
                             private val context: Context,
                             private val watchInfoProvider: WatchInfoProvider) {
     private val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
@@ -68,7 +70,7 @@ class WatchActionListSender(actionListStorage: ActionListStorage,
 
         for ((index, action) in actions.withIndex()) {
             val actionProto = WatchList.WatchListAction.newBuilder()
-            actionProto.actionTitle = action.getTitle()
+            actionProto.actionTitle = action.title
             actionProto.actionKey = action.javaClass.canonicalName
             protoBuilder.addActions(actionProto.build())
 
@@ -80,7 +82,7 @@ class WatchActionListSender(actionListStorage: ActionListStorage,
                 continue
             }
 
-            var icon = BitmapUtils.getBitmap(action.getIcon())
+            var icon = BitmapUtils.getBitmap(customIconStorage[action])
             icon = BitmapUtils.shrinkPreservingRatio(icon, targetIconSize, targetIconSize, true)
 
             val iconData = BitmapUtils.serialize(icon)

@@ -11,11 +11,14 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
@@ -46,8 +49,12 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     private lateinit var binding: FragmentButtonConfigBinding
     private lateinit var viewModel: ButtonConfigViewModel
 
-    @field:Inject
+    @Inject
     lateinit var viewModelFactory: ButtonConfigViewModelFactory
+
+    @Inject
+    lateinit var customIconStorage: CustomIconStorage
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setsPlaybackActions = arguments!!.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
@@ -134,16 +141,25 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         }
 
         val topAction = it.getScreenAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP))
-        binding.iconTop.setImageDrawable(topAction?.getIcon())
+        setIcon(binding.iconTop, topAction)
 
         val bottomAction = it.getScreenAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_SINGLE_TAP))
-        binding.iconBottom.setImageDrawable(bottomAction?.getIcon())
+        setIcon(binding.iconBottom, bottomAction)
 
         val rightAction = it.getScreenAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
-        binding.iconRight.setImageDrawable(rightAction?.getIcon())
+        setIcon(binding.iconRight, rightAction)
 
         val leftAction = it.getScreenAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
-        binding.iconLeft.setImageDrawable(leftAction?.getIcon())
+        setIcon(binding.iconLeft, leftAction)
+    }
+
+    private fun setIcon(imageView: ImageView, phoneAction: PhoneAction?) {
+        if (phoneAction == null) {
+            imageView.setImageDrawable(null)
+            return
+        }
+
+        imageView.setImageDrawable(customIconStorage[phoneAction])
     }
 
     override fun onSingleTap(quadrant: Int) {

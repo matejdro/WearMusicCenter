@@ -16,5 +16,6 @@ class PauseAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.action_pause)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_pause)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.action_pause)
 }

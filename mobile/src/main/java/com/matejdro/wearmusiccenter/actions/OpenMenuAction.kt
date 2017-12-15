@@ -16,5 +16,6 @@ class OpenMenuAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.open_actions_menu)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_open_menu)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.action_open_menu)
 }

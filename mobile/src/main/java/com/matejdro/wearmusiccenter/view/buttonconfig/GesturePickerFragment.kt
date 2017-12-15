@@ -144,7 +144,7 @@ class GesturePickerFragment : DialogFragment() {
 
         paletteButton.isEnabled = mutableAction !is NullAction
 
-        var icon = mutableAction.getIcon()
+        var icon = customIconStorage[mutableAction]
         if (icon is VectorDrawable) {
             icon = icon.mutate()
             icon.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
@@ -156,7 +156,7 @@ class GesturePickerFragment : DialogFragment() {
         val iconSize = resources.getDimensionPixelSize(R.dimen.action_icon_size)
         icon.setBounds(0, 0, iconSize, iconSize)
 
-        button.text = mutableAction.getTitle()
+        button.text = mutableAction.title
         button.setCompoundDrawables(icon, null, null, null)
     }
 

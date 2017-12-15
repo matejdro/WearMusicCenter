@@ -19,12 +19,13 @@ class AppPlayPickerAction : PhoneAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.start_playback)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.ic_apps)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.ic_apps)
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         val actions = getAllMusicApps(context)
                 .map { AppPlayAction(context, it) as PhoneAction }
-                .sortedBy { it.getTitle() }
+                .sortedBy { it.title }
 
         actionPicker.updateDisplayedActionsWithBackStack(actions)
     }

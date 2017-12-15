@@ -95,7 +95,7 @@ class ActionEditorActivity : Activity() {
         }
 
         val customTitle = binding.nameBox.text.toString()
-        if (!customTitle.isBlank() && customTitle != currentAction.getTitle()) {
+        if (!customTitle.isBlank() && customTitle != currentAction.title) {
             currentAction.customTitle = customTitle
         }
 
@@ -155,7 +155,7 @@ class ActionEditorActivity : Activity() {
     private fun populateFields() {
         val currentAction = currentAction ?: return
 
-        val icon = currentAction.getIcon()
+        val icon = iconStorage[currentAction]
         if (icon is VectorDrawable) {
             binding.icon.setColorFilter(Color.BLACK)
         } else {
@@ -163,7 +163,7 @@ class ActionEditorActivity : Activity() {
         }
         binding.icon.setImageDrawable(icon)
 
-        binding.nameBox.setText(currentAction.getTitle())
+        binding.nameBox.setText(currentAction.title)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

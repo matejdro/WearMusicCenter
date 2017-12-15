@@ -14,6 +14,7 @@ import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.actions.StandardIcons
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
@@ -23,6 +24,7 @@ import kotlinx.coroutines.experimental.launch
 class WatchConfigSender(actionConfigStorage: ActionConfigStorage,
                         private val context: Context,
                         private val watchInfoProvider: WatchInfoProvider,
+                        private val customIconStorage: CustomIconStorage,
                         private val endpointPath: String) {
     private val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
@@ -87,7 +89,7 @@ class WatchConfigSender(actionConfigStorage: ActionConfigStorage,
             }
 
 
-            var icon = BitmapUtils.getBitmap(action.getIcon())
+            var icon = BitmapUtils.getBitmap(customIconStorage[action])
             icon = BitmapUtils.shrinkPreservingRatio(icon, targetIconSize, targetIconSize, true)
 
             val iconData = BitmapUtils.serialize(icon)

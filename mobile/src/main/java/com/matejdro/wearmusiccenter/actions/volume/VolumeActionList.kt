@@ -28,8 +28,9 @@ class VolumeActionList : PhoneAction {
         return context.getString(R.string.group_volume_controls)
     }
 
-    override fun retrieveIcon(): Drawable {
-        return context.getDrawable(R.drawable.action_volume_up)
-    }
+    override val defaultIcon: Drawable
+        get() {
+            return context.getDrawable(R.drawable.action_volume_up)
+        }
 
 }

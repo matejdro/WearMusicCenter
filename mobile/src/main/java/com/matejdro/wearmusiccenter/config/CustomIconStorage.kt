@@ -9,9 +9,12 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.v4.util.ArraySet
 import android.util.LruCache
+import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
 import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.di.GlobalConfig
+import dagger.Lazy
+import dagger.Reusable
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -20,9 +23,9 @@ import java.io.IOException
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-class CustomIconStorage @Inject constructor(val context: Context,
-                                            @GlobalConfig val config: ActionConfigProvider) {
-
+@Reusable
+class CustomIconStorage @Inject constructor(private val context: Context,
+                                            private @GlobalConfig val configLazy: Lazy<ActionConfigProvider>) {
     companion object {
         private val UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^\\w.\\-_]")
 
@@ -32,13 +35,12 @@ class CustomIconStorage @Inject constructor(val context: Context,
         private const val GC_SAVES_THRESHOLD = 10
 
         private const val MAX_MEMORY_LRU_STORE_SIZE_BYTES = 5_000_000
-
     }
 
-    val storageFolder = File(context.filesDir, "icon_store")
-    val metaPreferences: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    private val storageFolder = File(context.filesDir, "icon_store")
+    private val metaPreferences: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    val memoryIconStore = object : LruCache<Uri, Bitmap>(MAX_MEMORY_LRU_STORE_SIZE_BYTES) {
+    private val memoryIconStore = object : LruCache<Uri, Bitmap>(MAX_MEMORY_LRU_STORE_SIZE_BYTES) {
         override fun sizeOf(key: Uri, value: Bitmap): Int {
             return value.byteCount
         }
@@ -48,7 +50,7 @@ class CustomIconStorage @Inject constructor(val context: Context,
         storageFolder.mkdirs()
     }
 
-    fun getIcon(iconUri: Uri): Drawable? {
+    operator fun get(iconUri: Uri): Drawable? {
         var bitmap = memoryIconStore[iconUri]
         if (bitmap == null) {
             bitmap = loadImageFromFile(iconUri) ?: return null
@@ -56,6 +58,16 @@ class CustomIconStorage @Inject constructor(val context: Context,
         }
 
         return BitmapDrawable(context.resources, bitmap)
+    }
+
+    operator fun get(action: PhoneAction): Drawable {
+        val customUri = action.customIconUri
+
+        return if (customUri == null) {
+            action.defaultIcon
+        } else {
+            get(customUri) ?: action.defaultIcon
+        }
     }
 
     private fun loadImageFromFile(uri: Uri): Bitmap? {
@@ -104,9 +116,10 @@ class CustomIconStorage @Inject constructor(val context: Context,
     private fun gc() {
         val utilizedIconUris = ArraySet<String>()
 
-        utilizedIconUris.addAll(getAllCustomUriFiles(config.getPlayingConfig()))
-        utilizedIconUris.addAll(getAllCustomUriFiles(config.getStoppedConfig()))
-        utilizedIconUris.addAll(getAllCustomUriFiles(config.getActionList()))
+        val actionConfig = this.configLazy.get()
+        utilizedIconUris.addAll(getAllCustomUriFiles(actionConfig.getPlayingConfig()))
+        utilizedIconUris.addAll(getAllCustomUriFiles(actionConfig.getStoppedConfig()))
+        utilizedIconUris.addAll(getAllCustomUriFiles(actionConfig.getActionList()))
 
         storageFolder
                 .listFiles()

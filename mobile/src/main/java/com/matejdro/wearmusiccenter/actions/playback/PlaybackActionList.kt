@@ -30,8 +30,9 @@ class PlaybackActionList : PhoneAction {
         return context.getString(R.string.group_playback_controls)
     }
 
-    override fun retrieveIcon(): Drawable {
-        return context.getDrawable(R.drawable.action_play)
-    }
+    override val defaultIcon: Drawable
+        get() {
+            return context.getDrawable(R.drawable.action_play)
+        }
 
 }

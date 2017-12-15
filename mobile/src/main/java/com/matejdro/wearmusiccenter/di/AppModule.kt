@@ -6,6 +6,8 @@ import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.DefaultActionConfigProvider
 import com.matejdro.wearmusiccenter.config.DefaultConfigGenerator
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
+import com.matejdro.wearmusiccenter.config.actionlist.DefaultActionListStorage
+import com.matejdro.wearmusiccenter.config.buttons.DefaultActionConfigStorageFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -25,6 +27,12 @@ class AppModule {
     @GlobalConfig
     fun provideConfigStorage(context: Context,
                              watchInfoProvider: WatchInfoProvider,
-                             defaultConfigGenerator: DefaultConfigGenerator): ActionConfigProvider
-            = DefaultActionConfigProvider(context, watchInfoProvider, defaultConfigGenerator)
+                             defaultConfigGenerator: DefaultConfigGenerator,
+                             actionListConfig: DefaultActionListStorage,
+                             actionButtonConfig: DefaultActionConfigStorageFactory): ActionConfigProvider
+            = DefaultActionConfigProvider(context,
+            watchInfoProvider,
+            defaultConfigGenerator,
+            actionListConfig,
+            actionButtonConfig)
 }

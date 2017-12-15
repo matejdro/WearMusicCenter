@@ -5,22 +5,15 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.PersistableBundle
 import android.support.annotation.CallSuper
-import com.matejdro.wearmusiccenter.WearMusicCenter
-import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.serialization.Bundlable
-import dagger.Lazy
 import timber.log.Timber
-import javax.inject.Inject
 
 abstract class PhoneAction : Bundlable {
     protected val context : Context
     var customIconUri : Uri? = null
     var customTitle: String? = null
-
-    @Inject
-    protected lateinit var customIconStorage : Lazy<CustomIconStorage>
 
     constructor(context : Context) : super() {
         this.context = context
@@ -35,31 +28,13 @@ abstract class PhoneAction : Bundlable {
         customTitle = bundle.getString(KEY_CUSTOM_TITLE)
     }
 
-    init {
-        @Suppress("LeakingThis")
-        WearMusicCenter.getAppComponent().inject(this)
-    }
-
     abstract fun execute(service : MusicService)
     abstract fun onActionPicked(actionPicker : ActionPickerViewModel)
     abstract protected fun retrieveTitle(): String
-    abstract protected fun retrieveIcon(): Drawable
+    abstract val defaultIcon: Drawable
 
-    fun getTitle(): String {
-        return customTitle ?: retrieveTitle()
-    }
-
-    fun getIcon() : Drawable {
-        val customIconUri = customIconUri ?: return retrieveIcon()
-        val newIcon = customIconStorage.get().getIcon(customIconUri)
-
-        if (newIcon == null) {
-            this.customIconUri = null
-            return retrieveIcon()
-        }
-
-        return newIcon
-    }
+    val title: String
+        get() = customTitle ?: retrieveTitle()
 
     override fun writeToBundle(bundle: PersistableBundle) {
         super.writeToBundle(bundle)

@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
 import dagger.Provides
 import dagger.android.AndroidInjection
@@ -38,6 +39,9 @@ class ActionPickerActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ActionPickerViewModelFactory
+
+    @Inject
+    lateinit var customIconStorage: CustomIconStorage
 
     private var oldRecyclerSize = 0
 
@@ -119,14 +123,14 @@ class ActionPickerActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: ActionsHolder, position: Int) {
             val action = viewModel.displayedActions.value?.get(position) ?: return
 
-            val icon = action.getIcon()
+            val icon = customIconStorage[action]
             if (icon is VectorDrawable) {
                 holder.iconView.setColorFilter(Color.BLACK)
             } else {
                 holder.iconView.clearColorFilter()
             }
 
-            holder.textView.text = action.getTitle()
+            holder.textView.text = action.title
             holder.iconView.setImageDrawable(icon)
         }
 

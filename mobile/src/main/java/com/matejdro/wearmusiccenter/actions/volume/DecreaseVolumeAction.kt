@@ -17,5 +17,6 @@ class DecreaseVolumeAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.volume_down)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_volume_down)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.action_volume_down)
 }

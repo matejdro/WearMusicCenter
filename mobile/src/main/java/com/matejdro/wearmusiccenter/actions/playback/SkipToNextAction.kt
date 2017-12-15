@@ -16,5 +16,6 @@ class SkipToNextAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.action_skip_next)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_skip_next)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.action_skip_next)
 }

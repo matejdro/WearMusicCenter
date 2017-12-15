@@ -30,6 +30,7 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropM
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.FragmentActionListBinding
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearmusiccenter.view.FabFragment
@@ -57,6 +58,9 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
 
     @Inject
     lateinit var viewModelFactory: ActionListViewModelFactory
+
+    @Inject
+    lateinit var customIconStorage: CustomIconStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
@@ -196,10 +200,10 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         override fun onBindViewHolder(holder: ListItemHolder, position: Int) {
             val phoneAction = actions[position].item
 
-            holder.text.text = phoneAction.getTitle()
+            holder.text.text = phoneAction.title
 
 
-            val icon = phoneAction.getIcon()
+            val icon = customIconStorage[phoneAction]
             if (icon is VectorDrawable) {
                 holder.icon.setColorFilter(Color.BLACK)
             } else {

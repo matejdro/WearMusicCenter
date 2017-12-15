@@ -17,5 +17,6 @@ class SkipToPrevAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = context.getString(R.string.action_skip_prev)
-    override fun retrieveIcon(): Drawable = context.getDrawable(R.drawable.action_skip_prev)
+    override val defaultIcon: Drawable
+        get() = context.getDrawable(R.drawable.action_skip_prev)
 }

@@ -89,7 +89,8 @@ class AppPlayAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = lazyName
-    override fun retrieveIcon(): Drawable = lazyIcon
+    override val defaultIcon: Drawable
+        get() = lazyIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {
         other as AppPlayAction

@@ -2,12 +2,16 @@ package com.matejdro.wearmusiccenter.config.actionlist
 
 import android.content.Context
 import com.matejdro.wearmusiccenter.actions.PhoneAction
+import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import javax.inject.Inject
 
-class DefaultActionListStorage(context: Context, watchInfoProvider: WatchInfoProvider) : ActionListStorage {
+class DefaultActionListStorage @Inject constructor(context: Context,
+                                                   watchInfoProvider: WatchInfoProvider,
+                                                   iconStorage: CustomIconStorage) : ActionListStorage {
     override var actions: List<PhoneAction> = emptyList()
     private val diskStorage = DiskActionListStorage(context)
 
@@ -20,7 +24,7 @@ class DefaultActionListStorage(context: Context, watchInfoProvider: WatchInfoPro
     init {
         diskStorage.loadActions(this)
 
-        watchSender = WatchActionListSender(this, context, watchInfoProvider)
+        watchSender = WatchActionListSender(this, iconStorage, context, watchInfoProvider)
     }
 
     override fun commit() {

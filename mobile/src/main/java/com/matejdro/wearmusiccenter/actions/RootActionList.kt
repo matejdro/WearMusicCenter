@@ -51,9 +51,10 @@ class RootActionList : PhoneAction {
         throw UnsupportedOperationException()
     }
 
-    override fun retrieveIcon(): Drawable {
-        throw UnsupportedOperationException()
-    }
+    override val defaultIcon: Drawable
+        get() {
+            throw UnsupportedOperationException()
+        }
 
     private fun isTaskerInstalled(): Boolean = TaskerIntent.getInstalledTaskerPackage(context) != null
 }

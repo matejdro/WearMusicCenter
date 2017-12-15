@@ -43,7 +43,8 @@ class TaskerTaskAction : SelectableAction {
     }
 
     override fun retrieveTitle(): String = taskName
-    override fun retrieveIcon(): Drawable = taskerIcon
+    override val defaultIcon: Drawable
+        get() = taskerIcon
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {
         other as TaskerTaskAction
