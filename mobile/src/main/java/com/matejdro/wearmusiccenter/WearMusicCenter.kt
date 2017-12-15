@@ -1,22 +1,40 @@
 package com.matejdro.wearmusiccenter
 
+import android.app.Activity
 import android.app.Application
+import android.app.Service
 import android.content.pm.ApplicationInfo
 import com.crashlytics.android.Crashlytics
 import com.matejdro.wearmusiccenter.di.AppComponent
-import com.matejdro.wearmusiccenter.di.AppModule
 import com.matejdro.wearmusiccenter.di.DaggerAppComponent
 import com.matejdro.wearmusiccenter.logging.CrashlyticsExceptionWearHandler
 import com.matejdro.wearmusiccenter.logging.TimberCrashlytics
 import com.matejdro.wearutils.logging.FileLogger
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
+import dagger.android.HasServiceInjector
 import io.fabric.sdk.android.Fabric
 import pl.tajchert.exceptionwear.ExceptionDataListenerService
 import timber.log.Timber
+import javax.inject.Inject
 
 
-class WearMusicCenter : Application() {
-    private lateinit var diComponent : AppComponent
+class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
+    private lateinit var diComponent: AppComponent
+
+    @field:Inject
+    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+
+    @field:Inject
+    lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+
     override fun onCreate() {
+        diComponent = DaggerAppComponent.builder()
+                .application(this)
+                .build()
+        diComponent.inject(this)
+
         super.onCreate()
 
         Timber.setAppTag("WearMusicCenter")
@@ -34,15 +52,18 @@ class WearMusicCenter : Application() {
         fileLogger.activate()
         Timber.plant(fileLogger)
 
-        diComponent = DaggerAppComponent.builder()
-                .appModule(AppModule(this))
-                .build()
         instance = this
     }
 
-    companion object {
-        private lateinit var instance : WearMusicCenter
+    override fun activityInjector(): AndroidInjector<Activity>
+            = activityInjector
 
-        fun getAppComponent() : AppComponent = instance.diComponent
+    override fun serviceInjector(): AndroidInjector<Service>
+            = serviceInjector
+
+    companion object {
+        private lateinit var instance: WearMusicCenter
+
+        fun getAppComponent(): AppComponent = instance.diComponent
     }
 }

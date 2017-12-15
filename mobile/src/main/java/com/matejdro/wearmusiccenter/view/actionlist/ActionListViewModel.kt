@@ -2,32 +2,25 @@ package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import com.kakai.android.autoviewmodelfactory.annotations.AutoViewModelFactory
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
-import com.matejdro.wearmusiccenter.di.ConfigActivityComponent
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
-import javax.inject.Inject
 
-class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : ViewModel() {
+@AutoViewModelFactory
+class ActionListViewModel(@param:LocalActivityConfig val actionConfigProvider: ActionConfigProvider) : ViewModel() {
     val actions = MutableLiveData<List<IdentifiedItem<PhoneAction>>>()
     val openActionEditor = SingleLiveEvent<Int>()
     private var actionStore: MutableList<IdentifiedItem<PhoneAction>>
 
     private var lastId = 0
 
-    @Inject
-    @field:LocalActivityConfig
-    internal lateinit var actionConfigProvider: ActionConfigProvider
-
-    private val actionListConfig: ActionListStorage
+    private val actionListConfig: ActionListStorage = actionConfigProvider.getActionList()
 
     init {
-        configActivityComponent.inject(this)
-        actionListConfig = actionConfigProvider.getActionList()
 
         actionStore = ArrayList(actionListConfig.actions.map(this::itemFromPhoneAction))
 
@@ -71,9 +64,4 @@ class ActionListViewModel(configActivityComponent: ConfigActivityComponent) : Vi
         actionListConfig.actions = actionStore.map(IdentifiedItem<PhoneAction>::item)
         actionListConfig.commit()
     }
-}
-
-class ActionListViewModelFactory(private val configActivityComponent: ConfigActivityComponent) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = ActionListViewModel(configActivityComponent) as T
 }

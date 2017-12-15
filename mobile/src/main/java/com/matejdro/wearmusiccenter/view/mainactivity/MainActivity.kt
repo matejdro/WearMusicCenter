@@ -25,10 +25,17 @@ import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearutils.companionnotice.WearCompanionPhoneActivity
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
+import javax.inject.Inject
+
+
 
 
 class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationItemSelectedListener,
-        ConfigActivityComponentProvider, TitledActivity, ActivityResultReceiver {
+        TitledActivity, ActivityResultReceiver, HasSupportFragmentInjector {
     private lateinit var viewmodel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
@@ -36,10 +43,18 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
     private var currentFragment: Fragment? = null
 
+    @Inject
+    lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+
+    @field:Inject
+    lateinit var viewModelFactory: MainActivityViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
+
         super.onCreate(savedInstanceState)
 
-        viewmodel = ViewModelProviders.of(this)[MainActivityViewModel::class.java]
+        viewmodel = ViewModelProviders.of(this, viewModelFactory)[MainActivityViewModel::class.java]
 
         viewmodel.watchInfoProvider.observe(this, watchInfoObserver)
 
@@ -181,11 +196,11 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
         return true
     }
 
-    override fun provideConfigActivityComponent() = viewmodel.configActivityComponent
-
     override fun updateActivityTitle(newTitle: String) {
         supportActionBar!!.title = newTitle
     }
 
     override fun getWatchAppPresenceCapability(): String = CommPaths.WATCH_APP_CAPABILITY
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 }

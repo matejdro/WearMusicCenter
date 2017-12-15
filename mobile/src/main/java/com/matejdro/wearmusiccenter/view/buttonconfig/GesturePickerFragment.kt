@@ -30,8 +30,8 @@ import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
-import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 class GesturePickerFragment : DialogFragment() {
@@ -84,11 +84,22 @@ class GesturePickerFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_Short)
-
         baseButtonInfo = ButtonInfo(arguments!!.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO))
         buttonName = arguments!!.getString(PARAM_BUTTON_NAME)
         setsPlaybackButtons = arguments!!.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
+
+        AndroidSupportInjection.inject(this)
+
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_Short)
+
+        buttonConfig = if (setsPlaybackButtons)
+            configProvider.getPlayingConfig()
+        else
+            configProvider.getStoppedConfig()
+
+        actions = Array(NUM_BUTTON_GESTURES) {
+            buttonConfig.getScreenAction(baseButtonInfo.copy(gesture = it))
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -106,22 +117,6 @@ class GesturePickerFragment : DialogFragment() {
 
         buttons = arrayOf(binding.singlePressButton, binding.doublePressButton)
         paletteButtons = arrayOf(binding.customizeSinglePressIcon, binding.customizeDoublePressIcon)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        (activity as ConfigActivityComponentProvider)
-                .provideConfigActivityComponent().inject(this)
-
-        buttonConfig = if (setsPlaybackButtons)
-            configProvider.getPlayingConfig()
-        else
-            configProvider.getStoppedConfig()
-
-        actions = Array(NUM_BUTTON_GESTURES) {
-            buttonConfig.getScreenAction(baseButtonInfo.copy(gesture = it))
-        }
 
         applyButton(binding.singlePressButton, binding.customizeSinglePressIcon, GESTURE_SINGLE_TAP)
         applyButton(binding.doublePressButton, binding.customizeDoublePressIcon, GESTURE_DOUBLE_TAP)

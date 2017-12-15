@@ -14,10 +14,12 @@ import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearutils.messages.DataUtils
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import dagger.Reusable
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 
+@Reusable
 class WatchInfoProvider @Inject constructor(private val context: Context) : LiveData<WatchInfoWithIcons>(),
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener {

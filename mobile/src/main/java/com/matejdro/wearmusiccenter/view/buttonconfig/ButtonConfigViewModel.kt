@@ -2,27 +2,21 @@ package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import com.kakai.android.autoviewmodelfactory.annotations.AutoViewModelFactory
 import com.matejdro.wearmusiccenter.config.ActionConfigProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
-import com.matejdro.wearmusiccenter.di.ConfigActivityComponent
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
-import javax.inject.Inject
+import javax.inject.Named
 
-class ButtonConfigViewModel(setsPlaybackActions : Boolean, configActivityComponent: ConfigActivityComponent) : ViewModel() {
-    @Inject
-    lateinit var watchInfoProvider: WatchInfoProvider
-
-    @Inject
-    @field:LocalActivityConfig
-    lateinit var buttonConfigProvider : ActionConfigProvider
+@AutoViewModelFactory
+class ButtonConfigViewModel(@Named(ARG_DISPLAY_PLAYBACK_ACTIONS) setsPlaybackActions: Boolean,
+                            val watchInfoProvider: WatchInfoProvider,
+                            @param:LocalActivityConfig val buttonConfigProvider: ActionConfigProvider) : ViewModel() {
 
     val buttonConfig = MutableLiveData<ActionConfigStorage>()
 
     init {
-        configActivityComponent.inject(this)
-
         val config = if (setsPlaybackActions) {
             buttonConfigProvider.getPlayingConfig()
         } else {
@@ -36,9 +30,8 @@ class ButtonConfigViewModel(setsPlaybackActions : Boolean, configActivityCompone
         buttonConfig.value?.commit()
         buttonConfig.value = buttonConfig.value
     }
-}
 
-class ButtonConfigViewModelFactory(private val setsPlaybackActions : Boolean, private val configActivityComponent: ConfigActivityComponent) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(p0: Class<T>): T = ButtonConfigViewModel(setsPlaybackActions, configActivityComponent) as T
+    companion object {
+        const val ARG_DISPLAY_PLAYBACK_ACTIONS = "DisplayPlaybackActions"
+    }
 }

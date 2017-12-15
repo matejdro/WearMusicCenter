@@ -21,7 +21,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
-import com.matejdro.wearmusiccenter.WearMusicCenter
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
@@ -37,6 +36,7 @@ import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearvibrationcenter.notificationprovider.ReceivedNotification
+import dagger.android.AndroidInjection
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -92,7 +92,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     override fun onCreate() {
         super.onCreate()
 
-        WearMusicCenter.getAppComponent().inject(this)
+        AndroidInjection.inject(this)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
 

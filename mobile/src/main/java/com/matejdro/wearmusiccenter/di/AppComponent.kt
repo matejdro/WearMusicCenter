@@ -1,24 +1,25 @@
 package com.matejdro.wearmusiccenter.di
 
-import android.content.Context
+import android.app.Application
+import com.matejdro.wearmusiccenter.WearMusicCenter
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.config.ActionConfigProvider
-import com.matejdro.wearmusiccenter.config.WatchInfoProvider
-import com.matejdro.wearmusiccenter.music.MusicService
-import com.matejdro.wearmusiccenter.view.actionlist.ActionEditorActivity
+import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(AppModule::class))
+@Component(modules = arrayOf(AndroidInjectionModule::class, AppModule::class, MainInjectorsModule::class))
 interface AppComponent {
-    fun provideContext() :  Context
-    fun provideWatchInfoProvider() : WatchInfoProvider
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun application(application: Application): Builder
 
-    @GlobalConfig
-    fun provideConfigStorage() : ActionConfigProvider
+        fun build(): AppComponent
+    }
 
+
+    fun inject(wearMusicCenter: WearMusicCenter)
     fun inject(phoneAction: PhoneAction)
-    fun inject(service: MusicService)
-    fun inject(actionEditorActivity: ActionEditorActivity)
 }

@@ -34,8 +34,9 @@ import com.matejdro.wearmusiccenter.databinding.FragmentActionListBinding
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
-import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
 import com.matejdro.wearutils.miscutils.VibratorCompat
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
     companion object {
@@ -54,8 +55,11 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     private var ignoreNextUpdate: Boolean = false
     private var lastEditedActionPosition = -1
 
+    @Inject
+    lateinit var viewModelFactory: ActionListViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState != null) {
@@ -113,10 +117,8 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val factory = ActionListViewModelFactory(
-                (activity as ConfigActivityComponentProvider).provideConfigActivityComponent())
 
-        viewModel = ViewModelProviders.of(this, factory)[ActionListViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[ActionListViewModel::class.java]
 
         viewModel.actions.observe(this, actionListListener)
         viewModel.openActionEditor.observe(this, openEditDialogListener)

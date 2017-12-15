@@ -18,6 +18,10 @@ import android.widget.TextView
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
+import dagger.Provides
+import dagger.android.AndroidInjection
+import javax.inject.Inject
+import javax.inject.Named
 
 class ActionPickerActivity : AppCompatActivity() {
     companion object {
@@ -30,23 +34,25 @@ class ActionPickerActivity : AppCompatActivity() {
     private lateinit var recycler : RecyclerView
     private lateinit var adapter : ActionsAdapter
 
+    private var displayNone = false
+
+    @Inject
+    lateinit var viewModelFactory: ActionPickerViewModelFactory
+
     private var oldRecyclerSize = 0
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        displayNone = intent.getBooleanExtra(EXTRA_DISPLAY_NONE, true)
+
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         val binding = DataBindingUtil.setContentView<PopupActionPickerBinding>(this,
                 com.matejdro.wearmusiccenter.R.layout.popup_action_picker)
         binding.activity = this
 
-        val displayNone = intent.getBooleanExtra(EXTRA_DISPLAY_NONE, true)
 
-        val factory = ActionPickerViewModelFactory(
-                application,
-                displayNone
-        )
-
-        viewModel = ViewModelProviders.of(this, factory)[ActionPickerViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[ActionPickerViewModel::class.java]
         viewModel.displayedActions.observe(this, listObserver)
         viewModel.selectedAction.observe(this, pickObserver)
         viewModel.activityStarter.observe(this, activityOpenObserver)
@@ -139,5 +145,12 @@ class ActionPickerActivity : AppCompatActivity() {
                 viewModel.onActionTapped(adapterPosition)
             }
         }
+    }
+
+    @dagger.Module
+    class Module {
+        @Provides
+        @Named(ActionPickerViewModel.ARG_SHOW_NONE)
+        fun displayNone(actionPickerActivity: ActionPickerActivity) = actionPickerActivity.displayNone
     }
 }

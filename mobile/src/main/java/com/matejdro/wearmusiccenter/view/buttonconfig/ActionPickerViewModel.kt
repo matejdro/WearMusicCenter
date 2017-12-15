@@ -1,18 +1,19 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import android.content.Context
 import android.content.Intent
+import com.kakai.android.autoviewmodelfactory.annotations.AutoViewModelFactory
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.RootActionList
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import java.util.*
+import javax.inject.Named
 
-class ActionPickerViewModel(showNone: Boolean, application: Application) : AndroidViewModel(application) {
+@AutoViewModelFactory
+class ActionPickerViewModel(@Named(ARG_SHOW_NONE) showNone: Boolean, context: Context) : ViewModel() {
     val displayedActions = MutableLiveData<List<PhoneAction>>()
     val selectedAction = SingleLiveEvent<PhoneAction>()
     val activityStarter = SingleLiveEvent<Intent>()
@@ -21,7 +22,7 @@ class ActionPickerViewModel(showNone: Boolean, application: Application) : Andro
     private var activityResultReceiver: ActivityResultReceiver? = null
 
     init {
-        RootActionList(getApplication(), showNone).onActionPicked(this)
+        RootActionList(context, showNone).onActionPicked(this)
     }
 
     fun updateDisplayedActionsWithBackStack(actions : List<PhoneAction>) {
@@ -57,11 +58,8 @@ class ActionPickerViewModel(showNone: Boolean, application: Application) : Andro
         activityResultReceiver?.onActivityResult(requestCode, resultCode, data)
         activityResultReceiver = null
     }
- }
 
-class ActionPickerViewModelFactory(private val application: Application, private val showNone: Boolean) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T
-            = ActionPickerViewModel(showNone, application) as T
-
+    companion object {
+        const val ARG_SHOW_NONE = "ShowNone"
+    }
 }

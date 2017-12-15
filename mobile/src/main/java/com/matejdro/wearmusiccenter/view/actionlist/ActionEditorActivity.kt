@@ -14,12 +14,12 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import com.matejdro.wearmusiccenter.R
-import com.matejdro.wearmusiccenter.WearMusicCenter
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.PopupActionEditorBinding
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerActivity
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 class ActionEditorActivity : Activity() {
@@ -42,7 +42,7 @@ class ActionEditorActivity : Activity() {
     private var currentAction: PhoneAction? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WearMusicCenter.getAppComponent().inject(this)
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.popup_action_editor)

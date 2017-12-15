@@ -21,7 +21,10 @@ import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
 import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
 import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
 import com.matejdro.wearmusiccenter.view.TitledActivity
-import com.matejdro.wearmusiccenter.view.mainactivity.ConfigActivityComponentProvider
+import dagger.Provides
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
+import javax.inject.Named
 
 class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     companion object {
@@ -43,9 +46,13 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     private lateinit var binding: FragmentButtonConfigBinding
     private lateinit var viewModel: ButtonConfigViewModel
 
-
+    @field:Inject
+    lateinit var viewModelFactory: ButtonConfigViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setsPlaybackActions = arguments!!.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
+        AndroidSupportInjection.inject(this)
+
         super.onCreate(savedInstanceState)
     }
 
@@ -60,11 +67,6 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        setsPlaybackActions = arguments!!.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
-
-        val configActivityComponent = (activity as ConfigActivityComponentProvider).provideConfigActivityComponent()
-        val viewModelFactory = ButtonConfigViewModelFactory(setsPlaybackActions, configActivityComponent)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory)[ButtonConfigViewModel::class.java]
 
@@ -174,4 +176,11 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     override fun onUpwardsSwipe() = Unit
 
     override fun onDoubleTap(quadrant: Int) = Unit
+
+    @dagger.Module
+    class Module {
+        @Provides
+        @Named(ButtonConfigViewModel.ARG_DISPLAY_PLAYBACK_ACTIONS)
+        fun displayPlaybackActions(configFragment: ButtonConfigFragment) = configFragment.setsPlaybackActions
+    }
 }
