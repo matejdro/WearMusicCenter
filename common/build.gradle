@@ -35,17 +35,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':wearutils')
 
-    compile project(path: ':wearutils')
+    implementation "com.android.support:appcompat-v7:$support_lib_version"
 
-    compile "com.android.support:appcompat-v7:$support_lib_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    api 'com.google.protobuf:protobuf-lite:3.0.1'
 
-    compile 'com.google.protobuf:protobuf-lite:3.0.1'
-
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 repositories {
     mavenCentral()
