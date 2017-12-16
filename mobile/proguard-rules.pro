@@ -40,3 +40,6 @@
 -keepclassmembers public class * extends com.matejdro.wearutils.serialization.Bundlable {
    public <init>(android.os.PersistableBundle);
 }
+
+# Dagger
+-dontwarn com.google.errorprone.annotations.*
