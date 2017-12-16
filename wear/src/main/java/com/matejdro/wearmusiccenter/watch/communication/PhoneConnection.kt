@@ -124,7 +124,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
     }
 
     private fun onWatchConnectionUpdated(capabilityInfo: CapabilityInfo) {
-        val watchConnected = capabilityInfo.nodes.first()?.isNearby == true
+        val watchConnected = capabilityInfo.nodes.firstOrNull()?.isNearby == true
 
         if (watchConnected) {
             Wearable.MessageApi.sendMessage(googleApiClient, capabilityInfo.nodes.first()!!.id, CommPaths.MESSAGE_WATCH_OPENED, null).await()
