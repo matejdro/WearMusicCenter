@@ -14,17 +14,17 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
 @AutoFactory
-class DefaultActionConfigStorage
+class GlobalButtonConfig
 constructor(playbackConfig: Boolean,
             @Provided context: Context,
             @Provided watchInfoProvider: WatchInfoProvider,
-            @Provided customIconStorage: CustomIconStorage) : ActionConfigStorage {
+            @Provided customIconStorage: CustomIconStorage) : ButtonConfig {
     private val configMap = ArrayMap<ButtonInfo, PhoneAction>()
     private var commiting: Boolean = false
     private var commitAgain: Boolean = false
 
-    private val diskStorage: DiskConfigStorage
-    private val watchSender: WatchConfigSender
+    private val diskButtonStorage: DiskButtonConfigStorage
+    private val buttonTransmitter: ButtonConfigTransmitter
 
     override fun saveButtonAction(buttonInfo: ButtonInfo, action: PhoneAction?) {
         if (action == null) {
@@ -54,10 +54,10 @@ constructor(playbackConfig: Boolean,
             watchSenderPath = CommPaths.DATA_STOPPING_ACTION_CONFIG
         }
 
-        diskStorage = DiskConfigStorage(context, diskSuffix)
-        diskStorage.loadButtons(this)
+        diskButtonStorage = DiskButtonConfigStorage(context, diskSuffix)
+        diskButtonStorage.loadButtons(this)
 
-        watchSender = WatchConfigSender(this,
+        buttonTransmitter = ButtonConfigTransmitter(this,
                 context,
                 watchInfoProvider,
                 customIconStorage,
@@ -75,8 +75,8 @@ constructor(playbackConfig: Boolean,
 
         launch(UI) {
             launch(CommonPool) worker@ {
-                diskStorage.saveButtons(configMap.entries)
-                watchSender.sendConfigToWatch(configMap.entries)
+                diskButtonStorage.saveButtons(configMap.entries)
+                buttonTransmitter.sendConfigToWatch(configMap.entries)
             }.join()
 
             commiting = false

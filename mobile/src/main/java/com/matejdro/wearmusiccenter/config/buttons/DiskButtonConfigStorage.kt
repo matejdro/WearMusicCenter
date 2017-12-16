@@ -10,10 +10,10 @@ import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
-class DiskConfigStorage(private val context: Context, fileSuffix : String) {
+class DiskButtonConfigStorage(private val context: Context, fileSuffix: String) {
     private val storageFile = File(context.filesDir, "action_config" + fileSuffix)
 
-    fun loadButtons(target : ActionConfigStorage) : Boolean {
+    fun loadButtons(target: ButtonConfig): Boolean {
         try {
             val configBundle = BundleFileSerialization.readFromFile(storageFile) ?: return false
             unpackConfigBundle(configBundle, target)
@@ -61,7 +61,7 @@ class DiskConfigStorage(private val context: Context, fileSuffix : String) {
         return configBundle
     }
 
-    private fun unpackConfigBundle(bundle : PersistableBundle, target : ActionConfigStorage) {
+    private fun unpackConfigBundle(bundle: PersistableBundle, target: ButtonConfig) {
         val numButtons = bundle.getInt(ConfigConstants.NUM_BUTTONS, 0)
         for (buttonIndex in 0 until numButtons) {
             val buttonInfoKey = "${ConfigConstants.BUTTON_INFO}.$buttonIndex"

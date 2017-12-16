@@ -10,8 +10,8 @@ import android.net.Uri
 import android.support.v4.util.ArraySet
 import android.util.LruCache
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
-import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
+import com.matejdro.wearmusiccenter.config.actionlist.ActionList
+import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.di.GlobalConfig
 import dagger.Lazy
 import dagger.Reusable
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @Reusable
 class CustomIconStorage @Inject constructor(private val context: Context,
-                                            private @GlobalConfig val configLazy: Lazy<ActionConfigProvider>) {
+                                            private @GlobalConfig val configLazy: Lazy<ActionConfig>) {
     companion object {
         private val UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^\\w.\\-_]")
 
@@ -128,13 +128,13 @@ class CustomIconStorage @Inject constructor(private val context: Context,
 
     }
 
-    private fun getAllCustomUriFiles(config: ActionConfigStorage): Collection<String> {
+    private fun getAllCustomUriFiles(config: ButtonConfig): Collection<String> {
         return config.getAllActions()
                 .mapNotNull { it.value.customIconUri }
                 .map { getFileForUri(it).name }
     }
 
-    private fun getAllCustomUriFiles(config: ActionListStorage): Collection<String> {
+    private fun getAllCustomUriFiles(config: ActionList): Collection<String> {
         return config.actions
                 .mapNotNull { it.customIconUri }
                 .map { getFileForUri(it).name }

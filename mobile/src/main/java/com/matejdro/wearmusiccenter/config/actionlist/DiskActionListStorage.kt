@@ -13,7 +13,7 @@ import java.io.IOException
 class DiskActionListStorage(private val context: Context) {
     private val storageFile = File(context.filesDir, "actions_list")
 
-    fun loadActions(target: ActionListStorage): Boolean {
+    fun loadActions(target: ActionList): Boolean {
 
         try {
             val bundle = BundleFileSerialization.readFromFile(storageFile) ?: return false
@@ -55,7 +55,7 @@ class DiskActionListStorage(private val context: Context) {
         return bundle
     }
 
-    private fun unpackActionListBundle(bundle: PersistableBundle, target: ActionListStorage) {
+    private fun unpackActionListBundle(bundle: PersistableBundle, target: ActionList) {
         val numActions = bundle.getInt(ConfigConstants.NUM_ACTIONS, 0)
         val actions = (0 until numActions)
                 .map { it.toString() }

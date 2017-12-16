@@ -2,12 +2,12 @@ package com.matejdro.wearmusiccenter.di
 
 import android.app.Application
 import android.content.Context
-import com.matejdro.wearmusiccenter.config.ActionConfigProvider
-import com.matejdro.wearmusiccenter.config.DefaultActionConfigProvider
+import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.DefaultConfigGenerator
+import com.matejdro.wearmusiccenter.config.GlobalActionConfig
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
-import com.matejdro.wearmusiccenter.config.actionlist.DefaultActionListStorage
-import com.matejdro.wearmusiccenter.config.buttons.DefaultActionConfigStorageFactory
+import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList
+import com.matejdro.wearmusiccenter.config.buttons.GlobalButtonConfigFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -28,11 +28,11 @@ class AppModule {
     fun provideConfigStorage(context: Context,
                              watchInfoProvider: WatchInfoProvider,
                              defaultConfigGenerator: DefaultConfigGenerator,
-                             actionListConfig: DefaultActionListStorage,
-                             actionButtonConfig: DefaultActionConfigStorageFactory): ActionConfigProvider
-            = DefaultActionConfigProvider(context,
+                             actionListConfig: GlobalActionList,
+                             globalButtonConfigFactory: GlobalButtonConfigFactory): ActionConfig
+            = GlobalActionConfig(context,
             watchInfoProvider,
             defaultConfigGenerator,
             actionListConfig,
-            actionButtonConfig)
+            globalButtonConfigFactory)
 }

@@ -24,9 +24,9 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.buttonconfig.*
-import com.matejdro.wearmusiccenter.config.ActionConfigProvider
+import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
-import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
+import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
@@ -70,12 +70,12 @@ class GesturePickerFragment : DialogFragment() {
 
     @Inject
     @field:LocalActivityConfig
-    lateinit var configProvider: ActionConfigProvider
+    lateinit var config: ActionConfig
 
     @Inject
     lateinit var customIconStorage: CustomIconStorage
 
-    private lateinit var buttonConfig: ActionConfigStorage
+    private lateinit var buttonConfig: ButtonConfig
     private lateinit var buttons: Array<Button>
     private lateinit var paletteButtons: Array<ImageButton>
     private var anythingChanged = false
@@ -93,9 +93,9 @@ class GesturePickerFragment : DialogFragment() {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog_Short)
 
         buttonConfig = if (setsPlaybackButtons)
-            configProvider.getPlayingConfig()
+            config.getPlayingConfig()
         else
-            configProvider.getStoppedConfig()
+            config.getStoppedConfig()
 
         actions = Array(NUM_BUTTON_GESTURES) {
             buttonConfig.getScreenAction(baseButtonInfo.copy(gesture = it))

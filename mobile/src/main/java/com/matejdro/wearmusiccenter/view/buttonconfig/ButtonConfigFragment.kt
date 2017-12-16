@@ -20,7 +20,7 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
-import com.matejdro.wearmusiccenter.config.buttons.ActionConfigStorage
+import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
 import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
 import com.matejdro.wearmusiccenter.view.TitledActivity
@@ -135,7 +135,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         }
     }
 
-    private val buttonsConfigObserver = Observer<ActionConfigStorage> {
+    private val buttonsConfigObserver = Observer<ButtonConfig> {
         if (it == null) {
             return@Observer
         }

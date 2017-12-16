@@ -9,9 +9,9 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 
-class DefaultActionListStorage @Inject constructor(context: Context,
-                                                   watchInfoProvider: WatchInfoProvider,
-                                                   iconStorage: CustomIconStorage) : ActionListStorage {
+class GlobalActionList @Inject constructor(context: Context,
+                                           watchInfoProvider: WatchInfoProvider,
+                                           iconStorage: CustomIconStorage) : ActionList {
     override var actions: List<PhoneAction> = emptyList()
     private val diskStorage = DiskActionListStorage(context)
 
@@ -19,12 +19,12 @@ class DefaultActionListStorage @Inject constructor(context: Context,
     private var commitAgain: Boolean = false
 
 
-    private val watchSender: WatchActionListSender
+    private val transmitter: ActionListTransmitter
 
     init {
         diskStorage.loadActions(this)
 
-        watchSender = WatchActionListSender(this, iconStorage, context, watchInfoProvider)
+        transmitter = ActionListTransmitter(this, iconStorage, context, watchInfoProvider)
     }
 
     override fun commit() {
@@ -38,7 +38,7 @@ class DefaultActionListStorage @Inject constructor(context: Context,
         launch(UI) {
             launch(CommonPool) {
                 diskStorage.saveActions(actions)
-                watchSender.sendConfigToWatch(actions)
+                transmitter.sendConfigToWatch(actions)
             }.join()
 
             committing = false

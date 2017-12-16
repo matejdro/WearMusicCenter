@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.di
 
-import com.matejdro.wearmusiccenter.config.ActionConfigProvider
+import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.GesturePickerFragment
@@ -14,7 +14,7 @@ class MainActivityModule {
     @Provides
     @PerContextLifecycle
     @LocalActivityConfig
-    fun provideLocalConfig(@GlobalConfig globalConfig: ActionConfigProvider): ActionConfigProvider
+    fun provideLocalConfig(@GlobalConfig globalConfig: ActionConfig): ActionConfig
             = globalConfig
 }
 

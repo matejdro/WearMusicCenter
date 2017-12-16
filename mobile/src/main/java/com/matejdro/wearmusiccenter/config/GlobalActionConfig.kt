@@ -1,0 +1,48 @@
+package com.matejdro.wearmusiccenter.config
+
+import android.arch.lifecycle.Observer
+import android.content.Context
+import com.matejdro.wearmusiccenter.config.actionlist.ActionList
+import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList
+import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
+import com.matejdro.wearmusiccenter.config.buttons.GlobalButtonConfigFactory
+import java.io.File
+
+class GlobalActionConfig(private val context: Context,
+                         private val watchInfoProvider: WatchInfoProvider,
+                         private val defaultConfigGenerator: DefaultConfigGenerator,
+                         private val actionListConfig: GlobalActionList,
+                         globalButtonConfigFactory: GlobalButtonConfigFactory) : ActionConfig {
+
+    private val playingConfig by lazy { globalButtonConfigFactory.create(true) }
+    private val stoppedConfig by lazy { globalButtonConfigFactory.create(false) }
+
+    override fun getPlayingConfig(): ButtonConfig = playingConfig
+    override fun getStoppedConfig(): ButtonConfig = stoppedConfig
+    override fun getActionList(): ActionList = actionListConfig
+
+    private fun doesConfigExist(): Boolean =
+            File(context.filesDir, "action_config_playing").exists() &&
+                    File(context.filesDir, "action_config_stopped").exists() &&
+                    File(context.filesDir, "actions_list").exists()
+
+    private val defaultConfigCreatorListener = object : Observer<WatchInfoWithIcons> {
+        override fun onChanged(t: WatchInfoWithIcons?) {
+            watchInfoProvider.removeObserver(this)
+            defaultConfigGenerator.generateDefaultButtons(this@GlobalActionConfig)
+            defaultConfigGenerator.generateDefaultActionList(getActionList())
+
+            playingConfig.commit()
+            stoppedConfig.commit()
+            actionListConfig.commit()
+        }
+    }
+
+
+    init {
+        if (!doesConfigExist()) {
+            watchInfoProvider.observeForever(defaultConfigCreatorListener)
+        }
+    }
+
+}

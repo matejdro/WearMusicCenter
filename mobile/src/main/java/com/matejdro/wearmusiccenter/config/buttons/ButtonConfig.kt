@@ -5,7 +5,7 @@ import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 
-interface ActionConfigStorage {
+interface ButtonConfig {
     fun saveButtonAction(buttonInfo: ButtonInfo, action : PhoneAction?)
     fun getScreenAction(buttonInfo: ButtonInfo) : PhoneAction?
     fun getAllActions() : Collection<Map.Entry<ButtonInfo, PhoneAction>>
@@ -13,7 +13,7 @@ interface ActionConfigStorage {
     fun commit()
 }
 
-fun ActionConfigStorage.getScreenActionFallback(context : Context, buttonInfo: ButtonInfo) : PhoneAction {
+fun ButtonConfig.getScreenActionFallback(context: Context, buttonInfo: ButtonInfo): PhoneAction {
     val action = getScreenAction(buttonInfo)
 
     if (action == null) {

@@ -13,15 +13,15 @@ import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
-import com.matejdro.wearmusiccenter.config.actionlist.ActionListStorage
+import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import javax.inject.Inject
 
 class DefaultConfigGenerator @Inject constructor(private val context : Context,
                                                  private val watchInfoProvider: WatchInfoProvider) {
 
-    fun generateDefaultButtons(actionConfigProvider: ActionConfigProvider) {
-        val playingConfig = actionConfigProvider.getPlayingConfig()
-        val stoppedConfig = actionConfigProvider.getStoppedConfig()
+    fun generateDefaultButtons(actionConfig: ActionConfig) {
+        val playingConfig = actionConfig.getPlayingConfig()
+        val stoppedConfig = actionConfig.getStoppedConfig()
 
         playingConfig.saveButtonAction(
                 ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP),
@@ -83,8 +83,8 @@ class DefaultConfigGenerator @Inject constructor(private val context : Context,
         }
     }
 
-    fun generateDefaultActionList(actionListStorage: ActionListStorage) {
-        actionListStorage.actions =
+    fun generateDefaultActionList(actionList: ActionList) {
+        actionList.actions =
                 AppPlayPickerAction.getAllMusicApps(context)
                         .map { AppPlayAction(context, it) }
     }

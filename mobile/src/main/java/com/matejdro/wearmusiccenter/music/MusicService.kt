@@ -25,7 +25,7 @@ import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.util.FloatPacker
-import com.matejdro.wearmusiccenter.config.ActionConfigProvider
+import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.di.GlobalConfig
@@ -73,7 +73,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
     @Inject
     @field:GlobalConfig
-    lateinit var configProvider: ActionConfigProvider
+    lateinit var config: ActionConfig
 
     @Inject
     lateinit var watchInfoProvider: WatchInfoProvider
@@ -236,16 +236,16 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         val playing = currentMediaController?.isPlaying() == true
 
         val config = if (playing)
-            configProvider.getPlayingConfig()
+            config.getPlayingConfig()
         else
-            configProvider.getStoppedConfig()
+            config.getStoppedConfig()
 
         val buttonAction = config.getScreenAction(buttonInfo) ?: return
         buttonAction.execute(this)
     }
 
     private fun executeMenuAction(index: Int) {
-        val config = configProvider.getActionList()
+        val config = config.getActionList()
         val list = config.actions
 
         if (index < 0 || index >= list.size) {
