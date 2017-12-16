@@ -46,7 +46,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
-    @field:Inject
+    @Inject
     lateinit var viewModelFactory: MainActivityViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {

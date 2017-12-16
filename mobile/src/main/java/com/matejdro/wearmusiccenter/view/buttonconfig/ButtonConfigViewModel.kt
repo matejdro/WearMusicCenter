@@ -12,7 +12,7 @@ import javax.inject.Named
 @AutoViewModelFactory
 class ButtonConfigViewModel(@Named(ARG_DISPLAY_PLAYBACK_ACTIONS) setsPlaybackActions: Boolean,
                             val watchInfoProvider: WatchInfoProvider,
-                            @param:LocalActivityConfig val buttonConfigProvider: ActionConfig) : ViewModel() {
+                            @LocalActivityConfig val buttonConfigProvider: ActionConfig) : ViewModel() {
 
     val buttonConfig = MutableLiveData<ButtonConfig>()
 

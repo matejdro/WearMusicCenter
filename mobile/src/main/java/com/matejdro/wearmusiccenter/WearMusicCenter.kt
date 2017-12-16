@@ -20,10 +20,10 @@ import javax.inject.Inject
 
 
 class WearMusicCenter : Application(), HasActivityInjector, HasServiceInjector {
-    @field:Inject
+    @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
 
-    @field:Inject
+    @Inject
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
     override fun onCreate() {
