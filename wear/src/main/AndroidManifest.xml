@@ -26,8 +26,7 @@
         -->
         <meta-data
             android:name="com.google.android.wearable.standalone"
-            android:value="false"
-            tools:replace="android:value" />
+            android:value="false" />
 
         <activity
             android:name=".watch.view.MainActivity"
