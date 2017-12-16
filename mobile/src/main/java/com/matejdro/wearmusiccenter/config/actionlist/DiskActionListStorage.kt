@@ -9,8 +9,9 @@ import com.matejdro.wearmusiccenter.util.BundleFileSerialization
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject
 
-class DiskActionListStorage(private val context: Context) {
+class DiskActionListStorage @Inject constructor(private val context: Context) {
     private val storageFile = File(context.filesDir, "actions_list")
 
     fun loadActions(target: ActionList): Boolean {

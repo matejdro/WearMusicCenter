@@ -3,6 +3,8 @@ package com.matejdro.wearmusiccenter.config.buttons
 import android.content.Context
 import android.os.PersistableBundle
 import android.support.annotation.WorkerThread
+import com.google.auto.factory.AutoFactory
+import com.google.auto.factory.Provided
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.util.BundleFileSerialization
@@ -10,7 +12,8 @@ import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
-class DiskButtonConfigStorage(private val context: Context, fileSuffix: String) {
+@AutoFactory
+class DiskButtonConfigStorage(@Provided private val context: Context, fileSuffix: String) {
     private val storageFile = File(context.filesDir, "action_config" + fileSuffix)
 
     fun loadButtons(target: ButtonConfig): Boolean {

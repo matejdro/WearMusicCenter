@@ -10,6 +10,8 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
+import com.google.auto.factory.AutoFactory
+import com.google.auto.factory.Provided
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.actions.StandardIcons
@@ -21,10 +23,11 @@ import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 
+@AutoFactory
 class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
-                              private val context: Context,
-                              private val watchInfoProvider: WatchInfoProvider,
-                              private val customIconStorage: CustomIconStorage,
+                              @Provided private val context: Context,
+                              @Provided private val watchInfoProvider: WatchInfoProvider,
+                              @Provided private val customIconStorage: CustomIconStorage,
                               private val endpointPath: String) {
     private val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
