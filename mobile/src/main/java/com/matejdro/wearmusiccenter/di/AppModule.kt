@@ -8,6 +8,7 @@ import com.matejdro.wearmusiccenter.config.GlobalActionConfig
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList
 import com.matejdro.wearmusiccenter.config.buttons.GlobalButtonConfigFactory
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -28,7 +29,7 @@ class AppModule {
     fun provideConfigStorage(context: Context,
                              watchInfoProvider: WatchInfoProvider,
                              defaultConfigGenerator: DefaultConfigGenerator,
-                             actionListConfig: GlobalActionList,
+                             actionListConfig: Lazy<GlobalActionList>,
                              globalButtonConfigFactory: GlobalButtonConfigFactory): ActionConfig
             = GlobalActionConfig(context,
             watchInfoProvider,

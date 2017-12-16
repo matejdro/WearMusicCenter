@@ -6,16 +6,18 @@ import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.config.buttons.GlobalButtonConfigFactory
+import dagger.Lazy
 import java.io.File
 
 class GlobalActionConfig(private val context: Context,
                          private val watchInfoProvider: WatchInfoProvider,
                          private val defaultConfigGenerator: DefaultConfigGenerator,
-                         private val actionListConfig: GlobalActionList,
+                         actionListConfigLazy: Lazy<GlobalActionList>,
                          globalButtonConfigFactory: GlobalButtonConfigFactory) : ActionConfig {
 
     private val playingConfig by lazy { globalButtonConfigFactory.create(true) }
     private val stoppedConfig by lazy { globalButtonConfigFactory.create(false) }
+    private val actionListConfig by lazy { actionListConfigLazy.get() }
 
     override fun getPlayingConfig(): ButtonConfig = playingConfig
     override fun getStoppedConfig(): ButtonConfig = stoppedConfig
