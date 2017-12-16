@@ -41,6 +41,8 @@
 
         <activity android:name="com.matejdro.wearutils.companionnotice.PhoneAppNoticeActivity" />
 
+        <activity android:name="android.support.wearable.activity.ConfirmationActivity" />
+
         <service
             android:name=".watch.communication.PreferencesReceiver"
             tools:ignore="ExportedService">
