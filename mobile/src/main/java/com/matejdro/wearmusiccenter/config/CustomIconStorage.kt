@@ -17,7 +17,6 @@ import dagger.Lazy
 import dagger.Reusable
 import timber.log.Timber
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.regex.Pattern
@@ -76,17 +75,34 @@ class CustomIconStorage @Inject constructor(private val context: Context,
             return null
         }
 
-        val bitmap: Bitmap
-        try {
-            bitmap = FileInputStream(file).use<FileInputStream, Bitmap> {
-                return BitmapFactory.decodeStream(it)
-            }
+        return try {
+            BitmapFactory.decodeFile(file.absolutePath)
         } catch (e: IOException) {
             Timber.e(e, "Image loading error")
-            return null
+            null
+        } catch (e: OutOfMemoryError) {
+            // Try loading smaller image. Blurry image is better than crash
+            loadImageFromFileLowMemory(file, 100)
         }
+    }
 
-        return bitmap
+    private fun loadImageFromFileLowMemory(file: File, size: Int): Bitmap? {
+        return try {
+            decodeSampledBitmapFromFile(file, size, size)
+        } catch (e: IOException) {
+            Timber.e(e, "Image loading error")
+            null
+        } catch (e: OutOfMemoryError) {
+            if (size > 50) {
+                // We still cannot load the image. Try loading smaller one.
+                loadImageFromFileLowMemory(file, size / 2)
+            } else {
+                // We cannot load even very small 50x50 image
+                // It is better to display default image than crashing.
+                Timber.e("Image loading out of memory")
+                return null
+            }
+        }
     }
 
     fun setIcon(iconUri: Uri, icon: Bitmap) {
@@ -147,6 +163,39 @@ class CustomIconStorage @Inject constructor(private val context: Context,
         fileName += ".png"
 
         return File(storageFolder, fileName)
+    }
+
+    private fun calculateInSampleSize(
+            options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width smaller than the requested height and width.
+            while (width / inSampleSize >= reqWidth || height / inSampleSize >= reqHeight) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
+    }
+
+    private fun decodeSampledBitmapFromFile(file: File, reqWidth: Int, reqHeight: Int): Bitmap {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(file.absolutePath, options)
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false
+        return BitmapFactory.decodeFile(file.absolutePath, options)
     }
 }
 
