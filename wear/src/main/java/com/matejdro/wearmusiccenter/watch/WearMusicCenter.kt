@@ -18,7 +18,7 @@ class WearMusicCenter : android.app.Application() {
         Timber.setAppTag("WearMusicCenter")
         Timber.plant(Timber.AndroidDebugTree(isDebuggable))
 
-        if (isDebuggable) {
+        if (!isDebuggable) {
             ExceptionWear.initialize(this)
             Timber.plant(TimberExceptionWear(this))
         }
