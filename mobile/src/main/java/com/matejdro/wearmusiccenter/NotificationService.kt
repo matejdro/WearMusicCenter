@@ -1,5 +1,6 @@
 package com.matejdro.wearmusiccenter
 
+import android.annotation.TargetApi
 import android.arch.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
@@ -40,7 +41,7 @@ class NotificationService : NotificationListenerService() {
         if (ACTION_UNBIND_SERVICE == intent?.action &&
                 bound &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            requestUnbind()
+            requestUnbindSafe()
             Timber.d("Unbind on command")
         }
 
@@ -62,7 +63,7 @@ class NotificationService : NotificationListenerService() {
             Timber.d("Unbind on start")
 
             // On N+ we can turn off the service
-            requestUnbind()
+            requestUnbindSafe()
             return
         }
 
@@ -129,5 +130,16 @@ class NotificationService : NotificationListenerService() {
         }
 
         val ACTION_UNBIND_SERVICE = "UNBIND"
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private fun requestUnbindSafe() {
+        try {
+            requestUnbind()
+        } catch (e: SecurityException) {
+            // Sometimes notification service may be unbound before we can unbind safely.
+            // just stop self.
+            stopSelf()
+        }
     }
 }
