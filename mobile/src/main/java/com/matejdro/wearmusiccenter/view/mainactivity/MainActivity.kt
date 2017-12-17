@@ -2,6 +2,7 @@ package com.matejdro.wearmusiccenter.view.mainactivity
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -152,12 +153,24 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
                 .setMessage(getString(R.string.error_service_not_enabled_description))
                 .setPositiveButton(getString(R.string.action_open_settings),
                         { _, _ ->
-                            startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
+                            openNotificationListener()
                         })
 
         builder.show()
     }
 
+    private fun openNotificationListener() {
+        try {
+            startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
+        } catch (e: ActivityNotFoundException) {
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.error_service_not_enabled)
+                    .setMessage(getString(R.string.error_no_notification_service_support))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+        }
+
+    }
 
     override fun onBackPressed() {
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)

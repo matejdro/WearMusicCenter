@@ -81,4 +81,5 @@
     <string name="app_required">App required</string>
     <string name="vibration_center_required_description">To use this feature, you will need to install another (free) app: Vibration Center for Wear.</string>
     <string name="open_play_store">Open play store</string>
+    <string name="error_no_notification_service_support">Sorry, your device does not appear to support notification services</string>
 </resources>
