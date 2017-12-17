@@ -32,6 +32,7 @@ import com.matejdro.wearmusiccenter.di.GlobalConfig
 import com.matejdro.wearmusiccenter.notifications.NotificationProvider
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
+import com.matejdro.wearutils.lifecycle.EmptyObserver
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
@@ -118,7 +119,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         mediaSessionProvider = ActiveMediaSessionProvider(this)
         mediaSessionProvider.observe(this, mediaCallback)
 
-        watchInfoProvider.observe(this, Observer<WatchInfoWithIcons> {})
+        watchInfoProvider.observe(this, EmptyObserver<WatchInfoWithIcons>())
 
         if (Preferences.getBoolean(preferences, MiscPreferences.ENABLE_NOTIFICATION_POPUP)) {
             notificationProvider.observe(this, notificationCallback)
