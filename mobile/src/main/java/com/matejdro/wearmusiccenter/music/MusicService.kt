@@ -86,8 +86,6 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
     private var previousMusicState: MusicState? = null
     var currentMediaController: MediaController? = null
-    private var firstMessage = true
-
     private var startedFromWatch = false
 
     override fun onCreate() {
@@ -261,12 +259,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         val musicStateBuilder = MusicState.newBuilder()
         var albumArt: Bitmap? = null
 
-        if (firstMessage) {
-            // Add time to the first message to make sure it gets transmitted even if it is
-            // identical to the previous one
-            musicStateBuilder.time = System.currentTimeMillis().toInt()
-            firstMessage = false
-        }
+        musicStateBuilder.time = System.currentTimeMillis().toInt()
 
         if (mediaController == null) {
             musicStateBuilder.playing = false
@@ -291,6 +284,10 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
 
 
         val musicState = musicStateBuilder.build()
+        // Do not waste BT bandwitch and re-transmit equal music state
+        if (musicState.equalsIgnoringTime(previousMusicState)) {
+            return
+        }
 
         Timber.d("TransmittingToWear %s", musicState)
         transmitToWear(musicState, albumArt)
@@ -322,12 +319,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     private fun transmitError(error: String) = connectionHandler.post {
         val musicStateBuilder = MusicState.newBuilder()
 
-        if (firstMessage) {
-            // Add time to the first message to make sure it gets transmitted even if it is
-            // identical to the previous one
-            musicStateBuilder.time = System.currentTimeMillis().toInt()
-            firstMessage = false
-        }
+        // Add time to the first message to make sure it gets transmitted even if it is
+        // identical to the previous one
+        musicStateBuilder.time = System.currentTimeMillis().toInt()
 
         musicStateBuilder.error = true
         musicStateBuilder.title = error
@@ -397,7 +391,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 executeMenuAction(ByteBuffer.wrap(event.data).int)
             }
             event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
-                firstMessage = true
+
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
                 buildMusicStateAndTransmit(currentMediaController)
             }
@@ -432,9 +426,18 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     .Handler() {
         override fun dispatchMessage(msg: android.os.Message?) {
             if (msg?.what == MESSAGE_STOP_SELF) {
-                Timber.d("TIMEOUT!")
+                Timber.d("mTIMEOUT!")
                 service.get()?.stopSelf()
             }
         }
+    }
+
+    private fun MusicState.equalsIgnoringTime(other: MusicState?): Boolean {
+        return other != null &&
+                other.playing == playing &&
+                other.artist == artist &&
+                other.title == title &&
+                other.volume == volume &&
+                other.error == error
     }
 }
