@@ -294,26 +294,27 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     }
 
     private fun transmitToWear(musicState: MusicState, originalAlbumArt: Bitmap?) = connectionHandler.post {
-            val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
+        val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
 
-            var albumArt = originalAlbumArt
-            val watchInfo = watchInfoProvider.value?.watchInfo
-            if (watchInfo != null && albumArt != null) {
-                albumArt = BitmapUtils.resizeAndCrop(albumArt,
-                        watchInfo.displayWidth,
-                        watchInfo.displayHeight,
-                        true)
-            }
+        var albumArt = originalAlbumArt
+        val watchInfo = watchInfoProvider.value?.watchInfo
+        if (watchInfo != null && albumArt != null) {
+            albumArt = BitmapUtils.resizeAndCrop(albumArt,
+                    watchInfo.displayWidth,
+                    watchInfo.displayHeight,
+                    true)
+        }
 
-            if (albumArt != null) {
-                val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt))
-                putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
-            }
+        if (albumArt != null) {
+            val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt))
+            putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
+        }
 
-            putDataRequest.data = musicState.toByteArray()
-            putDataRequest.setUrgent()
+        putDataRequest.data = musicState.toByteArray()
+        putDataRequest.setUrgent()
 
-            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
+        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
+        ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
     }
 
     private fun transmitError(error: String) = connectionHandler.post {
