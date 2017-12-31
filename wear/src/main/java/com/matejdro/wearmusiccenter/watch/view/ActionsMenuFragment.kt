@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.app.Fragment
 import android.arch.lifecycle.Observer
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
@@ -18,13 +19,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
+import com.matejdro.wearutils.preferences.definition.Preferences
 
 
 class ActionsMenuFragment : Fragment() {
     private lateinit var viewmodel: MusicViewModel
 
     private lateinit var recycler: WearableRecyclerView
+    private lateinit var recyclerClickDetector: RecyclerClickDetector
 
     private var menuItems: List<ButtonAction> = emptyList()
     private lateinit var adapter: MenuAdapter
@@ -34,38 +38,60 @@ class ActionsMenuFragment : Fragment() {
 
     private lateinit var activity: MainActivity
 
+    private var alwaysPickCenter = false
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
         activity = context as MainActivity
 
         viewmodel = activity.viewModel
-        viewmodel.actionsMenuConfig.config.observe(activity, configListener)
+        viewmodel.actionsMenuConfig.config.observe(activity, actionItemsListener)
+        viewmodel.preferences.observe(activity, preferencesListener)
 
         findButtons()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        recycler = inflater.inflate(R.layout.fragment_actions_list, container, false)
-                as WearableRecyclerView
-        return recycler
+        recyclerClickDetector = inflater.inflate(R.layout.fragment_actions_list, container, false)
+                as RecyclerClickDetector
+        return recyclerClickDetector
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = MenuAdapter()
+
+        recycler = view.findViewById(R.id.recycler)
 
         layoutManager = MenuLayoutManager(context)
         recycler.layoutManager = layoutManager
         recycler.isEdgeItemsCenteringEnabled = true
         recycler.adapter = adapter
+
+        recyclerClickDetector.setOnClickListener {
+            viewmodel.executeActionFromMenu(layoutManager.getCenterItem())
+        }
+
     }
 
-    private val configListener = Observer<List<ButtonAction>> {
+    private val actionItemsListener = Observer<List<ButtonAction>> {
         if (it == null) {
             return@Observer
         }
 
         menuItems = it
+        adapter.notifyDataSetChanged()
+    }
+
+    private val preferencesListener = Observer<SharedPreferences> {
+        if (it == null) {
+            return@Observer
+        }
+
+        alwaysPickCenter = Preferences.getBoolean(it, MiscPreferences.ALWAYS_SELECT_CENTER_ACTION)
+        recyclerClickDetector.isClickable = alwaysPickCenter
+
+
         adapter.notifyDataSetChanged()
     }
 
@@ -112,6 +138,10 @@ class ActionsMenuFragment : Fragment() {
 
             holder.icon.setImageDrawable(configItem.icon)
             holder.title.text = configItem.title
+
+            val clickListener = if (alwaysPickCenter) null else holder
+            holder.itemView.setOnClickListener(clickListener)
+            holder.itemView.isClickable = !alwaysPickCenter
         }
 
         override fun getItemCount(): Int = menuItems.size
@@ -124,7 +154,6 @@ class ActionsMenuFragment : Fragment() {
 
         init {
             itemView.tag = this
-            itemView.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {

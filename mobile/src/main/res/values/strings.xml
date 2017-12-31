@@ -43,6 +43,7 @@
 
     <string name="category_about">About</string>
     <string name="category_music_screen">Music screen</string>
+    <string name="category_action_list">Action List</string>
     <string name="category_automation">Automation</string>
     <string name="installed_version">Installed version</string>
     <string name="donate">Donate</string>
@@ -82,4 +83,6 @@
     <string name="vibration_center_required_description">To use this feature, you will need to install another (free) app: Vibration Center for Wear.</string>
     <string name="open_play_store">Open play store</string>
     <string name="error_no_notification_service_support">Sorry, your device does not appear to support notification services</string>
+    <string name="setting_always_select_center_action">Always select center action</string>
+    <string name="setting_always_select_center_action_description">When enabled, tapping on action list will always select center (highlighted) option, regardless of what option you tapped.</string>
 </resources>

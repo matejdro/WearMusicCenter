@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.wear.widget.WearableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.matejdro.wearmusiccenter.watch.view.RecyclerClickDetector xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:background="?selectableItemBackground">
+
+    <android.support.wear.widget.WearableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</com.matejdro.wearmusiccenter.watch.view.RecyclerClickDetector>

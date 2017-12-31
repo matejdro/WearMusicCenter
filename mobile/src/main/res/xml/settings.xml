@@ -32,6 +32,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="cat_action_list"
+        android:title="@string/category_action_list">
+        <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
+            android:defaultValue="false"
+            android:key="always_select_center_action"
+            android:title="@string/setting_always_select_center_action"
+            android:summary="@string/setting_always_select_center_action_description" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="cat_automation"
         android:title="@string/category_automation">
         <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx

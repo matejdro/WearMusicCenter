@@ -27,4 +27,7 @@ object MiscPreferences {
 
     val NOTIFICATION_TIMEOUT: PreferenceDefinition<Int>
             = SimplePreferenceDefinition("notification_timeout", 10)
+
+    val ALWAYS_SELECT_CENTER_ACTION: PreferenceDefinition<Boolean>
+            = SimplePreferenceDefinition("always_select_center_action", false)
 }
