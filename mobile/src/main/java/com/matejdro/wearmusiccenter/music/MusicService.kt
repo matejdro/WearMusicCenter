@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Message
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -41,6 +42,7 @@ import dagger.android.AndroidInjection
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MusicService : LifecycleService(), MessageApi.MessageListener {
@@ -49,7 +51,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         const val ACTION_NOTIFICATION_SERVICE_ACTIVATED = "NOTIFICATION_SERVICE_ACTIVATED"
 
         private const val MESSAGE_STOP_SELF = 0
-        private const val ACK_TIMEOUT_MS = 10_000L
+        private val ACK_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(3)
 
         private const val STOP_SELF_PENDING_INTENT_REQUEST_CODE = 333
         private const val ACTION_STOP_SELF = "STOP_SELF"
@@ -173,6 +175,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         }
         connectionThread.quitSafely()
 
+        ackTimeoutHandler.removeCallbacksAndMessages(null)
+
         active = false
 
         super.onDestroy()
@@ -220,7 +224,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             putDataRequest.setUrgent()
 
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest)
-            ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
+            startTimeout()
         }
     }
 
@@ -314,7 +318,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         putDataRequest.setUrgent()
 
         Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
-        ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
+        startTimeout()
     }
 
     private fun transmitError(error: String) = connectionHandler.post {
@@ -422,12 +426,15 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         notificationManager.createNotificationChannel(errorChannel)
     }
 
+    private fun startTimeout() {
+        ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
+        ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
+    }
 
-    private class AckTimeoutHandler(val service: WeakReference<MusicService>) : android.os
-    .Handler() {
-        override fun dispatchMessage(msg: android.os.Message?) {
+    private class AckTimeoutHandler(val service: WeakReference<MusicService>) : android.os.Handler() {
+        override fun handleMessage(msg: Message?) {
             if (msg?.what == MESSAGE_STOP_SELF) {
-                Timber.d("mTIMEOUT!")
+                Timber.d("TIMEOUT!")
                 service.get()?.stopSelf()
             }
         }
