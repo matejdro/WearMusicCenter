@@ -41,7 +41,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-wearable:$play_services_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21"
 }
 repositories {
     mavenCentral()

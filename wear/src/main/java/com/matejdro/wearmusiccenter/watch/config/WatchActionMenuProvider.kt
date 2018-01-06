@@ -8,21 +8,18 @@ import com.google.android.gms.wearable.DataItem
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchList
 import com.matejdro.wearmusiccenter.watch.communication.IconGetter
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.async
 
 class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawData: LiveData<DataItem>) {
     val config = MutableLiveData<List<ButtonAction>>()
 
-    private val dataObserver = Observer<DataItem> {
-        if (it == null) {
+    private val dataObserver = Observer<DataItem> { dataItem ->
+        if (dataItem == null) {
             return@Observer
         }
 
-        val dataItem = it
-
-        launch(CommonPool) {
-            val listProto = WatchList.parseFrom(it.data)
+        async {
+            val listProto = WatchList.parseFrom(dataItem.data)
 
             val actions = listProto.actionsList.withIndex().map {
                 val iconKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + it.index

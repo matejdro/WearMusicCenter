@@ -19,8 +19,8 @@ import com.matejdro.wearutils.lifecycle.*
 import com.matejdro.wearutils.messages.DataUtils
 import com.matejdro.wearutils.messages.MessagingUtils
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -162,7 +162,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
             sendingVolume = true
 
-            launch(CommonPool) {
+            async {
                 val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
                 if (phoneNode != null) {
                     Wearable.MessageApi.sendMessage(googleApiClient,

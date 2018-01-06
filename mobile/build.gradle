@@ -46,7 +46,7 @@ dependencies {
     compileOnly 'com.google.android.wearable:wearable:2.1.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21"
 
     kapt 'com.google.auto.factory:auto-factory:1.0-beta5'
     kapt 'com.google.auto.value:auto-value:1.1'

@@ -10,8 +10,8 @@ import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearmusiccenter.watch.communication.IconGetter
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 
 class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, rawConfigData: LiveData<DataItem>) {
@@ -41,7 +41,7 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
         launch(UI) {
             val newConfigMap = SimpleArrayMap<ButtonInfo, ButtonAction>()
 
-            launch(CommonPool) {
+            async {
                 val actions = WatchActions.parseFrom(it.data)
                 volumeStep = actions.volumeStep
 

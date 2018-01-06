@@ -1,8 +1,8 @@
 package com.matejdro.wearmusiccenter.config.actionlist
 
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class GlobalActionList @Inject constructor(actionListTransmitterFactory: ActionL
         committing = true
 
         launch(UI) {
-            launch(CommonPool) {
+            async {
                 diskStorage.saveActions(actions)
                 transmitter.sendConfigToWatch(actions)
             }.join()

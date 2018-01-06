@@ -6,8 +6,8 @@ import com.google.auto.factory.Provided
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 
 @AutoFactory
@@ -66,7 +66,7 @@ constructor(playbackConfig: Boolean,
         commiting = true
 
         launch(UI) {
-            launch(CommonPool) worker@ {
+            async worker@ {
                 diskButtonStorage.saveButtons(configMap.entries)
                 buttonTransmitter.sendConfigToWatch(configMap.entries)
             }.join()
