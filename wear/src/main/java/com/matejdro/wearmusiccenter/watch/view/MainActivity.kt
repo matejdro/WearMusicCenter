@@ -418,7 +418,7 @@ class MainActivity : WearCompanionWatchActivity(),
             return actionsMenuFragment.onKeyDown(keyCode, event)
         }
 
-        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
+        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3 && event?.repeatCount == 0) {
             val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
             handleStemDown(buttonIndex)
 
