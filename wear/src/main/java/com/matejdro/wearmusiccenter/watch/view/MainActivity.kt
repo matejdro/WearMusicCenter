@@ -399,7 +399,7 @@ class MainActivity : WearCompanionWatchActivity(),
         val timeout = ViewConfiguration.getDoubleTapTimeout()
 
         if (System.currentTimeMillis() - lastPressTime > timeout) {
-            handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_PRESS_BUTTON, buttonIndex),
+            handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_PRESS_BUTTON, buttonIndex, -1),
                     timeout.toLong())
         } else {
             viewModel.executeAction(ButtonInfo(true, buttonIndex, GESTURE_DOUBLE_TAP))
