@@ -1,4 +1,4 @@
-package com.matejdro.wearmusiccenter.view
+package com.matejdro.wearmusiccenter.view.settings
 
 import android.Manifest
 import android.content.ComponentName
@@ -68,7 +68,6 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
 
                         true
                     }
-
         }
     }
 

@@ -49,6 +49,11 @@
             android:key="auto_start"
             android:title="@string/setting_auto_start"
             android:summary="@string/setting_auto_start_description" />
+        <com.matejdro.wearmusiccenter.view.settings.MusicAppListPreference
+            android:key="auto_start_apps_blacklist"
+            android:title="@string/setting_auto_start_apps_blacklist"
+            android:summary="@string/setting_auto_start_apps_blacklist_description"
+            android:dependency="auto_start" />
         <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
             android:defaultValue="0"
             android:key="close_timeout"

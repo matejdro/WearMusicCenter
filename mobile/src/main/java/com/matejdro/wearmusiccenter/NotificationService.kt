@@ -116,7 +116,10 @@ class NotificationService : NotificationListenerService() {
         Timber.d("Playback update %b %s", MusicService.active, it?.data?.playbackState?.state)
 
         if (!MusicService.active && it?.data?.playbackState?.isPlaying() == true) {
-            startAppOnWatch()
+            val autoStartBlacklist = Preferences.getStringSet(preferences, MiscPreferences.AUTO_START_APP_BLACKLIST)
+            if (!autoStartBlacklist.contains(it.data?.packageName)) {
+                startAppOnWatch()
+            }
         }
     }
 

@@ -72,6 +72,9 @@
     <string name="setting_haptic_feedback_description">Vibrate the watch when tapping on-screen buttons.</string>
     <string name="setting_auto_start">Open Music Center automatically</string>
     <string name="setting_auto_start_description">Automatically open the Music Center on the watch when music playback is started on the phone.</string>
+    <string name="setting_auto_start_apps_blacklist">Auto-start apps</string>
+    <string name="setting_auto_start_apps_blacklist_description">List of media apps that can auto-start Music Center</string>
+
     <string name="setting_close_timeout">Close timeout</string>
     <string name="setting_close_timeout_description">Music Center will automatically close itself when there is no music playing for <![CDATA[<b>%1$s seconds</b>]]>. Feature is disabled when timeout is set to 0 seconds. Please not that, to save battery, this option may not be too accurate at times and it might delay the closing for up to a minute.</string>
     <string name="category_notifications">Notification popup</string>

@@ -21,18 +21,16 @@ import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.FabFragment
-import com.matejdro.wearmusiccenter.view.MiscSettingsFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
+import com.matejdro.wearmusiccenter.view.settings.MiscSettingsFragment
 import com.matejdro.wearutils.companionnotice.WearCompanionPhoneActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
-
-
 
 
 class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationItemSelectedListener,
