@@ -58,7 +58,7 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
 
                     newConfigMap.put(buttonInfo, ButtonAction(key, icon))
                 }
-            }.join()
+            }.await()
 
             configMap = newConfigMap
             updateListener.value = this@WatchActionConfigProvider

@@ -69,7 +69,7 @@ constructor(playbackConfig: Boolean,
             async worker@ {
                 diskButtonStorage.saveButtons(configMap.entries)
                 buttonTransmitter.sendConfigToWatch(configMap.entries)
-            }.join()
+            }.await()
 
             commiting = false
             if (commitAgain) {

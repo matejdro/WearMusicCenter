@@ -34,7 +34,7 @@ class GlobalActionList @Inject constructor(actionListTransmitterFactory: ActionL
             async {
                 diskStorage.saveActions(actions)
                 transmitter.sendConfigToWatch(actions)
-            }.join()
+            }.await()
 
             committing = false
             if (commitAgain) {

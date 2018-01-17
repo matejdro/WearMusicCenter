@@ -170,7 +170,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
                             CommPaths.MESSAGE_CHANGE_VOLUME,
                             FloatPacker.packFloat(newVolume)).await()
                 }
-            }.join()
+            }.await()
 
             sendingVolume = false
             if (nextVolume >= 0) {
