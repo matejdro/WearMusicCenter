@@ -8,5 +8,6 @@ annotation class ButtonGesture
 
 const val GESTURE_SINGLE_TAP = 0
 const val GESTURE_DOUBLE_TAP = 1
+const val GESTURE_LONG_TAP = 1
 
 const val NUM_BUTTON_GESTURES = 2

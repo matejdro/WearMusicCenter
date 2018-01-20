@@ -15,7 +15,6 @@ import android.support.wear.ambient.AmbientMode
 import android.support.wear.widget.drawer.WearableDrawerLayout
 import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.input.RotaryEncoder
-import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -45,7 +44,6 @@ class MainActivity : WearCompanionWatchActivity(),
 
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0
-        private const val MESSAGE_PRESS_BUTTON = 1
         private const val MESSAGE_UPDATE_CLOCK = 2
         private const val MESSAGE_DISMISS_NOTIFICATION = 3
 
@@ -58,6 +56,7 @@ class MainActivity : WearCompanionWatchActivity(),
     private lateinit var actionsMenuFragment: ActionsMenuFragment
     private lateinit var vibrator: Vibrator
     private lateinit var ambientController: AmbientMode.AmbientController
+    private lateinit var stemButtonsManager: StemButtonsManager
     private val handler = TimeoutsHandler(WeakReference(this))
 
     private lateinit var preferences: SharedPreferences
@@ -65,8 +64,6 @@ class MainActivity : WearCompanionWatchActivity(),
     private val lifecycleRegistry = LifecycleRegistry(this)
     lateinit var viewModel: MusicViewModel
 
-    private lateinit var lastStemPresses: Array<Long>
-    private lateinit var stemHasDoublePressAction: Array<Boolean>
     private var rotatingInputDisabledUntil = 0L
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
@@ -111,10 +108,8 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.closeApp.observe(this, closeAppListener)
         viewModel.notification.observe(this, notificationObserver)
 
-        val numStemButtons = Math.max(0, WearableButtons.getButtonCount(this))
-        lastStemPresses = Array<Long>(numStemButtons) { 0 }
-        stemHasDoublePressAction = Array(numStemButtons) { false }
 
+        stemButtonsManager = StemButtonsManager(this, stemButtonListener)
 
         WatchInfoSender(this, true).sendWatchInfoToPhone()
         actionsMenuFragment = fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
@@ -196,20 +191,20 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.albumArt.setImageBitmap(it)
     }
 
-    private val buttonConfigObserver = Observer<WatchActionConfigProvider> {
-        if (it == null) {
+    private val buttonConfigObserver = Observer<WatchActionConfigProvider> { config ->
+        if (config == null) {
             return@Observer
         }
 
-        val topSingle = it.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP))
-        val bottomSingle = it.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_SINGLE_TAP))
-        val leftSingle = it.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
-        val rightSingle = it.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
+        val topSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP))
+        val bottomSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_SINGLE_TAP))
+        val leftSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
+        val rightSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
 
-        val topDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_DOUBLE_TAP))
-        val bottomDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_DOUBLE_TAP))
-        val leftDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_DOUBLE_TAP))
-        val rightDouble = it.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_DOUBLE_TAP))
+        val topDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_DOUBLE_TAP))
+        val bottomDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_DOUBLE_TAP))
+        val leftDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_DOUBLE_TAP))
+        val rightDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_DOUBLE_TAP))
 
         binding.iconTop.setImageDrawable(topSingle?.icon)
         binding.iconBottom.setImageDrawable(bottomSingle?.icon)
@@ -223,9 +218,10 @@ class MainActivity : WearCompanionWatchActivity(),
                 bottomDouble != null
         )
 
-        val config = it
-        stemHasDoublePressAction = Array(lastStemPresses.size) {
-            config.isActionActive(ButtonInfo(true, it, GESTURE_DOUBLE_TAP))
+        with(stemButtonsManager.enabledDoublePressActions) {
+            for (i in 0 until size) {
+                this[i] = config.isActionActive(ButtonInfo(true, i, GESTURE_DOUBLE_TAP))
+            }
         }
     }
 
@@ -288,6 +284,9 @@ class MainActivity : WearCompanionWatchActivity(),
         finish()
     }
 
+    private val stemButtonListener = {buttonIndex : Int, gesture : Int ->
+        viewModel.executeAction(ButtonInfo(true, buttonIndex, GESTURE_SINGLE_TAP))
+    }
 
     fun openMenuDrawer() {
         binding.actionDrawer.controller.openDrawer()
@@ -306,6 +305,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
     override fun getAmbientCallback(): AmbientMode.AmbientCallback = object : AmbientMode.AmbientCallback() {
         override fun onEnterAmbient(ambientDetails: Bundle?) {
+            stemButtonsManager.onEnterAmbient()
             binding.ambientClock.visibility = android.view.View.VISIBLE
 
             handler.removeMessages(MESSAGE_UPDATE_CLOCK)
@@ -334,6 +334,8 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         override fun onExitAmbient() {
+            stemButtonsManager.onExitAmbient()
+
             if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
                 handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
             } else {
@@ -387,29 +389,8 @@ class MainActivity : WearCompanionWatchActivity(),
         return super.onGenericMotionEvent(ev)
     }
 
-    private fun handleStemDown(buttonIndex: Int) {
-        handler.removeMessages(MESSAGE_PRESS_BUTTON)
-
-        if (!stemHasDoublePressAction[buttonIndex]) {
-            viewModel.executeAction(ButtonInfo(true, buttonIndex, GESTURE_SINGLE_TAP))
-            return
-        }
-
-        val lastPressTime = lastStemPresses[buttonIndex]
-        val timeout = ViewConfiguration.getDoubleTapTimeout()
-
-        if (System.currentTimeMillis() - lastPressTime > timeout) {
-            handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_PRESS_BUTTON, buttonIndex, -1),
-                    timeout.toLong())
-        } else {
-            viewModel.executeAction(ButtonInfo(true, buttonIndex, GESTURE_DOUBLE_TAP))
-        }
-
-        lastStemPresses[buttonIndex] = System.currentTimeMillis()
-    }
-
     @TargetApi(Build.VERSION_CODES.N)
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return super.onKeyDown(keyCode, event)
         }
@@ -418,14 +399,19 @@ class MainActivity : WearCompanionWatchActivity(),
             return actionsMenuFragment.onKeyDown(keyCode, event)
         }
 
-        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3 && event?.repeatCount == 0) {
-            val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
-            handleStemDown(buttonIndex)
-
+        if (stemButtonsManager.onKeyDown(keyCode, event)) {
             return true
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (stemButtonsManager.onKeyUp(keyCode, event)) {
+            return true
+        }
+
+        return super.onKeyUp(keyCode, event)
     }
 
     private fun onNotificationTapped() {
@@ -496,10 +482,6 @@ class MainActivity : WearCompanionWatchActivity(),
             when {
                 msg.what == MESSAGE_HIDE_VOLUME -> {
                     activity.get()?.binding?.volumeBar?.visibility = android.view.View.GONE
-                }
-                msg.what == MESSAGE_PRESS_BUTTON -> {
-                    activity.get()?.viewModel?.executeAction(ButtonInfo(true, msg.arg1,
-                            GESTURE_SINGLE_TAP))
                 }
                 msg.what == MESSAGE_UPDATE_CLOCK -> {
                     removeMessages(MESSAGE_UPDATE_CLOCK)
