@@ -24,6 +24,7 @@ import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.proto.MusicState
@@ -201,27 +202,24 @@ class MainActivity : WearCompanionWatchActivity(),
         val leftSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
         val rightSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
 
-        val topDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_DOUBLE_TAP))
-        val bottomDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_DOUBLE_TAP))
-        val leftDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_DOUBLE_TAP))
-        val rightDouble = config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_DOUBLE_TAP))
-
         binding.iconTop.setImageDrawable(topSingle?.icon)
         binding.iconBottom.setImageDrawable(bottomSingle?.icon)
         binding.iconLeft.setImageDrawable(leftSingle?.icon)
         binding.iconRight.setImageDrawable(rightSingle?.icon)
 
-        binding.fourWayTouch.enabledDoubleTaps = booleanArrayOf(
-                leftDouble != null,
-                topDouble != null,
-                rightDouble != null,
-                bottomDouble != null
-        )
+        for (i in 0 until 4) {
+            binding.fourWayTouch.enabledDoubleTaps[i] =
+                    config.isActionActive(ButtonInfo(false, i, GESTURE_DOUBLE_TAP))
+            binding.fourWayTouch.enabledLongTaps[i] =
+                    config.isActionActive(ButtonInfo(false, i, GESTURE_LONG_TAP))
+        }
 
-        with(stemButtonsManager.enabledDoublePressActions) {
-            for (i in 0 until size) {
-                this[i] = config.isActionActive(ButtonInfo(true, i, GESTURE_DOUBLE_TAP))
+        with(stemButtonsManager) {
+            for (i in 0 until enabledDoublePressActions.size) {
+                enabledDoublePressActions[i] = config.isActionActive(ButtonInfo(true, i, GESTURE_DOUBLE_TAP))
+                enabledLongPressActions[i] = config.isActionActive(ButtonInfo(true, i, GESTURE_LONG_TAP))
             }
+
         }
     }
 
@@ -284,8 +282,14 @@ class MainActivity : WearCompanionWatchActivity(),
         finish()
     }
 
-    private val stemButtonListener = {buttonIndex : Int, gesture : Int ->
-        viewModel.executeAction(ButtonInfo(true, buttonIndex, GESTURE_SINGLE_TAP))
+    private val stemButtonListener = { buttonIndex: Int, gesture: Int ->
+            if (gesture == GESTURE_DOUBLE_TAP) {
+                handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
+            } else {
+                buzz()
+            }
+
+        viewModel.executeAction(ButtonInfo(true, buttonIndex, gesture))
     }
 
     fun openMenuDrawer() {
@@ -463,6 +467,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
     override fun onSingleTap(quadrant: Int) {
         buzz()
+
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_SINGLE_TAP))
     }
 
@@ -473,6 +478,11 @@ class MainActivity : WearCompanionWatchActivity(),
         // that he double pressed
         handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_DOUBLE_TAP))
+    }
+
+    override fun onLongTap(quadrant: Int) {
+        buzz()
+        viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_LONG_TAP))
     }
 
     override fun getLifecycle(): LifecycleRegistry = lifecycleRegistry

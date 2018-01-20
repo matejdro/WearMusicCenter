@@ -193,6 +193,8 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
     override fun onDoubleTap(quadrant: Int) = Unit
 
+    override fun onLongTap(quadrant: Int) = Unit
+
     @dagger.Module
     class Module {
         @Provides

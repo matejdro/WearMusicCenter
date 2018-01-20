@@ -22,13 +22,12 @@
     <string name="no_action">No action</string>
     <string name="gesture_single_press">Single press</string>
     <string name="gesture_double_press">Double press</string>
+    <string name="gesture_long_press">Long press</string>
     <string name="start_playback">Start playback</string>
     <string name="uninstalled_app">Uninstalled app</string>
 
     <string name="play_app">Play %1$s</string>
     <string name="tasker_task">Tasker Task</string>
-    <string name="customize_single_press_icon">Customize single press icon</string>
-    <string name="customize_double_press_icon">Customize double press icon</string>
     <string name="icon_selection_title">Icon selection</string>
     <string name="icon_selection_no_icon_pack">This feature allows you to pick custom icon for your action from
         installed icon pack.\n\nUnfortunately it appears you do not have any icon packs installed.</string>
@@ -88,4 +87,5 @@
     <string name="error_no_notification_service_support">Sorry, your device does not appear to support notification services</string>
     <string name="setting_always_select_center_action">Always select center action</string>
     <string name="setting_always_select_center_action_description">When enabled, tapping on action list will always select center (highlighted) option, regardless of what option you tapped.</string>
+    <string name="change_icon">Change icon</string>
 </resources>

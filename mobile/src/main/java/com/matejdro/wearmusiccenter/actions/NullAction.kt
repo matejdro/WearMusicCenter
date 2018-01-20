@@ -12,7 +12,6 @@ class NullAction : PhoneAction {
     constructor(context : Context, bundle: PersistableBundle) : super(context, bundle)
 
     override fun execute(service: MusicService) {
-        throw UnsupportedOperationException()
     }
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {

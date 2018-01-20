@@ -7,7 +7,10 @@ import android.widget.FrameLayout
 import com.matejdro.common.R
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 
-class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureListener, android.view.GestureDetector.OnDoubleTapListener {
+class FourWayTouchLayout : FrameLayout,
+        android.view.GestureDetector.OnGestureListener,
+        android.view.GestureDetector.OnDoubleTapListener
+    {
     private val gestureDetector: android.support.v4.view.GestureDetectorCompat
 
     private var viewSize: Int = 0
@@ -15,7 +18,8 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
 
 
     var listener: UserActionListener? = null
-    var enabledDoubleTaps = booleanArrayOf(false, false, false, false)
+    val enabledDoubleTaps = booleanArrayOf(false, false, false, false)
+    val enabledLongTaps = booleanArrayOf(false, false, false, false)
 
     constructor(context: android.content.Context, attrs: android.util.AttributeSet?, @android.support.annotation.AttrRes defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         this.gestureDetector = android.support.v4.view.GestureDetectorCompat(context, this)
@@ -64,7 +68,7 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
     override fun onSingleTapUp(e: android.view.MotionEvent): Boolean {
         val quadrant = getQuadrant(e.x.toInt(), e.y.toInt())
         if (enabledDoubleTaps[quadrant]) {
-            // This method is only handling single taps
+            // This method is only handling single taps while double taps are enabled
             return false
         }
 
@@ -79,8 +83,6 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
     }
 
     override fun onScroll(e1: android.view.MotionEvent, e2: android.view.MotionEvent, distanceX: Float, distanceY: Float): Boolean = false
-
-    override fun onLongPress(e: android.view.MotionEvent) = Unit
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -156,11 +158,21 @@ class FourWayTouchLayout : FrameLayout, android.view.GestureDetector.OnGestureLi
         return true
     }
 
+    override fun onLongPress(e: android.view.MotionEvent) {
+        val quadrant = getQuadrant(e.x.toInt(), e.y.toInt())
+        if (!enabledLongTaps[quadrant]) {
+            return
+        }
+
+        listener?.onLongTap(quadrant)
+    }
+
     override fun onDoubleTapEvent(e: android.view.MotionEvent): Boolean = false
 
     interface UserActionListener {
         fun onUpwardsSwipe()
         fun onSingleTap(quadrant: Int)
         fun onDoubleTap(quadrant: Int)
+        fun onLongTap(quadrant: Int)
     }
 }

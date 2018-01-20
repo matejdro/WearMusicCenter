@@ -19,7 +19,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
@@ -46,7 +45,6 @@ class GesturePickerFragment : DialogFragment() {
         private const val REQUEST_CODE_PICK_ACTION_TO = REQUEST_CODE_PICK_ACTION + NUM_BUTTON_GESTURES
 
         private const val REQUEST_CODE_PICK_ICON = 5991
-        private const val REQUEST_CODE_PICK_ICON_TO = REQUEST_CODE_PICK_ICON + NUM_BUTTON_GESTURES
 
         fun newInstance(setsPlaybackButtons: Boolean, baseButtonInfo: ButtonInfo, buttonName: String): GesturePickerFragment {
             val fragment = GesturePickerFragment()
@@ -77,9 +75,7 @@ class GesturePickerFragment : DialogFragment() {
 
     private lateinit var buttonConfig: ButtonConfig
     private lateinit var buttons: Array<Button>
-    private lateinit var paletteButtons: Array<ImageButton>
     private var anythingChanged = false
-    private var storagePermissionRedirectGesture = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,11 +111,11 @@ class GesturePickerFragment : DialogFragment() {
         dialog.setCanceledOnTouchOutside(true)
         dialog.setTitle(buttonName)
 
-        buttons = arrayOf(binding.singlePressButton, binding.doublePressButton)
-        paletteButtons = arrayOf(binding.customizeSinglePressIcon, binding.customizeDoublePressIcon)
+        buttons = arrayOf(binding.singlePressButton, binding.doublePressButton, binding.longPressButton)
 
-        applyButton(binding.singlePressButton, binding.customizeSinglePressIcon, GESTURE_SINGLE_TAP)
-        applyButton(binding.doublePressButton, binding.customizeDoublePressIcon, GESTURE_DOUBLE_TAP)
+        updateButton(binding.singlePressButton, GESTURE_SINGLE_TAP)
+        updateButton(binding.doublePressButton, GESTURE_DOUBLE_TAP)
+        updateButton(binding.longPressButton, GESTURE_LONG_TAP)
     }
 
     fun changeAction(gesture: Int) {
@@ -128,21 +124,19 @@ class GesturePickerFragment : DialogFragment() {
 
     }
 
-    private fun applyButton(button: Button, paletteButton: ImageButton, @ButtonGesture gesture: Int) {
+    private fun updateButton(button: Button, @ButtonGesture gesture: Int) {
         val phoneAction = actions[gesture]
 
 
-        applyButton(button, paletteButton, phoneAction)
+        updateButton(button, phoneAction)
     }
 
-    private fun applyButton(button: Button, paletteButton: ImageButton, phoneAction: PhoneAction?) {
+    private fun updateButton(button: Button, phoneAction: PhoneAction?) {
         var mutableAction = phoneAction
 
         if (mutableAction == null) {
             mutableAction = NullAction(activity!!)
         }
-
-        paletteButton.isEnabled = mutableAction !is NullAction
 
         var icon = customIconStorage[mutableAction]
         if (icon is VectorDrawable) {
@@ -175,14 +169,10 @@ class GesturePickerFragment : DialogFragment() {
         dismiss()
     }
 
-    fun startIconSelection(gesture: Int) {
-        if (actions[gesture] == null) {
-            return
-        }
-
+    fun startIconSelection() {
         if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestStoragePermission(gesture)
+            requestStoragePermission()
             return
         }
 
@@ -192,7 +182,7 @@ class GesturePickerFragment : DialogFragment() {
 
             intent = Intent.createChooser(intent, getString(R.string.icon_selection_title))
 
-            startActivityForResult(intent, REQUEST_CODE_PICK_ICON + gesture)
+            startActivityForResult(intent, REQUEST_CODE_PICK_ICON)
         } catch (ignored: ActivityNotFoundException) {
             AlertDialog.Builder(context!!)
                     .setTitle(R.string.icon_selection_title)
@@ -202,13 +192,12 @@ class GesturePickerFragment : DialogFragment() {
         }
     }
 
-    private fun requestStoragePermission(gesture: Int) {
+    private fun requestStoragePermission() {
         AlertDialog.Builder(context!!)
                 .setTitle(R.string.icon_selection_title)
                 .setMessage(R.string.icon_selection_no_storage_permission)
                 .setPositiveButton(android.R.string.ok, null)
                 .setOnDismissListener {
-                    storagePermissionRedirectGesture = gesture
                     requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                             REQUEST_CODE_PICK_ACTION)
                 }
@@ -229,12 +218,20 @@ class GesturePickerFragment : DialogFragment() {
             anythingChanged = anythingChanged || action != actions[gesture]
 
             actions[gesture] = action
-            applyButton(buttons[gesture], paletteButtons[gesture], action)
-        } else if (requestCode in REQUEST_CODE_PICK_ICON until REQUEST_CODE_PICK_ICON_TO) {
-            val gesture = requestCode - REQUEST_CODE_PICK_ICON
+            updateButton(buttons[gesture],  action)
+        } else if (requestCode == REQUEST_CODE_PICK_ICON) {
             val iconUri = data.data
 
-            val action = actions[gesture] ?: return
+            val action = actions[GESTURE_SINGLE_TAP].let {
+                if (it == null) {
+                    val newAction = NullAction(context!!)
+                    actions[GESTURE_SINGLE_TAP] = newAction
+                    newAction
+                } else {
+                    it
+                }
+
+            }
 
             val bitmap = BitmapUtils.getBitmap(BitmapUtils.getDrawableFromUri(activity, iconUri)) ?: return
 
@@ -242,7 +239,7 @@ class GesturePickerFragment : DialogFragment() {
             customIconStorage.setIcon(iconUri, bitmap)
 
             anythingChanged = true
-            applyButton(buttons[gesture], paletteButtons[gesture], action)
+            updateButton(buttons[GESTURE_SINGLE_TAP], action)
         }
     }
 
@@ -251,10 +248,8 @@ class GesturePickerFragment : DialogFragment() {
 
         if (permissions.isNotEmpty() &&
                 permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                storagePermissionRedirectGesture >= 0) {
-            startIconSelection(storagePermissionRedirectGesture)
-            storagePermissionRedirectGesture = -1
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startIconSelection()
         }
     }
 }

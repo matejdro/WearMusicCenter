@@ -1,6 +1,5 @@
 package com.matejdro.wearmusiccenter.watch.view
 
-import kotlinx.coroutines.experimental.delay
 import org.robolectric.shadows.ShadowSystemClock
 
 /**
@@ -8,7 +7,6 @@ import org.robolectric.shadows.ShadowSystemClock
  */
 interface Function2<P1, P2, R> : kotlin.Function2<P1, P2, R>
 
-suspend fun advanceTime(durationMs : Int) {
-    delay(durationMs)
+fun advanceTime(durationMs : Int) {
     ShadowSystemClock.sleep(durationMs.toLong())
 }
