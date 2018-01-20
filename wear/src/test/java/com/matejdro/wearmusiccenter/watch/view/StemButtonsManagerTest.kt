@@ -47,6 +47,39 @@ class StemButtonsManagerTest {
     }
 
     @Test
+    fun testSinglePressOutOfBounds() = runBlocking {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(1, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
+        advanceTime(50)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
+    fun testSinglePressSecondButton() = runBlocking {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(2, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
+        advanceTime(50)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+
+        advanceTime(600)
+
+        Mockito.verify(listener).invoke(1, GESTURE_SINGLE_TAP)
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
     fun testDoublePress() = runBlocking {
         val listener: Function2<Int, Int, Unit> = mock()
         val buttonsManager = StemButtonsManager(1, listener)
@@ -66,6 +99,32 @@ class StemButtonsManagerTest {
         advanceTime(600)
 
         Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
+    fun testDoublePressSecondButton() = runBlocking {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(2, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+        buttonsManager.enabledDoublePressActions[1] = true
+        buttonsManager.enabledLongPressActions[1] = true
+
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
+        advanceTime(50)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+
+        advanceTime(100)
+
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
+        advanceTime(50)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+
+        advanceTime(600)
+
+        Mockito.verify(listener).invoke(1, GESTURE_DOUBLE_TAP)
         advanceTime(2000)
         Mockito.verifyNoMoreInteractions(listener)
     }
@@ -192,6 +251,26 @@ class StemButtonsManagerTest {
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
 
         Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
+    fun testLongPressSecondButton() = runBlocking {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(2, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+        buttonsManager.enabledDoublePressActions[1] = true
+        buttonsManager.enabledLongPressActions[1] = true
+
+        // This gesture only produces single click for now as long press is not implemented yet
+
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
+        advanceTime(1000)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+
+        Mockito.verify(listener).invoke(1, GESTURE_SINGLE_TAP)
         advanceTime(2000)
         Mockito.verifyNoMoreInteractions(listener)
     }
