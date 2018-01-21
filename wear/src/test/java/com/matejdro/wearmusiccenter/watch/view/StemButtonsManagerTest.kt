@@ -232,10 +232,61 @@ class StemButtonsManagerTest {
         buttonsManager.onExitAmbient()
         advanceTime(18)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
-
         advanceTime(5)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(60)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+
+        advanceTime(600)
+
+        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
+    fun testAmbientGlitch2() {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(1, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+
+        buttonsManager.onEnterAmbient()
+        advanceTime(2000)
+        buttonsManager.onExitAmbient()
+        advanceTime(487)
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
+        advanceTime(16)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        advanceTime(9)
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
+        advanceTime(107)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+
+        advanceTime(600)
+
+        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
+        advanceTime(2000)
+        Mockito.verifyNoMoreInteractions(listener)
+    }
+
+    @Test
+    fun testAmbientGlitch3() {
+        val listener: Function2<Int, Int, Unit> = mock()
+        val buttonsManager = StemButtonsManager(1, listener)
+        buttonsManager.enabledDoublePressActions[0] = true
+        buttonsManager.enabledLongPressActions[0] = true
+
+        buttonsManager.onEnterAmbient()
+        advanceTime(2000)
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
+        advanceTime(25)
+        buttonsManager.onExitAmbient()
+        advanceTime(86)
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        advanceTime(9)
+        buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
+        advanceTime(11)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
 
         advanceTime(600)

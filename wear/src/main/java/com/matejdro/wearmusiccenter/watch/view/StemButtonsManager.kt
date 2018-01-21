@@ -18,7 +18,6 @@ import kotlin.math.max
 private const val MESSAGE_PRESS_BUTTON = 1
 private const val MESSAGE_HOLD_BUTTON = 2
 private const val AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP = 15
-private const val AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_AMBIENT_EXIT = 34
 
 @TargetApi(Build.VERSION_CODES.N)
 class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gesture: Int) -> Unit) {
@@ -82,7 +81,6 @@ private class SingleButtonHandler(private val buttonIndex: Int,
 
     private var lastStemUpEvent = -1L
     private var lastStemPress = -1L
-    private var lastAmbientExitTime = -1L
     private var waitingForSecondPress = false
     private var waitingForButtonUp = false
 
@@ -90,13 +88,12 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     @TargetApi(Build.VERSION_CODES.N)
     fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         val now = SystemClock.elapsedRealtime()
-        if (now - lastAmbientExitTime < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_AMBIENT_EXIT &&
-                now - lastStemUpEvent < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP) {
+        if (now - lastStemUpEvent < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP) {
             // Some watches seem to have a bug where clicks are repeated immediately after exiting ambient mode,
             // resulting in double click.
 
-            // Phantom click appears milliseconds after watch exits ambient mode and after up event
-            // from prevous click is detected. This makes it unlikely for real human (or even physical button
+            // Phantom click appears milliseconds after up event
+            // from prevous click. This makes it unlikely for real human (or even physical button
             // mechanism) to press that fast. Try to detect this fast double click and ignore it.
 
             return false
@@ -168,11 +165,9 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     }
 
     fun onEnterAmbient() {
-        lastAmbientExitTime = -1
     }
 
     fun onExitAmbient() {
-        lastAmbientExitTime = SystemClock.elapsedRealtime()
     }
 
 
