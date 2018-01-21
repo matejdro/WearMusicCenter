@@ -44,16 +44,16 @@ class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gestu
 
         if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode < KeyEvent.KEYCODE_STEM_1 + buttonHandlers.size) {
             val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
-            return buttonHandlers[buttonIndex].onKeyDown(keyCode, event)
+            return buttonHandlers[buttonIndex].onKeyDown()
         }
         return false
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    fun onKeyUp(keyCode: Int): Boolean {
         if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode < KeyEvent.KEYCODE_STEM_1 + buttonHandlers.size) {
             val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
-            return buttonHandlers[buttonIndex].onKeyUp(keyCode, event)
+            return buttonHandlers[buttonIndex].onKeyUp()
         }
         return false
     }
@@ -86,7 +86,7 @@ private class SingleButtonHandler(private val buttonIndex: Int,
 
 
     @TargetApi(Build.VERSION_CODES.N)
-    fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    fun onKeyDown(): Boolean {
         val now = SystemClock.elapsedRealtime()
         if (now - lastStemUpEvent < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP) {
             // Some watches seem to have a bug where clicks are repeated immediately after exiting ambient mode,
@@ -152,7 +152,7 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    fun onKeyUp(): Boolean {
         lastStemUpEvent = SystemClock.elapsedRealtime()
 
         if (waitingForButtonUp) {

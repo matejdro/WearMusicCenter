@@ -21,7 +21,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(100)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
         advanceTime(2000)
@@ -37,7 +37,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(200)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -55,7 +55,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(200)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -73,7 +73,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
         advanceTime(2000)
@@ -89,7 +89,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
         advanceTime(2000)
         Mockito.verifyNoMoreInteractions(listener)
@@ -110,7 +110,7 @@ class StemButtonsManagerTest {
         advanceTime(50)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(0L, 0L, KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN, 3))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -129,7 +129,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
         advanceTime(600)
 
@@ -147,13 +147,13 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -171,13 +171,13 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -198,13 +198,13 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
         advanceTime(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
         advanceTime(600)
 
@@ -231,11 +231,11 @@ class StemButtonsManagerTest {
         advanceTime(25)
         buttonsManager.onExitAmbient()
         advanceTime(18)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
         advanceTime(5)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(60)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -257,11 +257,11 @@ class StemButtonsManagerTest {
         advanceTime(487)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(16)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
         advanceTime(9)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(107)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -283,11 +283,11 @@ class StemButtonsManagerTest {
         advanceTime(25)
         buttonsManager.onExitAmbient()
         advanceTime(86)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
         advanceTime(9)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(11)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -310,13 +310,13 @@ class StemButtonsManagerTest {
         advanceTime(25)
         buttonsManager.onExitAmbient()
         advanceTime(25)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -337,13 +337,13 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(50)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         advanceTime(600)
 
@@ -364,7 +364,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(1000)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
         advanceTime(2000)
@@ -383,7 +383,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(1000)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         Mockito.verify(listener).invoke(0, GESTURE_LONG_TAP)
         advanceTime(2000)
@@ -401,7 +401,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
         advanceTime(1000)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
         Mockito.verify(listener).invoke(0, GESTURE_LONG_TAP)
         advanceTime(2000)
@@ -421,7 +421,7 @@ class StemButtonsManagerTest {
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
         advanceTime(1000)
-        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_UP))
+        buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
         Mockito.verify(listener).invoke(1, GESTURE_LONG_TAP)
         advanceTime(2000)

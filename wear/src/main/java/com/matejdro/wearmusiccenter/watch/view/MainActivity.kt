@@ -411,7 +411,7 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        if (stemButtonsManager.onKeyUp(keyCode, event)) {
+        if (stemButtonsManager.onKeyUp(keyCode)) {
             return true
         }
 
