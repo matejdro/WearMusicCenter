@@ -68,7 +68,7 @@
     <string name="setting_rotating_crown_off_period">Rotary input screen on delay</string>
     <string name="setting_rotating_crown_off_period_description">Rotating inputs (for example rotating crowns) can be oversensitive on some devices. To prevent accidental volume changes, rotary input will be disabled for <![CDATA[<b>%1$s milliseconds</b>]]> after you turn the screen on.</string>
     <string name="setting_haptic_feedback">Haptic feedback</string>
-    <string name="setting_haptic_feedback_description">Vibrate the watch when tapping on-screen buttons.</string>
+    <string name="setting_haptic_feedback_description">Vibrate the watch when pressing buttons.</string>
     <string name="setting_auto_start">Open Music Center automatically</string>
     <string name="setting_auto_start_description">Automatically open the Music Center on the watch when music playback is started on the phone.</string>
     <string name="setting_auto_start_apps_blacklist">Auto-start apps</string>
