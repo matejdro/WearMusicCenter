@@ -67,6 +67,8 @@
     <string name="setting_pause_on_swipe_exit_description">Automatically pause any playback when exiting Music Center on the watch via swipe-left gesture.\n\nExiting via power button is not affected and it will never auto-pause.</string>
     <string name="setting_rotating_crown_off_period">Rotary input screen on delay</string>
     <string name="setting_rotating_crown_off_period_description">Rotating inputs (for example rotating crowns) can be oversensitive on some devices. To prevent accidental volume changes, rotary input will be disabled for <![CDATA[<b>%1$s milliseconds</b>]]> after you turn the screen on.</string>
+    <string name="setting_disable_ambient_physical_double_click">Disable physical button double click in ambient</string>
+    <string name="setting_disable_ambient_physical_double_click_description">Some watches have buggy buttons where single click of the physical button in ambient mode sometimes gets registered as double click.\n\nIf you experience this, you can enable this option to completely disable double clicks in ambient mode (e.g. clicking twice will just activate single click action). Clicking button twice when watch is active is not affected.</string>
     <string name="setting_haptic_feedback">Haptic feedback</string>
     <string name="setting_haptic_feedback_description">Vibrate the watch when pressing buttons.</string>
     <string name="setting_auto_start">Open Music Center automatically</string>

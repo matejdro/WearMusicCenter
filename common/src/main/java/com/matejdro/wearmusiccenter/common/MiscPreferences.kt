@@ -16,6 +16,8 @@ object MiscPreferences {
     val HAPTIC_FEEDBACK: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("haptic_feedback", true)
 
+    val DISABLE_PHYSICAL_DOUBLE_CLICK_IN_AMBIENT: PreferenceDefinition<Boolean> = SimplePreferenceDefinition("disable_ambient_physical_double_click", false)
+
     val AUTO_START: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("auto_start", false)
 

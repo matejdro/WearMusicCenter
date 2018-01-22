@@ -230,6 +230,9 @@ class MainActivity : WearCompanionWatchActivity(),
 
         preferences = it
 
+        stemButtonsManager.enableDoublePressInAmbient = !Preferences.getBoolean(preferences,
+                MiscPreferences.DISABLE_PHYSICAL_DOUBLE_CLICK_IN_AMBIENT)
+
         if (!ambientController.isAmbient) {
             val alwaysDisplayClock = Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)
 

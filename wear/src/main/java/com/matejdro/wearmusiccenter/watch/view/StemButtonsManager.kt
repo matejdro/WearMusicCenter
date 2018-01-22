@@ -26,6 +26,7 @@ class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gestu
 
     var enabledDoublePressActions = Array(numStemButtons) { false }
     var enabledLongPressActions = Array(numStemButtons) { false }
+    var enableDoublePressInAmbient: Boolean = true
 
 
     private var buttonHandlers = Array<SingleButtonHandler>(numStemButtons) {
@@ -33,12 +34,13 @@ class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gestu
                 it + KeyEvent.KEYCODE_STEM_1,
                 { enabledDoublePressActions[it] },
                 { enabledLongPressActions[it] },
+                { enableDoublePressInAmbient },
                 listener)
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if(event.repeatCount != 0) {
+        if (event.repeatCount != 0) {
             return false
         }
 
@@ -75,14 +77,17 @@ private class SingleButtonHandler(private val buttonIndex: Int,
                                   private val buttonKeyCode: Int,
                                   private val isDoubleClickEnabled: () -> Boolean,
                                   private val isLongClickEnabled: () -> Boolean,
+                                  private val isDoubleClickInAmbientEnabled: () -> Boolean,
                                   private val listener: (buttonIndex: Int, gesture: Int) -> Unit) {
 
     private val handler = TimeoutsHandler(WeakReference(this))
 
+    private var inAmbientMode = false
     private var lastStemUpEvent = -1L
     private var lastStemPress = -1L
     private var waitingForSecondPress = false
     private var waitingForButtonUp = false
+    private var ignoreSecondClick = false
 
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -107,10 +112,20 @@ private class SingleButtonHandler(private val buttonIndex: Int,
         }
 
         if (isDoubleClickEnabled()) {
+            if (inAmbientMode && !isDoubleClickInAmbientEnabled()) {
+                ignoreSecondClick = true
+            }
+
             val timeout = ViewConfiguration.getDoubleTapTimeout()
 
             if (waitingForSecondPress && SystemClock.elapsedRealtime() - lastStemPress > timeout) {
                 waitingForSecondPress = false
+            }
+
+            if (waitingForSecondPress && ignoreSecondClick) {
+                waitingForSecondPress = false
+                ignoreSecondClick = false
+                return false
             }
 
             if (waitingForSecondPress) {
@@ -138,6 +153,7 @@ private class SingleButtonHandler(private val buttonIndex: Int,
 
             lastStemPress = SystemClock.elapsedRealtime()
             waitingForSecondPress = true
+
         } else {
             reportGesture(GESTURE_SINGLE_TAP)
         }
@@ -146,6 +162,7 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     private fun reportGesture(gesture: Int) {
         listener.invoke(buttonIndex, gesture)
 
+        ignoreSecondClick = false
         waitingForSecondPress = false
         waitingForButtonUp = false
         handler.removeCallbacksAndMessages(null)
@@ -165,9 +182,11 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     }
 
     fun onEnterAmbient() {
+        inAmbientMode = true
     }
 
     fun onExitAmbient() {
+        inAmbientMode = false
     }
 
 
