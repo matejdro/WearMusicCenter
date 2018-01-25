@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -8,9 +7,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:minHeight="400dp"
             android:orientation="vertical"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
@@ -24,130 +24,121 @@
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/on_screen_buttons"/>
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/on_screen_buttons"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <FrameLayout
-                android:id="@+id/watch_display"
+            <ImageView
+                android:id="@+id/watch_display_background"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/on_screen_buttons_caption"
-                android:layout_gravity="center_horizontal">
+                app:layout_constraintBottom_toBottomOf="@+id/four_way_touch"
+                app:layout_constraintEnd_toEndOf="@+id/four_way_touch"
+                app:layout_constraintStart_toStartOf="@+id/four_way_touch"
+                app:layout_constraintTop_toTopOf="@+id/four_way_touch"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/watch_square_background" />
 
-                <ImageView
-                    android:id="@+id/watch_display_background"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:ignore="ContentDescription"
-                    android:layout_margin="5dp"
-                    tools:src="@drawable/watch_square_background"/>
+            <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+                android:id="@+id/four_way_touch"
+                android:layout_width="205dp"
+                android:layout_height="205dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/icon_bottom"
+                app:layout_constraintEnd_toEndOf="@+id/icon_right"
+                app:layout_constraintStart_toStartOf="@+id/icon_left"
+                app:layout_constraintTop_toTopOf="@+id/icon_top" />
 
-                <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
-                    android:id="@+id/four_way_touch"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
-
-                <ImageView
-                    android:id="@+id/watch_display_border"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:ignore="ContentDescription"
-                    tools:src="@drawable/watch_square_border"/>
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:columnCount="3"
-                    android:rowCount="3">
-
-                    <ImageView
-                        android:id="@+id/icon_left"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_column="0"
-                        android:layout_columnWeight="1"
-                        android:layout_row="1"
-                        android:layout_rowWeight="1"
-                        android:adjustViewBounds="false"
-                        android:padding="10dp"
-                        android:src="@drawable/action_pause"
-                        tools:ignore="ContentDescription"/>
-
-                    <ImageView
-                        android:id="@+id/icon_top"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_column="1"
-                        android:layout_columnWeight="1"
-                        android:layout_row="0"
-                        android:layout_rowWeight="1"
-                        android:padding="10dp"
-                        android:src="@drawable/action_volume_up"
-                        tools:ignore="ContentDescription"/>
-
-                    <ImageView
-                        android:id="@+id/icon_right"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_column="2"
-                        android:layout_columnWeight="1"
-                        android:layout_row="1"
-                        android:layout_rowWeight="1"
-                        android:padding="10dp"
-                        android:src="@drawable/action_skip_next"
-                        tools:ignore="ContentDescription"/>
-
-                    <ImageView
-                        android:id="@+id/icon_bottom"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_column="1"
-                        android:layout_columnWeight="1"
-                        android:layout_row="2"
-                        android:layout_rowWeight="1"
-                        android:padding="10dp"
-                        android:src="@drawable/action_volume_down"
-                        tools:ignore="ContentDescription"/>
-
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_column="1"
-                        android:layout_columnWeight="1"
-                        android:layout_row="1"
-                        android:layout_rowWeight="1"
-                        />
+            <ImageView
+                android:id="@+id/watch_display_border"
+                android:layout_width="205dp"
+                android:layout_height="205dp"
+                app:layout_constraintBottom_toBottomOf="@+id/four_way_touch"
+                app:layout_constraintEnd_toEndOf="@+id/four_way_touch"
+                app:layout_constraintStart_toStartOf="@+id/four_way_touch"
+                app:layout_constraintTop_toTopOf="@+id/four_way_touch"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/watch_square_border" />
 
 
-                </GridLayout>
+            <ImageView
+                android:id="@+id/icon_left"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="24dp"
+                android:adjustViewBounds="false"
+                android:padding="10dp"
+                android:src="@drawable/action_pause"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/space4"
+                tools:ignore="ContentDescription" />
 
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/icon_top"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/action_volume_up"
+                app:layout_constraintStart_toStartOf="@+id/space4"
+                app:layout_constraintTop_toBottomOf="@+id/on_screen_buttons_caption"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/icon_right"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/action_skip_next"
+                app:layout_constraintStart_toEndOf="@+id/space4"
+                app:layout_constraintTop_toTopOf="@+id/space4"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/icon_bottom"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/action_volume_down"
+                app:layout_constraintStart_toStartOf="@+id/space4"
+                app:layout_constraintTop_toBottomOf="@+id/space4"
+                tools:ignore="ContentDescription" />
+
+            <Space
+                android:id="@+id/space4"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:layout_constraintStart_toEndOf="@+id/icon_left"
+                app:layout_constraintTop_toBottomOf="@+id/icon_top" />
 
             <TextView
                 android:id="@+id/caption_physical_buttons"
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_below="@id/watch_display"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/physical_buttons"
-                tools:ignore="RelativeOverlap" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/watch_button_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_below="@id/caption_physical_buttons"
-                android:layout_toEndOf="@id/watch_display"
+                android:layout_marginTop="8dp"
                 android:gravity="end"
-                android:orientation="vertical" />
-        </RelativeLayout>
-
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/watch_display_border"
+                app:layout_constraintTop_toBottomOf="@+id/caption_physical_buttons" />
+        </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
 </layout>
