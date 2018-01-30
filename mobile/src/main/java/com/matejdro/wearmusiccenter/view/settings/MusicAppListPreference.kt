@@ -4,17 +4,23 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.v7.app.AlertDialog
 import android.support.v7.preference.DialogPreference
 import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.util.AttributeSet
 import android.view.View
-import com.matejdro.wearmusiccenter.actions.appplay.AppPlayPickerAction
+import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.preferences.compat.PreferenceWithDialog
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 
 class MusicAppListPreference
 @JvmOverloads
 constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPreference(context, attributeSet), PreferenceWithDialog {
+    var appList: List<App>? = null
 
     var blacklist: MutableSet<String>
         get() = getPersistedStringSet(emptySet())
@@ -25,6 +31,39 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
     override fun createDialog(key: String): PreferenceDialogFragmentCompat {
         return MusicAppListPreferenceDialog.create(key)
     }
+
+    override fun onClick() {
+        launch(UI) {
+
+            @Suppress("DEPRECATION")
+            val progressDialog = android.app.ProgressDialog(this@MusicAppListPreference.context!!)
+            progressDialog.setMessage(this@MusicAppListPreference.context!!.getString(R.string.please_wait))
+            progressDialog.show()
+
+            appList = getAllApps()
+
+            progressDialog.hide()
+            preferenceManager.showDialog(this@MusicAppListPreference)
+        }
+    }
+
+    private suspend fun getAllApps(): List<App> = async {
+        val packageManager = this@MusicAppListPreference.context!!.packageManager
+
+        packageManager.getInstalledPackages(0)
+                .map {
+                    val appLabel = try {
+                        val appInfo = packageManager.getApplicationInfo(it.packageName, 0)
+                        packageManager.getApplicationLabel(appInfo)
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        it.packageName
+                    }
+
+                    App(it.packageName, appLabel.toString())
+                }
+                .sortedBy { it.label }
+    }.await()
+
 
     class MusicAppListPreferenceDialog : PreferenceDialogFragmentCompat() {
         companion object {
@@ -43,21 +82,7 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
         private lateinit var selectedApps: BooleanArray
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            val packageManager = context!!.packageManager
-
-            installedApps = AppPlayPickerAction.getAllMusicApps(context!!)
-                    .distinctBy { it.packageName }
-                    .map {
-                        val appLabel = try {
-                            val appInfo = packageManager.getApplicationInfo(it.packageName, 0)
-                            packageManager.getApplicationLabel(appInfo)
-                        } catch (e: PackageManager.NameNotFoundException) {
-                            it.packageName
-                        }
-
-                        App(it.packageName, appLabel.toString())
-                    }
-                    .sortedBy { it.label }
+            installedApps = (preference as MusicAppListPreference).appList ?: emptyList()
 
             val savedBlacklist = (preference as MusicAppListPreference).blacklist
             selectedApps = BooleanArray(installedApps.size) { !savedBlacklist.contains(installedApps[it].pkg) }
@@ -90,5 +115,29 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
         }
     }
 
-    data class App(val pkg: String, val label: String)
+    data class App(val pkg: String, val label: String) : Parcelable {
+        constructor(parcel: Parcel) : this(
+                parcel.readString(),
+                parcel.readString()) {
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(pkg)
+            parcel.writeString(label)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<App> {
+            override fun createFromParcel(parcel: Parcel): App {
+                return App(parcel)
+            }
+
+            override fun newArray(size: Int): Array<App?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
 }

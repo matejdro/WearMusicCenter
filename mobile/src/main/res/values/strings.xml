@@ -90,4 +90,5 @@
     <string name="setting_always_select_center_action">Always select center action</string>
     <string name="setting_always_select_center_action_description">When enabled, tapping on action list will always select center (highlighted) option, regardless of what option you tapped.</string>
     <string name="change_icon">Change icon</string>
+    <string name="please_wait">Please wait</string>
 </resources>
