@@ -115,29 +115,5 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
         }
     }
 
-    data class App(val pkg: String, val label: String) : Parcelable {
-        constructor(parcel: Parcel) : this(
-                parcel.readString(),
-                parcel.readString()) {
-        }
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeString(pkg)
-            parcel.writeString(label)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<App> {
-            override fun createFromParcel(parcel: Parcel): App {
-                return App(parcel)
-            }
-
-            override fun newArray(size: Int): Array<App?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
+    data class App(val pkg: String, val label: String)
 }
