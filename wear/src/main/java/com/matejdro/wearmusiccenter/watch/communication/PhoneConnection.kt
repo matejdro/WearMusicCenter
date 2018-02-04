@@ -22,6 +22,8 @@ import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 
@@ -76,10 +78,10 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
             val result = googleApiClient.blockingConnect()
 
             if (!result.isSuccess) {
-                val errorText = context.getString(R.string.error_play_services)
-                musicState.postValue(Resource.error(errorText, null))
+                val errorText = result.errorMessage ?: context.getString(R.string.error_play_services)
+                musicState.postValue(Resource.error(errorText, null, result))
 
-                GoogleApiAvailability.getInstance().showErrorNotification(context, result)
+                Timber.e("Play Services error: %d %s", result.errorCode, result.errorMessage)
                 return@post
             }
 

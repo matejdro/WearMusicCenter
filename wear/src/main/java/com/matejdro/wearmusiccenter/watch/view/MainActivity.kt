@@ -18,6 +18,8 @@ import android.support.wearable.input.RotaryEncoder
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -180,6 +182,11 @@ class MainActivity : WearCompanionWatchActivity(),
         } else if (it.status == Resource.Status.ERROR) {
             binding.textArtist.text = getString(R.string.error)
             binding.textTitle.text = it.message
+
+            val errorData = it.errorData
+            if (errorData is ConnectionResult) {
+                GoogleApiAvailability.getInstance().getErrorDialog(this, errorData.errorCode, 1)?.show()
+            }
         } else {
             binding.textArtist.text = ""
             binding.textTitle.text = getString(R.string.playback_stopped)
