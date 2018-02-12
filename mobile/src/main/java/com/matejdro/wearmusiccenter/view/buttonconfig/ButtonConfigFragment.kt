@@ -23,6 +23,7 @@ import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.databinding.FragmentButtonConfigBinding
 import com.matejdro.wearmusiccenter.databinding.ItemWatchButtonBinding
+import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import com.matejdro.wearmusiccenter.view.TitledActivity
 import dagger.Provides
 import dagger.android.support.AndroidSupportInjection
@@ -50,7 +51,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     private lateinit var viewModel: ButtonConfigViewModel
 
     @Inject
-    lateinit var viewModelFactory: ButtonConfigViewModelFactory
+    lateinit var viewModelFactory: InjectableViewModelFactory<ButtonConfigViewModel>
 
     @Inject
     lateinit var customIconStorage: CustomIconStorage

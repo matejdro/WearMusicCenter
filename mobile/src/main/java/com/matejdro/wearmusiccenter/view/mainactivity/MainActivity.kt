@@ -19,6 +19,7 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
+import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
@@ -46,7 +47,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     @Inject
-    lateinit var viewModelFactory: MainActivityViewModelFactory
+    lateinit var viewModelFactory: InjectableViewModelFactory<MainActivityViewModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)

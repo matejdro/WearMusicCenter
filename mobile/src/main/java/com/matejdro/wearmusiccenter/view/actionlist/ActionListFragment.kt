@@ -32,6 +32,7 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.FragmentActionListBinding
+import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearmusiccenter.view.FabFragment
 import com.matejdro.wearmusiccenter.view.TitledActivity
@@ -57,7 +58,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     private var lastEditedActionPosition = -1
 
     @Inject
-    lateinit var viewModelFactory: ActionListViewModelFactory
+    lateinit var viewModelFactory: InjectableViewModelFactory<ActionListViewModel>
 
     @Inject
     lateinit var customIconStorage: CustomIconStorage

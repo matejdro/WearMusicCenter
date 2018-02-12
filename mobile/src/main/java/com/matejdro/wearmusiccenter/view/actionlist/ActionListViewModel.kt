@@ -2,16 +2,15 @@ package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.kakai.android.autoviewmodelfactory.annotations.AutoViewModelFactory
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.util.IdentifiedItem
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
+import javax.inject.Inject
 
-@AutoViewModelFactory
-class ActionListViewModel(@param:LocalActivityConfig val actionConfig: ActionConfig) : ViewModel() {
+class ActionListViewModel @Inject constructor(@param:LocalActivityConfig val actionConfig: ActionConfig) : ViewModel() {
     val actions = MutableLiveData<List<IdentifiedItem<PhoneAction>>>()
     val openActionEditor = SingleLiveEvent<Int>()
     private var actionStore: MutableList<IdentifiedItem<PhoneAction>>

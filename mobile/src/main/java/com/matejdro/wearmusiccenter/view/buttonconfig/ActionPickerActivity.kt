@@ -19,6 +19,7 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.PopupActionPickerBinding
+import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import dagger.Provides
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -38,7 +39,7 @@ class ActionPickerActivity : AppCompatActivity() {
     private var displayNone = false
 
     @Inject
-    lateinit var viewModelFactory: ActionPickerViewModelFactory
+    lateinit var viewModelFactory: InjectableViewModelFactory<ActionPickerViewModel>
 
     @Inject
     lateinit var customIconStorage: CustomIconStorage
