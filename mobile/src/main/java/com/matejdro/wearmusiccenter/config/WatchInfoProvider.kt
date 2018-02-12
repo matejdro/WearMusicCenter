@@ -24,6 +24,10 @@ class WatchInfoProvider @Inject constructor(private val context: Context) : Live
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DataApi.DataListener {
 
+    init {
+        this.value = null
+    }
+
     private val googleApiClient: GoogleApiClient = GoogleApiClient.Builder(context)
             .addApi(Wearable.API)
             .addConnectionCallbacks(this)
