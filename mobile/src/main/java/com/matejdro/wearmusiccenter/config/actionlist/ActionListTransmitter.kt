@@ -90,7 +90,9 @@ class ActionListTransmitter(actionList: ActionList,
 
             val iconData = BitmapUtils.serialize(icon)
             val assetKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + index
-            putDataRequest.putAsset(assetKey, Asset.createFromBytes(iconData))
+            if (iconData != null) {
+                putDataRequest.putAsset(assetKey, Asset.createFromBytes(iconData))
+            }
         }
 
         putDataRequest.data = protoBuilder.build().toByteArray()

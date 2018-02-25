@@ -97,7 +97,9 @@ class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
 
             val iconData = BitmapUtils.serialize(icon)
             val assetKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + buttonInfo.getKey()
-            putDataRequest.putAsset(assetKey, Asset.createFromBytes(iconData))
+            if (iconData != null) {
+                putDataRequest.putAsset(assetKey, Asset.createFromBytes(iconData))
+            }
         }
 
         putDataRequest.data = protoBuilder.build().toByteArray()

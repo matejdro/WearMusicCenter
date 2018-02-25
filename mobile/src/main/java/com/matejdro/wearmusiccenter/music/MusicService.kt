@@ -310,7 +310,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         }
 
         if (albumArt != null) {
-            val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt))
+            val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt)!!)
             putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
         }
 

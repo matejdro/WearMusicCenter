@@ -53,8 +53,10 @@ class WatchInfoSender(val context: Context, val urgent : Boolean) {
                     val buttonImage = WearableButtons.getButtonIcon(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
                     val imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
 
-                    putDataRequest.putAsset(CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonIndex,
-                            Asset.createFromBytes(imageBytes))
+                    if (imageBytes != null) {
+                        putDataRequest.putAsset(CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonIndex,
+                                Asset.createFromBytes(imageBytes))
+                    }
                 }
             }
 
