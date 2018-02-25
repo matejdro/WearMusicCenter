@@ -17,23 +17,22 @@ class TaskerTaskPickerAction : PhoneAction, ActivityResultReceiver {
     constructor(context: Context) : super(context)
     constructor(context: Context, bundle: PersistableBundle) : super(context, bundle)
 
-    private var prevActionPicker : ActionPickerViewModel? = null
+    private var prevActionPicker: ActionPickerViewModel? = null
 
     override fun execute(service: MusicService) {
         throw UnsupportedOperationException()
     }
 
-    private val taskerIcon by lazy {
-        try {
-            context.packageManager.getApplicationIcon(TaskerIntent.TASKER_PACKAGE_MARKET)
-        } catch(ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
-        }
-    }
 
     override fun retrieveTitle(): String = context.getString(R.string.tasker_task)
     override val defaultIcon: Drawable
-        get() = taskerIcon
+        get() {
+            return try {
+                context.packageManager.getApplicationIcon(TaskerIntent.TASKER_PACKAGE_MARKET)
+            } catch (ignored: PackageManager.NameNotFoundException) {
+                context.getDrawable(android.R.drawable.sym_def_app_icon)
+            }
+        }
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         prevActionPicker = actionPicker

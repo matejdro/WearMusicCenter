@@ -23,13 +23,6 @@ class TaskerTaskAction : SelectableAction {
         this.taskName = bundle.getString(KEY_TASK_NAME)
     }
 
-    private val taskerIcon by lazy {
-        try {
-            context.packageManager.getApplicationIcon(TaskerIntent.getInstalledTaskerPackage(context))
-        } catch(ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
-        }
-    }
 
     override fun execute(service: MusicService) {
         val taskerIntent = TaskerIntent(taskName)
@@ -44,7 +37,11 @@ class TaskerTaskAction : SelectableAction {
 
     override fun retrieveTitle(): String = taskName
     override val defaultIcon: Drawable
-        get() = taskerIcon
+        get() = try {
+            context.packageManager.getApplicationIcon(TaskerIntent.getInstalledTaskerPackage(context))
+        } catch (ignored: PackageManager.NameNotFoundException) {
+            context.getDrawable(android.R.drawable.sym_def_app_icon)
+        }
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {
         other as TaskerTaskAction

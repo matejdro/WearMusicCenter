@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -143,9 +142,6 @@ class GesturePickerFragment : DialogFragment() {
             icon = icon.mutate()
             icon.setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY)
         }
-
-        // Wrap icon into another dummy drawable, so setting its bounds will not affect the icon
-        icon = InsetDrawable(icon, 0)
 
         val iconSize = resources.getDimensionPixelSize(R.dimen.action_icon_size)
         icon.setBounds(0, 0, iconSize, iconSize)

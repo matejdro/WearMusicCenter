@@ -36,14 +36,6 @@ class AppPlayAction : SelectableAction {
         )
     }
 
-    private val lazyIcon by lazy {
-        try {
-            context.packageManager.getApplicationIcon(receiverComponent.packageName)
-        } catch (ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
-        }
-    }
-
     private val lazyName by lazy {
         var appName: String
         try {
@@ -126,7 +118,11 @@ class AppPlayAction : SelectableAction {
 
     override fun retrieveTitle(): String = lazyName
     override val defaultIcon: Drawable
-        get() = lazyIcon
+        get() = try {
+            context.packageManager.getApplicationIcon(receiverComponent.packageName)
+        } catch (ignored: PackageManager.NameNotFoundException) {
+            context.getDrawable(android.R.drawable.sym_def_app_icon)
+        }
 
     override fun isEqualToAction(other: PhoneAction): Boolean {
         other as AppPlayAction
