@@ -115,7 +115,6 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            Timber.d("StateChanged %s %s", controller.packageName, state)
             if (state?.isPlaying() == true) {
                 updateControllerIfNeeded()
             }
