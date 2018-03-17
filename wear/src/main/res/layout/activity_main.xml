@@ -28,7 +28,7 @@
                 android:orientation="vertical"
                 app:boxedEdges="all">
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
                     android:id="@+id/text_artist"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -41,7 +41,7 @@
                     app:autoSizeTextType="uniform"
                     tools:text="Artist" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
                     android:id="@+id/text_title"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

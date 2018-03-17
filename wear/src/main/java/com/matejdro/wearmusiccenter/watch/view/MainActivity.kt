@@ -339,6 +339,16 @@ class MainActivity : WearCompanionWatchActivity(),
             binding.notificationPopup!!.backgroundImage.visibility = View.GONE
             binding.notificationPopup!!.solidBackground.background = ColorDrawable(Color.BLACK)
 
+            with(binding.textArtist) {
+                setTextColor(Color.BLACK)
+                setShadowLayer(2f, 0f, 0f, Color.WHITE)
+            }
+
+            with(binding.textTitle) {
+                setTextColor(Color.BLACK)
+                setShadowLayer(2f, 0f, 0f, Color.WHITE)
+            }
+
             binding.actionDrawer.controller.closeDrawer()
         }
 
@@ -375,6 +385,16 @@ class MainActivity : WearCompanionWatchActivity(),
             val crownDisableTime = Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
             if (crownDisableTime > 0) {
                 rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
+            }
+
+            with(binding.textArtist) {
+                setTextColor(Color.WHITE)
+                setShadowLayer(3f, 0f, 0f, Color.TRANSPARENT)
+            }
+
+            with(binding.textTitle) {
+                setTextColor(Color.WHITE)
+                setShadowLayer(3f, 0f, 0f, Color.TRANSPARENT)
             }
         }
 
