@@ -8,6 +8,7 @@ import android.media.session.PlaybackState
 import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.lifecycle.Resource
+import timber.log.Timber
 import javax.inject.Inject
 
 class ActiveMediaSessionProvider @Inject constructor(private val context: Context) :
@@ -23,13 +24,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
     private val idlePlayers: ArrayList<OwnedPlaybackCallback>
 
     private fun findPlayingMediaController() {
-        val activeSessions: MutableList<MediaController>
-        try {
-            activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
-        } catch(e: SecurityException) {
-            value = Resource.error(context.getString(R.string.error_notification_access), null)
-            return
-        }
+        val activeSessions = getActiveSessions()
 
         val newController = activeSessions.firstOrNull { it.isPlaying() }
 
@@ -55,6 +50,15 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
         setReportedController(reportedController)
     }
 
+    private fun getActiveSessions(): List<MediaController> {
+        try {
+            return mediaSessionManager.getActiveSessions(notificationListenerComponent)
+        } catch (e: SecurityException) {
+            value = Resource.error(context.getString(R.string.error_notification_access), null)
+            return emptyList()
+        }
+    }
+
     fun activate() {
         try {
             mediaSessionManager.addOnActiveSessionsChangedListener(this, notificationListenerComponent)
@@ -66,6 +70,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
+        Timber.d("ActiveSessions changed %s", controllers?.map { it.packageName + " " + it.isPlaying() })
         updateControllerIfNeeded()
     }
 
@@ -82,9 +87,15 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
     }
 
     fun updateControllerIfNeeded() {
-        if (currentController?.isPlaying() != true) {
+        if (!isCurrentControllerActive() || currentController?.isPlaying() != true) {
             findPlayingMediaController()
         }
+    }
+
+    private fun isCurrentControllerActive(): Boolean {
+        val currentController = currentController ?: return false
+
+        return getActiveSessions().any { it.packageName == currentController.packageName }
     }
 
     private fun removeCurrentController() {
@@ -104,6 +115,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
         }
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
+            Timber.d("StateChanged %s %s", controller.packageName, state)
             if (state?.isPlaying() == true) {
                 updateControllerIfNeeded()
             }
