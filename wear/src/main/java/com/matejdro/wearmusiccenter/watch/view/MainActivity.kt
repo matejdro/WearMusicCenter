@@ -339,15 +339,8 @@ class MainActivity : WearCompanionWatchActivity(),
             binding.notificationPopup!!.backgroundImage.visibility = View.GONE
             binding.notificationPopup!!.solidBackground.background = ColorDrawable(Color.BLACK)
 
-            with(binding.textArtist) {
-                setTextColor(Color.BLACK)
-                setShadowLayer(2f, 0f, 0f, Color.WHITE)
-            }
-
-            with(binding.textTitle) {
-                setTextColor(Color.BLACK)
-                setShadowLayer(2f, 0f, 0f, Color.WHITE)
-            }
+            binding.textArtist.displayTextOutline = true
+            binding.textTitle.displayTextOutline = true
 
             binding.actionDrawer.controller.closeDrawer()
         }
@@ -387,15 +380,8 @@ class MainActivity : WearCompanionWatchActivity(),
                 rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
             }
 
-            with(binding.textArtist) {
-                setTextColor(Color.WHITE)
-                setShadowLayer(3f, 0f, 0f, Color.TRANSPARENT)
-            }
-
-            with(binding.textTitle) {
-                setTextColor(Color.WHITE)
-                setShadowLayer(3f, 0f, 0f, Color.TRANSPARENT)
-            }
+            binding.textArtist.displayTextOutline = false
+            binding.textTitle.displayTextOutline = false
         }
 
     }
