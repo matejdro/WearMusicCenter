@@ -97,9 +97,5 @@
         <Preference
             android:key="licenses"
             android:title="@string/licenses" />
-        <Preference
-            android:key="donateButton"
-            android:summary="@string/donate_description"
-            android:title="@string/donate" />
     </PreferenceCategory>
 </PreferenceScreen>

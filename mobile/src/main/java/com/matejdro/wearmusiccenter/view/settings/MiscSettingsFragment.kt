@@ -104,13 +104,6 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
         } catch (ignored: PackageManager.NameNotFoundException) {
         }
 
-        findPreference<Preference>("donateButton")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JAFYXYH2PDRAW")
-            startActivity(intent)
-            true
-        }
-
         findPreference<Preference>("licenses")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             LicensesDialog.Builder(activity)
                     .setNotices(R.raw.notices)
