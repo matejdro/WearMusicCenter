@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.config
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Context
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList

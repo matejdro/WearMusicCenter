@@ -9,8 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.Preference
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.Preference
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.NotificationService
@@ -52,7 +52,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
             // On Android N and above we unbind notification service when autostart is disabled and
             // rebind when enabled
 
-            findPreference("auto_start").onPreferenceChangeListener =
+            findPreference<Preference>("auto_start")!!.onPreferenceChangeListener =
                     Preference.OnPreferenceChangeListener { _, newValue ->
                         newValue as Boolean
 
@@ -72,7 +72,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
     }
 
     private fun initNotificationsSection() {
-        findPreference("enable_notification_popup").onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference, value: Any ->
+        findPreference<Preference>("enable_notification_popup")!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference, value: Any ->
             if (value == false) {
                 return@OnPreferenceChangeListener true
             }
@@ -93,25 +93,25 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
     }
 
     private fun initAboutSection() {
-        findPreference("supportButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        findPreference<Preference>("supportButton")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             sendLogs()
             true
         }
 
         try {
-            findPreference("version").summary =
+            findPreference<Preference>("version")!!.summary =
                     activity!!.packageManager.getPackageInfo(activity!!.packageName, 0).versionName
         } catch (ignored: PackageManager.NameNotFoundException) {
         }
 
-        findPreference("donateButton").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        findPreference<Preference>("donateButton")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JAFYXYH2PDRAW")
             startActivity(intent)
             true
         }
 
-        findPreference("licenses").onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        findPreference<Preference>("licenses")!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             LicensesDialog.Builder(activity)
                     .setNotices(R.raw.notices)
                     .setIncludeOwnLicense(true)

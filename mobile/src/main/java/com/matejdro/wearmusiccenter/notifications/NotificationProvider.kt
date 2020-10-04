@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.notifications
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent

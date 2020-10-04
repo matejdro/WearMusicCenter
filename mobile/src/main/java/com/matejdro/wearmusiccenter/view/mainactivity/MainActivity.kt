@@ -1,24 +1,23 @@
 package com.matejdro.wearmusiccenter.view.mainactivity
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
+import com.google.android.material.navigation.NavigationView
+import androidx.fragment.app.Fragment
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.view.MenuItem
 import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
-import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.FabFragment
@@ -30,12 +29,13 @@ import com.matejdro.wearutils.companionnotice.WearCompanionPhoneActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
+import dagger.android.HasAndroidInjector
+import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import javax.inject.Inject
 
 
 class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationItemSelectedListener,
-        TitledActivity, ActivityResultReceiver, HasSupportFragmentInjector {
+        TitledActivity, ActivityResultReceiver, HasAndroidInjector {
     private lateinit var viewmodel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
@@ -214,5 +214,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
     override fun getWatchAppPresenceCapability(): String = CommPaths.WATCH_APP_CAPABILITY
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
+    override fun androidInjector(): AndroidInjector<Any> {
+        return fragmentInjector as AndroidInjector<Any>
+    }
 }

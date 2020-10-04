@@ -1,11 +1,11 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.NinePatchDrawable
 import android.graphics.drawable.VectorDrawable
@@ -13,11 +13,11 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.os.Vibrator
 import android.provider.Settings
-import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -113,9 +113,19 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         adapter = dragDropManager.createWrappedAdapter(ListItemAdapter()) as RecyclerView.Adapter<ListItemHolder>
         recycler.adapter = adapter
         recycler.itemAnimator = DraggableItemAnimator()
-        recycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recycler.layoutManager =
+            LinearLayoutManager(
+                context,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
 
-        recycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        recycler.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         dragDropManager.attachRecyclerView(recycler)
     }
 
@@ -125,8 +135,8 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
 
         viewModel = ViewModelProviders.of(this, viewModelFactory)[ActionListViewModel::class.java]
 
-        viewModel.actions.observe(this, actionListListener)
-        viewModel.openActionEditor.observe(this, openEditDialogListener)
+        viewModel.actions.observe(viewLifecycleOwner, actionListListener)
+        viewModel.openActionEditor.observe(viewLifecycleOwner, openEditDialogListener)
     }
 
     override fun onDestroy() {
@@ -213,7 +223,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             holder.icon.setImageDrawable(icon)
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ListItemHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemHolder {
             val view = layoutInflater.inflate(R.layout.item_action_list, parent, false)
             return ListItemHolder(view)
         }

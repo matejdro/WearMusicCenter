@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.wear.widget.drawer.WearableDrawerLayout
+    <androidx.wear.widget.drawer.WearableDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,7 +17,7 @@
             android:alpha="0.333"
             tools:ignore="ContentDescription" />
 
-        <android.support.wear.widget.BoxInsetLayout
+        <androidx.wear.widget.BoxInsetLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/music_screen_text_margin">
@@ -58,7 +58,7 @@
 
             </LinearLayout>
 
-        </android.support.wear.widget.BoxInsetLayout>
+        </androidx.wear.widget.BoxInsetLayout>
 
         <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
             android:id="@+id/volume_bar"
@@ -153,5 +153,5 @@
 
         </com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView>
 
-    </android.support.wear.widget.drawer.WearableDrawerLayout>
+    </androidx.wear.widget.drawer.WearableDrawerLayout>
 </layout>

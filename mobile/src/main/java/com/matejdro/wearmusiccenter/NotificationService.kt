@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter
 
 import android.annotation.TargetApi
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -19,7 +19,7 @@ import com.matejdro.wearmusiccenter.music.ActiveMediaSessionProvider
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.music.isPlaying
 import com.matejdro.wearutils.lifecycle.Resource
-import com.matejdro.wearutils.messages.MessagingUtils
+import com.matejdro.wearutils.messages.sendSingleMessage
 import com.matejdro.wearutils.preferences.definition.Preferences
 import timber.log.Timber
 
@@ -102,9 +102,10 @@ class NotificationService : NotificationListenerService() {
 
     private fun startAppOnWatch() {
         Timber.d("AttemptToStartApp %s", googleApiClient?.isConnected)
+        val googleApiClient = googleApiClient
         if (googleApiClient?.isConnected == true) {
             Timber.d("Starting app")
-            MessagingUtils.sendSingleMessage(googleApiClient,
+            sendSingleMessage(googleApiClient,
                     CommPaths.MESSAGE_OPEN_APP,
                     null) {
                 Timber.d("Start success: %b", it.status.isSuccess)

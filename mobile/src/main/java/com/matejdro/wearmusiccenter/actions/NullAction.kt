@@ -21,5 +21,5 @@ class NullAction : PhoneAction {
     override fun retrieveTitle(): String = context.getString(R.string.no_action)
 
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.ic_cross_black)
+        get() = context.getDrawable(R.drawable.ic_cross_black)!!
 }

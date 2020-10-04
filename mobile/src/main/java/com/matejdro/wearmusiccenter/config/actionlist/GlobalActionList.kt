@@ -1,9 +1,10 @@
 package com.matejdro.wearmusiccenter.config.actionlist
 
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GlobalActionList @Inject constructor(actionListTransmitterFactory: ActionListTransmitterFactory,
@@ -30,11 +31,11 @@ class GlobalActionList @Inject constructor(actionListTransmitterFactory: ActionL
 
         committing = true
 
-        launch(UI) {
-            async {
+        GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
                 diskStorage.saveActions(actions)
                 transmitter.sendConfigToWatch(actions)
-            }.await()
+            }
 
             committing = false
             if (commitAgain) {

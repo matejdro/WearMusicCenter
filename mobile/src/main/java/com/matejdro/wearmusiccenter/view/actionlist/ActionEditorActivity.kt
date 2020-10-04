@@ -5,14 +5,14 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
@@ -191,7 +191,7 @@ class ActionEditorActivity : Activity() {
         } else if (requestCode == REQUEST_CODE_PICK_ICON && data != null) {
             val currentAction = currentAction ?: return
 
-            val iconUri = data.data
+            val iconUri = data.data!!
             val bitmap = BitmapUtils.getBitmap(BitmapUtils.getDrawableFromUri(this, iconUri)) ?: return
 
             currentAction.customIconUri = iconUri

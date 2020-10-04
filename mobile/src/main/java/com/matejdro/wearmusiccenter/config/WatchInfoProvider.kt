@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.config
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -15,8 +15,10 @@ import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearutils.messages.DataUtils
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import dagger.Reusable
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Reusable
@@ -44,7 +46,7 @@ class WatchInfoProvider @Inject constructor(private val context: Context) : Live
         val icons = ArrayList<Drawable?>()
 
         val frozenDataItem = dataItem.freeze()
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.Default) {
             for (buttonIndex in 0 until watchInfo.buttonsCount) {
                 val buttonAssetName = CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonIndex
                 val asset = frozenDataItem.assets[buttonAssetName]
@@ -59,7 +61,6 @@ class WatchInfoProvider @Inject constructor(private val context: Context) : Live
             }
 
             postValue(WatchInfoWithIcons(watchInfo, icons))
-
         }
     }
 

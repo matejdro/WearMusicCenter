@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.app.Application
-import android.arch.lifecycle.*
+import androidx.lifecycle.*
 import android.content.SharedPreferences
 import android.os.Handler
 import com.matejdro.wearmusiccenter.common.MiscPreferences

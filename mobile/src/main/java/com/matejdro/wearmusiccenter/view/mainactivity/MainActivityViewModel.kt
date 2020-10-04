@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.view.mainactivity
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import javax.inject.Inject
 

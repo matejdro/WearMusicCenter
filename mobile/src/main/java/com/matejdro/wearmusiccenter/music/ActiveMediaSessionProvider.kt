@@ -12,7 +12,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ActiveMediaSessionProvider @Inject constructor(private val context: Context) :
-        android.arch.lifecycle.LiveData<Resource<MediaController>>(),
+        androidx.lifecycle.LiveData<Resource<MediaController>>(),
         MediaSessionManager.OnActiveSessionsChangedListener {
 
     private val notificationListenerComponent: ComponentName =
@@ -25,6 +25,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
 
     private fun findPlayingMediaController() {
         val activeSessions = getActiveSessions()
+        Timber.d("Active Sessions %s", activeSessions.map { "${it.packageName} ${it.playbackState} ${it.playbackInfo}" })
 
         val newController = activeSessions.firstOrNull { it.isPlaying() }
 
@@ -47,6 +48,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
             currentController?.registerCallback(mediaCallback)
         }
 
+        Timber.d("Reported session %s", activeSessions.map { "${reportedController?.packageName} ${reportedController?.playbackState} ${reportedController?.playbackInfo}" })
         setReportedController(reportedController)
     }
 

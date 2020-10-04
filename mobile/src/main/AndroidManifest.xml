@@ -9,6 +9,9 @@
     <uses-permission android:name="net.dinglisch.android.tasker.PERMISSION_RUN_TASKS" />
     <uses-permission android:name="com.matejdro.wearvibrationcenter.RECEIVE_NOTIFICATIONS" />
 
+    <uses-sdk
+        tools:overrideLibrary="androidx.wear" />
+
     <application
         android:name=".WearMusicCenter"
         android:allowBackup="true"
@@ -72,7 +75,7 @@
 
         <provider
             android:authorities="com.matejdro.wearmusiccenter.logs"
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

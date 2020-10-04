@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import android.content.Context
 import android.content.Intent
 import com.matejdro.wearmusiccenter.actions.PhoneAction

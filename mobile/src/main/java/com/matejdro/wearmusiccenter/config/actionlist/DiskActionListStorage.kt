@@ -2,7 +2,7 @@ package com.matejdro.wearmusiccenter.config.actionlist
 
 import android.content.Context
 import android.os.PersistableBundle
-import android.support.annotation.WorkerThread
+import androidx.annotation.WorkerThread
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.util.BundleFileSerialization

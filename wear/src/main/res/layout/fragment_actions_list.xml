@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="?selectableItemBackground">
 
-    <android.support.wear.widget.WearableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.wear.widget.WearableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

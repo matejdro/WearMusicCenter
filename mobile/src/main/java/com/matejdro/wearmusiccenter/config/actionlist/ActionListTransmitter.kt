@@ -3,7 +3,7 @@ package com.matejdro.wearmusiccenter.config.actionlist
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.WorkerThread
+import androidx.annotation.WorkerThread
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
@@ -19,8 +19,10 @@ import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.proto.WatchList
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AutoFactory
 class ActionListTransmitter(actionList: ActionList,
@@ -43,7 +45,7 @@ class ActionListTransmitter(actionList: ActionList,
     }
 
     private fun resendIfNeeded(actionList: ActionList) {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.Default) {
             val dataOnWatch = Wearable.DataApi.getDataItems(apiClient,
                     Uri.parse("wear://*${CommPaths.DATA_LIST_ITEMS}"))
                     .await()

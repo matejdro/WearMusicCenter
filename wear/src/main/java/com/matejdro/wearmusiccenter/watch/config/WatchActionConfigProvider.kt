@@ -1,23 +1,26 @@
 package com.matejdro.wearmusiccenter.watch.config
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
-import android.support.v4.util.SimpleArrayMap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.collection.SimpleArrayMap
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.DataItem
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearmusiccenter.watch.communication.IconGetter
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, rawConfigData: LiveData<DataItem>) {
     val updateListener = MutableLiveData<WatchActionConfigProvider>()
 
-    var configMap = SimpleArrayMap<ButtonInfo, ButtonAction>()
+    var configMap =
+        SimpleArrayMap<ButtonInfo, ButtonAction>()
 
     var volumeStep = 0.1f
 
@@ -38,10 +41,11 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
 
         val dataItem = it
 
-        launch(UI) {
-            val newConfigMap = SimpleArrayMap<ButtonInfo, ButtonAction>()
+        GlobalScope.launch(Dispatchers.Main) {
+            val newConfigMap =
+                SimpleArrayMap<ButtonInfo, ButtonAction>()
 
-            async {
+            withContext(Dispatchers.Default) {
                 val actions = WatchActions.parseFrom(it.data)
                 volumeStep = actions.volumeStep
 
@@ -58,7 +62,7 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
 
                     newConfigMap.put(buttonInfo, ButtonAction(key, icon))
                 }
-            }.await()
+            }
 
             configMap = newConfigMap
             updateListener.value = this@WatchActionConfigProvider

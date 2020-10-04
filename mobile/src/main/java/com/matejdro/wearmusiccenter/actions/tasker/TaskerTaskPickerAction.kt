@@ -30,7 +30,7 @@ class TaskerTaskPickerAction : PhoneAction, ActivityResultReceiver {
             return try {
                 context.packageManager.getApplicationIcon(TaskerIntent.TASKER_PACKAGE_MARKET)
             } catch (ignored: PackageManager.NameNotFoundException) {
-                context.getDrawable(android.R.drawable.sym_def_app_icon)
+                context.getDrawable(android.R.drawable.sym_def_app_icon)!!
             }
         }
 

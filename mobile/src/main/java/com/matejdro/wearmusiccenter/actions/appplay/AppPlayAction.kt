@@ -13,9 +13,10 @@ import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.SelectableAction
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.music.isPlaying
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class AppPlayAction : SelectableAction {
     companion object {
@@ -31,8 +32,8 @@ class AppPlayAction : SelectableAction {
 
     constructor(context: Context, bundle: PersistableBundle) : super(context, bundle) {
         this.receiverComponent = ComponentName(
-                bundle.getString(KEY_PACKAGE_NAME),
-                bundle.getString(KEY_CLASS_NAME)
+                bundle.getString(KEY_PACKAGE_NAME)!!,
+                bundle.getString(KEY_CLASS_NAME)!!
         )
     }
 
@@ -64,7 +65,7 @@ class AppPlayAction : SelectableAction {
 
         val androidContext = context
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             dispatchUpDownEvents(pickedDeviceID)
             delay(500)
 
@@ -121,7 +122,7 @@ class AppPlayAction : SelectableAction {
         get() = try {
             context.packageManager.getApplicationIcon(receiverComponent.packageName)
         } catch (ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
+            context.getDrawable(android.R.drawable.sym_def_app_icon)!!
         }
 
     override fun isEqualToAction(other: PhoneAction): Boolean {

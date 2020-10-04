@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.WorkerThread
+import androidx.annotation.WorkerThread
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
@@ -20,8 +20,10 @@ import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AutoFactory
 class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
@@ -45,7 +47,7 @@ class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
     }
 
     private fun resendIfNeeded(buttonConfig: ButtonConfig) {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.Default) {
             val dataOnWatch = Wearable.DataApi.getDataItems(apiClient,
                     Uri.parse("wear://*$endpointPath"))
                     .await()

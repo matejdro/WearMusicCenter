@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList

@@ -6,9 +6,11 @@ import com.google.auto.factory.Provided
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AutoFactory
 class GlobalButtonConfig
@@ -65,11 +67,11 @@ constructor(playbackConfig: Boolean,
 
         commiting = true
 
-        launch(UI) {
-            async worker@ {
+        GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) worker@ {
                 diskButtonStorage.saveButtons(configMap.entries)
                 buttonTransmitter.sendConfigToWatch(configMap.entries)
-            }.await()
+            }
 
             commiting = false
             if (commitAgain) {

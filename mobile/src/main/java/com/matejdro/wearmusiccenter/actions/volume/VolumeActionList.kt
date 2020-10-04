@@ -30,7 +30,7 @@ class VolumeActionList : PhoneAction {
 
     override val defaultIcon: Drawable
         get() {
-            return context.getDrawable(R.drawable.action_volume_up)
+            return context.getDrawable(R.drawable.action_volume_up)!!
         }
 
 }

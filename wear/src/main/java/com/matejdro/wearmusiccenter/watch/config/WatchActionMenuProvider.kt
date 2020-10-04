@@ -1,14 +1,16 @@
 package com.matejdro.wearmusiccenter.watch.config
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.DataItem
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchList
 import com.matejdro.wearmusiccenter.watch.communication.IconGetter
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawData: LiveData<DataItem>) {
     val config = MutableLiveData<List<ButtonAction>>()
@@ -18,7 +20,7 @@ class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawD
             return@Observer
         }
 
-        async {
+        GlobalScope.launch(Dispatchers.Default) {
             val listProto = WatchList.parseFrom(dataItem.data)
 
             val actions = listProto.actionsList.withIndex().map {

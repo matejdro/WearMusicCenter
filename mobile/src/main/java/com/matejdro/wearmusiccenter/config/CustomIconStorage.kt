@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.support.v4.util.ArraySet
+import androidx.collection.ArraySet
 import android.util.LruCache
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList

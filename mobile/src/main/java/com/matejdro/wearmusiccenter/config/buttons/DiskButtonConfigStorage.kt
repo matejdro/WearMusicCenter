@@ -2,7 +2,7 @@ package com.matejdro.wearmusiccenter.config.buttons
 
 import android.content.Context
 import android.os.PersistableBundle
-import android.support.annotation.WorkerThread
+import androidx.annotation.WorkerThread
 import com.google.auto.factory.AutoFactory
 import com.google.auto.factory.Provided
 import com.matejdro.wearmusiccenter.actions.PhoneAction
@@ -68,7 +68,7 @@ class DiskButtonConfigStorage(@Provided private val context: Context, fileSuffix
         val numButtons = bundle.getInt(ConfigConstants.NUM_BUTTONS, 0)
         for (buttonIndex in 0 until numButtons) {
             val buttonInfoKey = "${ConfigConstants.BUTTON_INFO}.$buttonIndex"
-            val buttonInfo = ButtonInfo(bundle.getPersistableBundle(buttonInfoKey))
+            val buttonInfo = ButtonInfo(bundle.getPersistableBundle(buttonInfoKey)!!)
 
             val buttonActionKey = "${ConfigConstants.BUTTON_ACTION}.$buttonIndex"
             val buttonAction = PhoneAction.deserialize<PhoneAction>(context, bundle.getPersistableBundle(buttonActionKey))

@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.common.view
 
 import android.annotation.SuppressLint
-import android.support.v4.content.res.ResourcesCompat
+import androidx.core.content.res.ResourcesCompat
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.matejdro.common.R
@@ -11,7 +11,7 @@ class FourWayTouchLayout : FrameLayout,
         android.view.GestureDetector.OnGestureListener,
         android.view.GestureDetector.OnDoubleTapListener
     {
-    private val gestureDetector: android.support.v4.view.GestureDetectorCompat
+    private val gestureDetector: androidx.core.view.GestureDetectorCompat
 
     private var viewSize: Int = 0
     private val quadrantRipples : Array<android.graphics.drawable.Drawable>
@@ -21,8 +21,8 @@ class FourWayTouchLayout : FrameLayout,
     val enabledDoubleTaps = booleanArrayOf(false, false, false, false)
     val enabledLongTaps = booleanArrayOf(false, false, false, false)
 
-    constructor(context: android.content.Context, attrs: android.util.AttributeSet?, @android.support.annotation.AttrRes defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        this.gestureDetector = android.support.v4.view.GestureDetectorCompat(context, this)
+    constructor(context: android.content.Context, attrs: android.util.AttributeSet?, @androidx.annotation.AttrRes defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        this.gestureDetector = androidx.core.view.GestureDetectorCompat(context, this)
         gestureDetector.setOnDoubleTapListener(this)
 
         val rippleColor = android.content.res.ColorStateList.valueOf(

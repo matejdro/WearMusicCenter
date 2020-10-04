@@ -31,5 +31,5 @@ class PlayAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_play)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.action_play)
+        get() = context.getDrawable(R.drawable.action_play)!!
 }

@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.watch.communication
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -17,12 +17,13 @@ import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
 import com.matejdro.wearutils.lifecycle.*
 import com.matejdro.wearutils.messages.DataUtils
-import com.matejdro.wearutils.messages.MessagingUtils
+import com.matejdro.wearutils.messages.getOtherNodeId
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -116,7 +117,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
         connectionHandler.post {
             Wearable.DataApi.removeListener(googleApiClient, this)
 
-            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            val phoneNode = getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
                 Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_CLOSED, null).await()
             }
@@ -141,7 +142,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
         }
 
         connectionHandler.post {
-            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            val phoneNode = getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
                 Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
             }
@@ -154,7 +155,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
     }
 
     fun sendVolume(newVolume: Float) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             nextVolume = -1f
 
             if (sendingVolume) {
@@ -164,15 +165,15 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
             sendingVolume = true
 
-            async {
-                val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            withContext(Dispatchers.Default) {
+                val phoneNode = getOtherNodeId(googleApiClient)
                 if (phoneNode != null) {
                     Wearable.MessageApi.sendMessage(googleApiClient,
                             phoneNode,
                             CommPaths.MESSAGE_CHANGE_VOLUME,
                             FloatPacker.packFloat(newVolume)).await()
                 }
-            }.await()
+            }
 
             sendingVolume = false
             if (nextVolume >= 0) {
@@ -183,7 +184,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
     fun executeButtonAction(buttonInfo: ButtonInfo) {
         connectionHandler.post {
-            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            val phoneNode = getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
                 Wearable.MessageApi.sendMessage(googleApiClient,
                         phoneNode,
@@ -196,7 +197,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
     fun executeMenuAction(index: Int) {
         connectionHandler.post {
-            val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+            val phoneNode = getOtherNodeId(googleApiClient)
             if (phoneNode != null) {
                 Wearable.MessageApi.sendMessage(googleApiClient,
                         phoneNode,
@@ -208,7 +209,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
     }
 
     private fun sendAck() {
-        val phoneNode = MessagingUtils.getOtherNodeId(googleApiClient)
+        val phoneNode = getOtherNodeId(googleApiClient)
         if (phoneNode != null) {
             Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
         }

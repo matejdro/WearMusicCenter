@@ -6,20 +6,22 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.DialogPreference
-import android.support.v7.preference.PreferenceDialogFragmentCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceDialogFragmentCompat
 import android.util.AttributeSet
 import android.view.View
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.preferences.compat.PreferenceWithDialog
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MusicAppListPreference
 @JvmOverloads
-constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPreference(context, attributeSet), PreferenceWithDialog {
+constructor(context: Context, attributeSet: AttributeSet? = null) :
+    DialogPreference(context, attributeSet), PreferenceWithDialog {
     var appList: List<App>? = null
 
     var blacklist: MutableSet<String>
@@ -33,7 +35,7 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
     }
 
     override fun onClick() {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
 
             @Suppress("DEPRECATION")
             val progressDialog = android.app.ProgressDialog(this@MusicAppListPreference.context!!)
@@ -47,23 +49,22 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
         }
     }
 
-    private suspend fun getAllApps(): List<App> = async {
+    private suspend fun getAllApps(): List<App> = withContext(Dispatchers.Default) {
         val packageManager = this@MusicAppListPreference.context!!.packageManager
 
         packageManager.getInstalledPackages(0)
-                .map {
-                    val appLabel = try {
-                        val appInfo = packageManager.getApplicationInfo(it.packageName, 0)
-                        packageManager.getApplicationLabel(appInfo)
-                    } catch (e: PackageManager.NameNotFoundException) {
-                        it.packageName
-                    }
-
-                    App(it.packageName, appLabel.toString())
+            .map {
+                val appLabel = try {
+                    val appInfo = packageManager.getApplicationInfo(it.packageName, 0)
+                    packageManager.getApplicationLabel(appInfo)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    it.packageName
                 }
-                .sortedBy { it.label }
-    }.await()
 
+                App(it.packageName, appLabel.toString())
+            }
+            .sortedBy { it.label }
+    }
 
     class MusicAppListPreferenceDialog : PreferenceDialogFragmentCompat() {
         companion object {
@@ -85,7 +86,8 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
             installedApps = (preference as MusicAppListPreference).appList ?: emptyList()
 
             val savedBlacklist = (preference as MusicAppListPreference).blacklist
-            selectedApps = BooleanArray(installedApps.size) { !savedBlacklist.contains(installedApps[it].pkg) }
+            selectedApps =
+                BooleanArray(installedApps.size) { !savedBlacklist.contains(installedApps[it].pkg) }
 
             return super.onCreateDialog(savedInstanceState)
         }
@@ -96,18 +98,21 @@ constructor(context: Context, attributeSet: AttributeSet? = null) : DialogPrefer
             }
 
             val newBlacklist = HashSet<String>(installedApps
-                    .filterIndexed { index, _ -> !selectedApps[index] }
-                    .map { it.pkg })
+                .filterIndexed { index, _ -> !selectedApps[index] }
+                .map { it.pkg })
 
             (preference as MusicAppListPreference).blacklist = newBlacklist
         }
 
         override fun onPrepareDialogBuilder(builder: AlertDialog.Builder) {
-            builder.setMultiChoiceItems(installedApps.map { it.label }.toTypedArray(), selectedApps) { _, which, isChecked ->
+            builder.setMultiChoiceItems(
+                installedApps.map { it.label }.toTypedArray(),
+                selectedApps
+            ) { _, which, isChecked ->
                 selectedApps[which] = isChecked
             }
-                    .setPositiveButton(android.R.string.ok, this)
-                    .setNegativeButton(android.R.string.cancel, this)
+                .setPositiveButton(android.R.string.ok, this)
+                .setNegativeButton(android.R.string.cancel, this)
         }
 
         override fun onCreateDialogView(context: Context?): View? {

@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig

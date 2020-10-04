@@ -1,9 +1,9 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -11,9 +11,9 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.preference.PreferenceManager
-import android.support.wear.ambient.AmbientMode
-import android.support.wear.widget.drawer.WearableDrawerLayout
-import android.support.wear.widget.drawer.WearableDrawerView
+import androidx.wear.ambient.AmbientMode
+import androidx.wear.widget.drawer.WearableDrawerLayout
+import androidx.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.input.RotaryEncoder
 import android.view.KeyEvent
 import android.view.View
@@ -64,7 +64,6 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private lateinit var preferences: SharedPreferences
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
     lateinit var viewModel: MusicViewModel
 
     private var rotatingInputDisabledUntil = 0L
@@ -74,7 +73,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
         viewModel = ViewModelProviders.of(this)[MusicViewModel::class.java]
 
-        binding = android.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
+        binding = androidx.databinding.DataBindingUtil.setContentView(this, com.matejdro.wearmusiccenter.R.layout.activity_main)
         drawerContentContainer = findViewById(R.id.drawer_content)
 
         // Hide peek container - we only want full blown drawer without peeks
@@ -500,8 +499,6 @@ class MainActivity : WearCompanionWatchActivity(),
         buzz()
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_LONG_TAP))
     }
-
-    override fun getLifecycle(): LifecycleRegistry = lifecycleRegistry
 
     private class TimeoutsHandler(val activity: WeakReference<MainActivity>) : Handler() {
         override fun handleMessage(msg: Message) {

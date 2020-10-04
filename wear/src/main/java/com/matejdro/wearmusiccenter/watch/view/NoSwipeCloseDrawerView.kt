@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.content.Context
-import android.support.wear.widget.drawer.WearableDrawerView
+import androidx.wear.widget.drawer.WearableDrawerView
 import android.util.AttributeSet
 
 /**

@@ -1,13 +1,13 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,8 +78,8 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
         viewModel = ViewModelProviders.of(this, viewModelFactory)[ButtonConfigViewModel::class.java]
 
-        viewModel.watchInfoProvider.observe(this, watchInfoObserver)
-        viewModel.buttonConfig.observe(this, buttonsConfigObserver)
+        viewModel.watchInfoProvider.observe(viewLifecycleOwner, watchInfoObserver)
+        viewModel.buttonConfig.observe(viewLifecycleOwner, buttonsConfigObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -176,7 +176,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         val gesturePicker = GesturePickerFragment.newInstance(setsPlaybackActions,
                 buttonInfo,
                 buttonName)
-        gesturePicker.show(fragmentManager, "GesturePickerFragment")
+        gesturePicker.show(requireFragmentManager(), "GesturePickerFragment")
     }
 
     private fun onButtonConfigurationFinished() {

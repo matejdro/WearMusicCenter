@@ -2,8 +2,8 @@ package com.matejdro.wearmusiccenter.music
 
 import android.annotation.TargetApi
 import android.app.*
-import android.arch.lifecycle.LifecycleService
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,8 +16,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.preference.PreferenceManager
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
@@ -151,13 +151,16 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         Timber.d("Service started")
     }
 
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if ((intent?.action) == ACTION_START_FROM_WATCH) {
+        val action = intent?.action
+
+        if (action == ACTION_START_FROM_WATCH) {
             startedFromWatch = true
-        } else if (intent?.action == ACTION_STOP_SELF || !startedFromWatch) {
+        } else if (action == ACTION_STOP_SELF || !startedFromWatch) {
             stopSelf()
             return Service.START_NOT_STICKY
-        } else if (intent?.action == ACTION_NOTIFICATION_SERVICE_ACTIVATED) {
+        } else if (action == ACTION_NOTIFICATION_SERVICE_ACTIVATED) {
             mediaSessionProvider.activate()
             NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID_SERVICE_ERROR)
         }
@@ -231,7 +234,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     private fun updateVolume(newVolume: Float) {
         val previousMediaController = currentMediaController ?: return
 
-        val maxVolume = previousMediaController.playbackInfo.maxVolume
+        val maxVolume = previousMediaController.playbackInfo?.maxVolume ?: 0
         previousMediaController.setVolumeTo((maxVolume * newVolume).toInt(), 0)
     }
 
@@ -282,7 +285,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             }
 
-            val volume = mediaController.playbackInfo.currentVolume.toFloat() / mediaController.playbackInfo.maxVolume
+            val volume = (mediaController.playbackInfo?.currentVolume?.toFloat() ?: 0f) / (mediaController.playbackInfo?.maxVolume?.toFloat() ?: 0f)
             musicStateBuilder.volume = volume
         }
 

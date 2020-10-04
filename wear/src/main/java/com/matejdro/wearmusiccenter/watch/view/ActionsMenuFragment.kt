@@ -2,15 +2,15 @@ package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
 import android.app.Fragment
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
-import android.support.wear.widget.CurvingLayoutCallback
-import android.support.wear.widget.WearableLinearLayoutManager
-import android.support.wear.widget.WearableRecyclerView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.wear.widget.CurvingLayoutCallback
+import androidx.wear.widget.WearableLinearLayoutManager
+import androidx.wear.widget.WearableRecyclerView
 import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -128,7 +128,7 @@ class ActionsMenuFragment : Fragment() {
     }
 
     inner class MenuAdapter : RecyclerView.Adapter<MenuItemViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MenuItemViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuItemViewHolder {
             val view = LayoutInflater.from(context).inflate(R.layout.item_list_action, parent, false)
             return MenuItemViewHolder(view)
         }
@@ -183,7 +183,7 @@ class ActionsMenuFragment : Fragment() {
         private fun finishChildrenLayout() {
             for (childIndex in 0 until childCount) {
                 val child = getChildAt(childIndex)
-                val holder = child.tag as MenuItemViewHolder
+                val holder = child!!.tag as MenuItemViewHolder
 
                 val textScale: Float
                 val imageScale: Float

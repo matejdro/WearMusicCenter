@@ -1,6 +1,6 @@
 package com.matejdro.wearmusiccenter.view
 
-import android.support.design.widget.FloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 interface FabFragment {
     fun onFabClicked()

@@ -20,7 +20,7 @@ class AppPlayPickerAction : PhoneAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.start_playback)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.ic_apps)
+        get() = context.getDrawable(R.drawable.ic_apps)!!
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         val actions = getAllMusicApps(context)

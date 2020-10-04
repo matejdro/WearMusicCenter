@@ -5,15 +5,15 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,8 +79,8 @@ class GesturePickerFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        baseButtonInfo = ButtonInfo(arguments!!.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO))
-        buttonName = arguments!!.getString(PARAM_BUTTON_NAME)
+        baseButtonInfo = ButtonInfo(arguments!!.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO)!!)
+        buttonName = arguments!!.getString(PARAM_BUTTON_NAME)!!
         setsPlaybackButtons = arguments!!.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
 
         AndroidSupportInjection.inject(this)
@@ -107,8 +107,8 @@ class GesturePickerFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog.setCanceledOnTouchOutside(true)
-        dialog.setTitle(buttonName)
+        dialog!!.setCanceledOnTouchOutside(true)
+        dialog!!.setTitle(buttonName)
 
         buttons = arrayOf(binding.singlePressButton, binding.doublePressButton, binding.longPressButton)
 
@@ -216,7 +216,7 @@ class GesturePickerFragment : DialogFragment() {
             actions[gesture] = action
             updateButton(buttons[gesture],  action)
         } else if (requestCode == REQUEST_CODE_PICK_ICON) {
-            val iconUri = data.data
+            val iconUri = data.data!!
 
             val action = actions[GESTURE_SINGLE_TAP].let {
                 if (it == null) {

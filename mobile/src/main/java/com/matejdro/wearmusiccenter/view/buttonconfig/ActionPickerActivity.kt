@@ -1,16 +1,16 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -65,8 +65,18 @@ class ActionPickerActivity : AppCompatActivity() {
         recycler = binding.recycler
         adapter = ActionsAdapter()
         recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        recycler.layoutManager =
+            LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        recycler.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
 
 
         setFinishOnTouchOutside(true)
@@ -116,7 +126,7 @@ class ActionPickerActivity : AppCompatActivity() {
             return viewModel.displayedActions.value?.size ?: 0
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ActionsHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActionsHolder {
             val view = layoutInflater.inflate(R.layout.item_action, parent, false)
             return ActionsHolder(view)
         }

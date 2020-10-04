@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.PersistableBundle
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.serialization.Bundlable

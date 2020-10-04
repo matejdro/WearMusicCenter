@@ -20,7 +20,7 @@ class TaskerTaskAction : SelectableAction {
         this.taskName = taskName
     }
     constructor(context : Context, bundle: PersistableBundle) : super(context, bundle) {
-        this.taskName = bundle.getString(KEY_TASK_NAME)
+        this.taskName = bundle.getString(KEY_TASK_NAME)!!
     }
 
 
@@ -40,7 +40,7 @@ class TaskerTaskAction : SelectableAction {
         get() = try {
             context.packageManager.getApplicationIcon(TaskerIntent.getInstalledTaskerPackage(context))
         } catch (ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
+            context.getDrawable(android.R.drawable.sym_def_app_icon)!!
         }
 
     override fun isEqualToAction(other : PhoneAction) : Boolean {

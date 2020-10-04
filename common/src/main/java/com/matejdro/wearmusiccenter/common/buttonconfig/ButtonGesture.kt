@@ -1,9 +1,9 @@
 package com.matejdro.wearmusiccenter.common.buttonconfig
 
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(GESTURE_SINGLE_TAP.toLong(), GESTURE_DOUBLE_TAP.toLong(), GESTURE_LONG_TAP.toLong())
+@IntDef(GESTURE_SINGLE_TAP, GESTURE_DOUBLE_TAP, GESTURE_LONG_TAP)
 annotation class ButtonGesture
 
 const val GESTURE_SINGLE_TAP = 0
