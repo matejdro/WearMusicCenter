@@ -23,6 +23,7 @@ interface CommPaths {
         const val MESSAGE_EXECUTE_MENU_ACTION = "/Messages/MenuAction"
         const val MESSAGE_SEND_LOGS = "/SendLogs"
         const val MESSAGE_OPEN_APP = "/IdleMessages/OpenApp"
+        const val MESSAGE_CUSTOM_LIST_ITEM_SELECTED = "/Messages/CustomListItemSelected"
 
         const val CHANNEL_LOGS = "/Channel/Logs"
 
@@ -34,6 +35,8 @@ interface CommPaths {
         const val DATA_PLAYING_ACTION_CONFIG = DATA_ACTION_CONFIG_PREFIX + "/Playback"
         const val DATA_STOPPING_ACTION_CONFIG = DATA_ACTION_CONFIG_PREFIX + "/Stopped"
         const val ASSET_BUTTON_ICON_PREFIX = "/Button_Icon_"
+
+        const val DATA_CUSTOM_LIST = "/CustomList/List"
 
         const val PREFERENCES_PREFIX = "/Settings"
     }

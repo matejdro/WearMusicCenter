@@ -2,8 +2,6 @@ package com.matejdro.wearmusiccenter.music
 
 import android.annotation.TargetApi
 import android.app.*
-import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,11 +16,14 @@ import android.os.Message
 import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.Observer
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
+import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.util.FloatPacker
@@ -31,6 +32,7 @@ import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.di.GlobalConfig
 import com.matejdro.wearmusiccenter.notifications.NotificationProvider
+import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearutils.lifecycle.EmptyObserver
@@ -65,7 +67,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             private set
     }
 
-    private lateinit var googleApiClient: GoogleApiClient
+    lateinit var googleApiClient: GoogleApiClient
     private val connectionThread: HandlerThread = HandlerThread("Phone Connection")
     private lateinit var connectionHandler: Handler
 
@@ -285,7 +287,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             }
 
-            val volume = (mediaController.playbackInfo?.currentVolume?.toFloat() ?: 0f) / (mediaController.playbackInfo?.maxVolume?.toFloat() ?: 0f)
+            val volume = (mediaController.playbackInfo?.currentVolume?.toFloat()
+                    ?: 0f) / (mediaController.playbackInfo?.maxVolume?.toFloat() ?: 0f)
             musicStateBuilder.volume = volume
         }
 
@@ -375,6 +378,20 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         }
     }
 
+    private fun onCustomMenuItemPresed(customListItemAction: CustomListItemAction) {
+        if (customListItemAction.entryId == CustomLists.SPECIAL_ITEM_ERROR) {
+            return
+        }
+
+        when (customListItemAction.listId) {
+            CustomLists.PLAYLIST -> {
+                currentMediaController?.transportControls?.skipToQueueItem(
+                        customListItemAction.entryId.toLong()
+                )
+            }
+        }
+    }
+
     override fun onMessageReceived(event: MessageEvent?) {
         if (event == null) {
             return
@@ -405,6 +422,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             }
             event.path == CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY -> {
                 onWatchSwipeExited()
+            }
+            event.path == CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED -> {
+                onCustomMenuItemPresed(CustomListItemAction.parseFrom(event.data))
             }
         }
     }

@@ -1,13 +1,14 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.app.Application
-import androidx.lifecycle.*
 import android.content.SharedPreferences
 import android.os.Handler
+import androidx.lifecycle.*
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.proto.MusicState
+import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
@@ -30,6 +31,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     val currentButtonConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
+    val customList = MediatorLiveData<CustomListWithBitmaps>()
     val actionsMenuConfig = WatchActionMenuProvider(phoneConnection.googleApiClient, phoneConnection.rawActionMenuConfig)
     val preferences = PreferencesBus as LiveData<SharedPreferences>
 
@@ -42,7 +44,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val closeApp = SingleLiveEvent<Unit>()
 
     val albumArt
-    get() = phoneConnection.albumArt
+        get() = phoneConnection.albumArt
 
     fun updateTimers() {
         if (closeDeadline < System.currentTimeMillis()) {
@@ -62,6 +64,11 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         phoneConnection.executeMenuAction(index)
     }
 
+    fun executeItemFromCustomMenu(listId: String, itemId: String) {
+        closeActionsMenu.postValue(null)
+        phoneConnection.executeCustomMenuAction(listId, itemId)
+    }
+
     fun executeAction(buttonInfo: ButtonInfo) {
         val action = currentButtonConfig.value?.getAction(buttonInfo) ?: return
         if (!executeActionOnWatch(action)) {
@@ -72,12 +79,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private fun executeActionOnWatch(action: ButtonAction): Boolean {
         return when {
             action.key == StandardActions.ACTION_VOLUME_UP -> {
-                updateVolume(Math.min(1f, volume.value!! + (currentButtonConfig.value?.volumeStep ?: 0.1f)))
+                updateVolume(Math.min(1f, volume.value!! + (currentButtonConfig.value?.volumeStep
+                        ?: 0.1f)))
                 popupVolumeBar.call()
                 true
             }
             action.key == StandardActions.ACTION_VOLUME_DOWN -> {
-                updateVolume(Math.max(0f, volume.value!! - (currentButtonConfig.value?.volumeStep ?: 0.1f)))
+                updateVolume(Math.max(0f, volume.value!! - (currentButtonConfig.value?.volumeStep
+                        ?: 0.1f)))
                 popupVolumeBar.call()
                 true
             }
@@ -90,7 +99,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateVolume(newVolume : Float) {
+    fun updateVolume(newVolume: Float) {
         volume.value = newVolume
         phoneConnection.sendVolume(newVolume)
     }
@@ -131,7 +140,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         musicState.value = it
     }
 
-    private fun swapConfig(newConfig : WatchActionConfigProvider) {
+    private fun swapConfig(newConfig: WatchActionConfigProvider) {
         if (newConfig === currentButtonConfig.value) {
             return
         }
@@ -147,6 +156,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         musicState.addSource(phoneConnection.musicState, musicStateListener)
+        musicState.addSource(phoneConnection.customList) { customList.value = it }
         swapConfig(stoppedConfig)
 
 

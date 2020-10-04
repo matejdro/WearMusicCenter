@@ -37,6 +37,7 @@
     <string name="action_text">Action text</string>
     <string name="swap_action">Swap action</string>
     <string name="open_actions_menu">Open actions menu</string>
+    <string name="open_playlist_menu">Show current playlist</string>
     <string name="music_control">Music control</string>
     <string name="misc_settings">Misc settings</string>
 
@@ -91,4 +92,6 @@
     <string name="setting_always_select_center_action_description">When enabled, tapping on action list will always select center (highlighted) option, regardless of what option you tapped.</string>
     <string name="change_icon">Change icon</string>
     <string name="please_wait">Please wait</string>
+
+    <string name="error_playlist_not_supported">Not supported by this media app</string>
 </resources>

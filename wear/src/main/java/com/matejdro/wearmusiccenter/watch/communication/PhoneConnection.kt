@@ -1,18 +1,19 @@
 package com.matejdro.wearmusiccenter.watch.communication
 
-import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
-import com.google.android.gms.common.GoogleApiAvailability
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.util.FloatPacker
+import com.matejdro.wearmusiccenter.proto.CustomList
+import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
 import com.matejdro.wearutils.lifecycle.*
@@ -21,7 +22,6 @@ import com.matejdro.wearutils.messages.getOtherNodeId
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -37,6 +37,7 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
     val musicState = ListenableLiveData<Resource<MusicState>>()
     val albumArt = ListenableLiveData<Bitmap?>()
+    val customList = ListenableLiveData<CustomListWithBitmaps>()
 
     val notification = SingleLiveEvent<com.matejdro.wearmusiccenter.watch.model.Notification>()
 
@@ -79,7 +80,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
             val result = googleApiClient.blockingConnect()
 
             if (!result.isSuccess) {
-                val errorText = result.errorMessage ?: context.getString(R.string.error_play_services)
+                val errorText = result.errorMessage
+                        ?: context.getString(R.string.error_play_services)
                 musicState.postValue(Resource.error(errorText, null, result))
 
                 Timber.e("Play Services error: %d %s", result.errorCode, result.errorMessage)
@@ -208,13 +210,32 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
         }
     }
 
+    fun executeCustomMenuAction(listId: String, entryId: String) {
+        connectionHandler.post {
+            val phoneNode = getOtherNodeId(googleApiClient)
+            if (phoneNode != null) {
+                Wearable.MessageApi.sendMessage(googleApiClient,
+                        phoneNode,
+                        CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED,
+                        CustomListItemAction.newBuilder()
+                                .setListId(listId)
+                                .setEntryId(entryId)
+                                .build()
+                                .toByteArray()
+                )
+            }
+
+        }
+
+    }
+
+
     private fun sendAck() {
         val phoneNode = getOtherNodeId(googleApiClient)
         if (phoneNode != null) {
             Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
         }
     }
-
 
     override fun onDataChanged(data: DataEventBuffer?) {
         if (data == null) {
@@ -267,6 +288,36 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
                         CommPaths.DATA_PLAYING_ACTION_CONFIG -> rawPlaybackConfig.postValue(it.freeze())
                         CommPaths.DATA_STOPPING_ACTION_CONFIG -> rawStoppedConfig.postValue(it.freeze())
                         CommPaths.DATA_LIST_ITEMS -> rawActionMenuConfig.postValue(it.freeze())
+                        CommPaths.DATA_CUSTOM_LIST -> {
+                            val dataItem = it.freeze()
+                            connectionHandler.post {
+                                val receivedCustomList = CustomList.parseFrom(dataItem.data)
+
+                                val listItems = receivedCustomList.actionsList
+                                        .mapIndexed { index, rawListEntry ->
+                                            val pictureData = DataUtils.getByteArrayAsset(
+                                                    dataItem.assets[index.toString()],
+                                                    googleApiClient
+                                            )
+
+                                            val picture = BitmapUtils.deserialize(pictureData)
+
+                                            CustomListItemWithIcon(
+                                                    rawListEntry,
+                                                    picture
+                                            )
+                                        }
+
+
+                                customList.postValue(
+                                        CustomListWithBitmaps(
+                                                receivedCustomList.listTimestamp,
+                                                receivedCustomList.listId,
+                                                listItems
+                                        )
+                                )
+                            }
+                        }
                     }
                 }
 

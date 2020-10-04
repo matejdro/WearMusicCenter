@@ -35,4 +35,7 @@ object MiscPreferences {
 
     val ALWAYS_SELECT_CENTER_ACTION: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("always_select_center_action", false)
+
+    val LAST_MENU_DISPLAYED: PreferenceDefinition<String>
+            = SimplePreferenceDefinition("last_menu_displayed", "-1")
 }

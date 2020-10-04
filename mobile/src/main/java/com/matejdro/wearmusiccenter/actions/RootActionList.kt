@@ -10,7 +10,6 @@ import com.matejdro.wearmusiccenter.actions.volume.VolumeActionList
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.tasker.TaskerIntent
-import java.lang.UnsupportedOperationException
 
 class RootActionList : PhoneAction {
     private val showNone: Boolean
@@ -37,7 +36,8 @@ class RootActionList : PhoneAction {
         actions.addAll(listOf(PlaybackActionList(context),
                 VolumeActionList(context),
                 AppPlayPickerAction(context),
-                OpenMenuAction(context)
+                OpenMenuAction(context),
+                OpenPlaylistAction(context)
         ))
 
         if (isTaskerInstalled()) {

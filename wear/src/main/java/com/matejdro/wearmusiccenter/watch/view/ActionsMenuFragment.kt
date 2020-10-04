@@ -2,15 +2,10 @@ package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
 import android.app.Fragment
-import androidx.lifecycle.Observer
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import androidx.recyclerview.widget.RecyclerView
-import androidx.wear.widget.CurvingLayoutCallback
-import androidx.wear.widget.WearableLinearLayoutManager
-import androidx.wear.widget.WearableRecyclerView
 import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -18,8 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
+import androidx.wear.widget.CurvingLayoutCallback
+import androidx.wear.widget.WearableLinearLayoutManager
+import androidx.wear.widget.WearableRecyclerView
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.MiscPreferences
+import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearutils.preferences.definition.Preferences
 
@@ -31,6 +32,7 @@ class ActionsMenuFragment : Fragment() {
     private lateinit var recyclerClickDetector: RecyclerClickDetector
 
     private var menuItems: List<ButtonAction> = emptyList()
+    private var customMenuItems: CustomListWithBitmaps? = null
     private lateinit var adapter: MenuAdapter
     private lateinit var layoutManager: MenuLayoutManager
 
@@ -69,7 +71,7 @@ class ActionsMenuFragment : Fragment() {
         recycler.adapter = adapter
 
         recyclerClickDetector.setOnClickListener {
-            viewmodel.executeActionFromMenu(layoutManager.getCenterItem())
+            executeAction(layoutManager.getCenterItem())
         }
 
     }
@@ -117,14 +119,38 @@ class ActionsMenuFragment : Fragment() {
         recycler.scrollToPosition(0)
     }
 
+    fun refreshMenu(type: MenuType) {
+        val newCustomMenuItems = when (type) {
+            is MenuType.Actions -> null
+            is MenuType.Custom -> type.items
+        }
+
+        if (newCustomMenuItems != customMenuItems) {
+            customMenuItems = newCustomMenuItems
+            adapter.notifyDataSetChanged()
+        }
+    }
+
     @Suppress("UNUSED_PARAMETER")
     fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == closeDrawerKeycode) {
             (context as MainActivity).closeMenuDrawer()
         } else {
-            viewmodel.executeActionFromMenu(layoutManager.getCenterItem())
+            executeAction(layoutManager.getCenterItem())
         }
         return true
+    }
+
+    private fun executeAction(index: Int) {
+        val customList = customMenuItems
+        if (customList != null) {
+            viewmodel.executeItemFromCustomMenu(
+                    customList.listId,
+                    customList.items.elementAt(index).listItem.entryId
+            )
+        } else {
+            viewmodel.executeActionFromMenu(index)
+        }
     }
 
     inner class MenuAdapter : RecyclerView.Adapter<MenuItemViewHolder>() {
@@ -134,17 +160,31 @@ class ActionsMenuFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: MenuItemViewHolder, position: Int) {
-            val configItem = menuItems[position]
+            val customMenuItems = customMenuItems
+            if (customMenuItems != null) {
+                val customItem = customMenuItems.items[position]
 
-            holder.icon.setImageDrawable(configItem.icon)
-            holder.title.text = configItem.title
+                holder.icon.setImageBitmap(customItem.icon)
+                holder.title.text = customItem.listItem.entryTitle
 
-            val clickListener = if (alwaysPickCenter) null else holder
-            holder.itemView.setOnClickListener(clickListener)
-            holder.itemView.isClickable = !alwaysPickCenter
+                val clickListener = if (alwaysPickCenter) null else holder
+                holder.itemView.setOnClickListener(clickListener)
+                holder.itemView.isClickable = !alwaysPickCenter
+            } else {
+                val configItem = menuItems[position]
+
+                holder.icon.setImageDrawable(configItem.icon)
+                holder.title.text = configItem.title
+
+                val clickListener = if (alwaysPickCenter) null else holder
+                holder.itemView.setOnClickListener(clickListener)
+                holder.itemView.isClickable = !alwaysPickCenter
+            }
         }
 
-        override fun getItemCount(): Int = menuItems.size
+        override fun getItemCount(): Int {
+            return customMenuItems?.items?.size ?: menuItems.size
+        }
 
     }
 
@@ -158,7 +198,7 @@ class ActionsMenuFragment : Fragment() {
 
         override fun onClick(v: View?) {
             activity.buzz()
-            viewmodel.executeActionFromMenu(adapterPosition)
+            executeAction(adapterPosition)
         }
     }
 
@@ -244,5 +284,8 @@ class ActionsMenuFragment : Fragment() {
         }
     }
 
-
+    sealed class MenuType {
+        object Actions : MenuType()
+        class Custom(val items: CustomListWithBitmaps) : MenuType()
+    }
 }

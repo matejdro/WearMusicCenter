@@ -1,7 +1,6 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.content.Context
@@ -30,6 +29,7 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.proto.MusicState
+import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.model.Notification
@@ -106,9 +106,10 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.volume.observe(this, phoneVolumeListener)
         viewModel.popupVolumeBar.observe(this, volumeBarPopupListener)
         viewModel.closeActionsMenu.observe(this, closeDrawerListener)
-        viewModel.openActionsMenu.observe(this, openDrawerListener)
+        viewModel.openActionsMenu.observe(this, openActionsMenuListener)
         viewModel.closeApp.observe(this, closeAppListener)
         viewModel.notification.observe(this, notificationObserver)
+        viewModel.customList.observe(this, customListListener)
 
 
         stemButtonsManager = StemButtonsManager(this, stemButtonListener)
@@ -283,13 +284,33 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.actionDrawer.controller.closeDrawer()
     }
 
-    private val openDrawerListener = Observer<Unit> {
-        openMenuDrawer()
+    private val openActionsMenuListener = Observer<Unit> {
+        openMenuDrawer(ActionsMenuFragment.MenuType.Actions)
     }
 
     private val closeAppListener = Observer<Unit> {
         finish()
     }
+
+    private val customListListener = Observer<CustomListWithBitmaps> {
+        val lastListDisplayed = Preferences.getString(
+                preferences,
+                MiscPreferences.LAST_MENU_DISPLAYED
+        ).toLong()
+
+        if (!binding.actionDrawer.isClosed || lastListDisplayed != it.listTimestamp) {
+            openMenuDrawer(ActionsMenuFragment.MenuType.Custom(it))
+
+            val editor = preferences.edit()
+            Preferences.putString(
+                    editor,
+                    MiscPreferences.LAST_MENU_DISPLAYED,
+                    it.listTimestamp.toString()
+            )
+            editor.apply()
+        }
+    }
+
 
     private val stemButtonListener = { buttonIndex: Int, gesture: Int ->
             if (gesture == GESTURE_DOUBLE_TAP) {
@@ -301,14 +322,16 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.executeAction(ButtonInfo(true, buttonIndex, gesture))
     }
 
-    fun openMenuDrawer() {
+    fun openMenuDrawer(type: ActionsMenuFragment.MenuType) {
         binding.actionDrawer.controller.openDrawer()
+        actionsMenuFragment.refreshMenu(type)
     }
 
     private val drawerStateCallback = object : WearableDrawerLayout.DrawerStateCallback() {
         override fun onDrawerClosed(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
             binding.fourWayTouch.requestFocus()
             actionsMenuFragment.scrollToTop()
+            actionsMenuFragment.refreshMenu(ActionsMenuFragment.MenuType.Actions)
         }
 
         override fun onDrawerOpened(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
