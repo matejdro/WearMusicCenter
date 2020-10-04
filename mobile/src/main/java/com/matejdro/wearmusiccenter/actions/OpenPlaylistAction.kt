@@ -31,12 +31,17 @@ class OpenPlaylistAction : SelectableAction {
             val protoList = if (playlist != null) {
                 playlist.mapIndexed { index, queueItem ->
                     var icon = queueItem.description.iconBitmap
+                            ?: queueItem.description.iconUri?.let {
+                                BitmapUtils.getBitmap(BitmapUtils.getDrawableFromUri(service, it))
+                            }
+
                     icon = BitmapUtils.shrinkPreservingRatio(
                             icon,
                             targetIconSize,
                             targetIconSize,
                             true
                     )
+
 
                     val iconData = BitmapUtils.serialize(icon)
                     if (iconData != null) {
