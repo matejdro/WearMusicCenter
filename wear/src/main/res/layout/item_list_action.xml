@@ -33,7 +33,8 @@
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:textColor="@color/white"
         android:textSize="20sp"
-
+        android:maxLines="2"
+        android:ellipsize="end"
         tools:text="Start Playback" />
 
 </LinearLayout>
