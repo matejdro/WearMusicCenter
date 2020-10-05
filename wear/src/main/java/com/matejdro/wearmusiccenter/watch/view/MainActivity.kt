@@ -1,8 +1,6 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -10,13 +8,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.preference.PreferenceManager
-import androidx.wear.ambient.AmbientMode
-import androidx.wear.widget.drawer.WearableDrawerLayout
-import androidx.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.input.RotaryEncoder
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.wear.ambient.AmbientMode
+import androidx.wear.widget.drawer.WearableDrawerLayout
+import androidx.wear.widget.drawer.WearableDrawerView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.matejdro.wearmusiccenter.R
@@ -285,7 +285,8 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private val openActionsMenuListener = Observer<Unit> {
-        openMenuDrawer(ActionsMenuFragment.MenuType.Actions)
+        actionsMenuFragment.refreshMenu(ActionsMenuFragment.MenuType.Actions)
+        openMenuDrawer()
     }
 
     private val closeAppListener = Observer<Unit> {
@@ -299,7 +300,8 @@ class MainActivity : WearCompanionWatchActivity(),
         ).toLong()
 
         if (!binding.actionDrawer.isClosed || lastListDisplayed != it.listTimestamp) {
-            openMenuDrawer(ActionsMenuFragment.MenuType.Custom(it))
+            actionsMenuFragment.refreshMenu(ActionsMenuFragment.MenuType.Custom(it))
+            openMenuDrawer()
 
             val editor = preferences.edit()
             Preferences.putString(
@@ -313,30 +315,51 @@ class MainActivity : WearCompanionWatchActivity(),
 
 
     private val stemButtonListener = { buttonIndex: Int, gesture: Int ->
-            if (gesture == GESTURE_DOUBLE_TAP) {
-                handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
-            } else {
-                buzz()
-            }
+        if (gesture == GESTURE_DOUBLE_TAP) {
+            handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
+        } else {
+            buzz()
+        }
 
         viewModel.executeAction(ButtonInfo(true, buttonIndex, gesture))
     }
 
-    fun openMenuDrawer(type: ActionsMenuFragment.MenuType) {
+    fun openMenuDrawer() {
         binding.actionDrawer.controller.openDrawer()
-        actionsMenuFragment.refreshMenu(type)
     }
 
     private val drawerStateCallback = object : WearableDrawerLayout.DrawerStateCallback() {
         override fun onDrawerClosed(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
             binding.fourWayTouch.requestFocus()
             actionsMenuFragment.scrollToTop()
-            actionsMenuFragment.refreshMenu(ActionsMenuFragment.MenuType.Actions)
         }
 
         override fun onDrawerOpened(layout: WearableDrawerLayout, drawerView: WearableDrawerView) {
             drawerContentContainer.requestFocus()
         }
+
+        override fun onDrawerStateChanged(layout: WearableDrawerLayout, newState: Int) {
+            if (newState == WearableDrawerView.STATE_DRAGGING && binding.actionDrawer.isClosed) {
+                openDefaultListInDrawer()
+            }
+        }
+    }
+
+    private fun openDefaultListInDrawer() {
+        val type = if (Preferences.getBoolean(
+                        preferences,
+                        MiscPreferences.OPEN_PLAYBACK_QUEUE_ON_SWIPE_UP
+                )) {
+            viewModel.openPlaybackQueue()
+
+            ActionsMenuFragment.MenuType.Custom(
+                    CustomListWithBitmaps(-1, "", emptyList())
+            )
+        } else {
+            ActionsMenuFragment.MenuType.Actions
+        }
+
+        actionsMenuFragment.refreshMenu(type)
     }
 
     override fun getAmbientCallback(): AmbientMode.AmbientCallback = object : AmbientMode.AmbientCallback() {
@@ -501,6 +524,7 @@ class MainActivity : WearCompanionWatchActivity(),
         timber.log.Timber.d("UpwardsSwipe")
 
         binding.actionDrawer.controller.openDrawer()
+        openDefaultListInDrawer()
     }
 
     override fun onSingleTap(quadrant: Int) {

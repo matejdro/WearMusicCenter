@@ -38,4 +38,7 @@ object MiscPreferences {
 
     val LAST_MENU_DISPLAYED: PreferenceDefinition<String>
             = SimplePreferenceDefinition("last_menu_displayed", "-1")
+
+    val OPEN_PLAYBACK_QUEUE_ON_SWIPE_UP: PreferenceDefinition<Boolean>
+            = SimplePreferenceDefinition("swipe_up_for_queue", false)
 }

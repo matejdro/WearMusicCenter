@@ -353,6 +353,20 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
         start()
     }
 
+    fun openPlaybackQueue() {
+        connectionHandler.post {
+            val phoneNode = getOtherNodeId(googleApiClient)
+            if (phoneNode != null) {
+                Wearable.MessageApi.sendMessage(
+                        googleApiClient,
+                        phoneNode,
+                        CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE,
+                        null
+                )
+            }
+        }
+    }
+
     private class ConnectionCloseHandler(val phoneConnection: java.lang.ref.WeakReference<PhoneConnection>) : android.os
     .Handler() {
         override fun dispatchMessage(msg: android.os.Message?) {

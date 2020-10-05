@@ -24,6 +24,7 @@ interface CommPaths {
         const val MESSAGE_SEND_LOGS = "/SendLogs"
         const val MESSAGE_OPEN_APP = "/IdleMessages/OpenApp"
         const val MESSAGE_CUSTOM_LIST_ITEM_SELECTED = "/Messages/CustomListItemSelected"
+        const val MESSAGE_OPEN_PLAYBACK_QUEUE = "/Messages/OpenPlaybackQueue"
 
         const val CHANNEL_LOGS = "/Channel/Logs"
 

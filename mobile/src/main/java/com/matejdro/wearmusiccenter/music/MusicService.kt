@@ -22,6 +22,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.actions.OpenPlaylistAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -392,6 +393,10 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         }
     }
 
+    private fun openPlaybackQueueOnWatch() {
+        OpenPlaylistAction(this).execute(this)
+    }
+
     override fun onMessageReceived(event: MessageEvent?) {
         if (event == null) {
             return
@@ -425,6 +430,9 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             }
             event.path == CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED -> {
                 onCustomMenuItemPresed(CustomListItemAction.parseFrom(event.data))
+            }
+            event.path == CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE -> {
+                openPlaybackQueueOnWatch()
             }
         }
     }
