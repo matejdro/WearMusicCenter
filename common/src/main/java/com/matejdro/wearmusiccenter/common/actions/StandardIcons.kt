@@ -10,7 +10,9 @@ object StandardIcons {
             StandardActions.ACTION_SKIP_TO_NEXT to R.drawable.action_skip_next,
             StandardActions.ACTION_VOLUME_UP to R.drawable.action_volume_up,
             StandardActions.ACTION_VOLUME_DOWN to R.drawable.action_volume_down,
-            StandardActions.ACTION_OPEN_MENU to R.drawable.action_open_menu
+            StandardActions.ACTION_OPEN_MENU to R.drawable.action_open_menu,
+            StandardActions.ACTION_SKIP_30_SECONDS to R.drawable.action_skip_30_seconds,
+            StandardActions.ACTION_REVERSE_30_SECONDS to R.drawable.action_reverse_30_seconds
     )
 
     fun hasIcon(key: String): Boolean = iconMap.containsKey(key)

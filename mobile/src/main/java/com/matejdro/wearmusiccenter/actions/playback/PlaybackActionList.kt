@@ -22,7 +22,9 @@ class PlaybackActionList : PhoneAction {
                 PlayAction(context),
                 PauseAction(context),
                 SkipToPrevAction(context),
-                SkipToNextAction(context)
+                SkipToNextAction(context),
+                SkipThirtySecondsAction(context),
+                ReverseThirtySecondsAction(context)
         ))
     }
 

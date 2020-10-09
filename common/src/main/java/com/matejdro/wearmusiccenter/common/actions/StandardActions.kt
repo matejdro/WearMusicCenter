@@ -8,4 +8,6 @@ object StandardActions {
     const val ACTION_VOLUME_UP = "com.matejdro.wearmusiccenter.actions.volume.IncreaseVolumeAction"
     const val ACTION_VOLUME_DOWN = "com.matejdro.wearmusiccenter.actions.volume.DecreaseVolumeAction"
     const val ACTION_OPEN_MENU = "com.matejdro.wearmusiccenter.actions.OpenMenuAction"
+    const val ACTION_SKIP_30_SECONDS = "com.matejdro.wearmusiccenter.actions.playback.SkipThirtySecondsAction"
+    const val ACTION_REVERSE_30_SECONDS = "com.matejdro.wearmusiccenter.actions.playback.ReverseThirtySecondsAction"
 }
