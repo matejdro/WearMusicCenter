@@ -14,6 +14,10 @@
         tools:overrideLibrary="androidx.wear" />
 
     <queries>
+        <package android:name="net.dinglisch.android.tasker"/>
+        <package android:name="net.dinglisch.android.taskerm"/>
+        <package android:name="com.matejdro.wearvibrationcenter"/>
+
         <intent>
             <action android:name="android.intent.action.MEDIA_BUTTON" />
         </intent>
