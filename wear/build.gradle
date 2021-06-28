@@ -8,8 +8,8 @@ android {
         applicationId "com.matejdro.wearmusiccenter"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 121
-        versionName "1.4"
+        versionCode 122
+        versionName "1.4.4"
     }
     buildTypes {
         release {
