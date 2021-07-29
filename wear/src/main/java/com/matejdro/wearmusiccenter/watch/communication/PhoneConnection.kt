@@ -369,8 +369,8 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
     private class ConnectionCloseHandler(val phoneConnection: java.lang.ref.WeakReference<PhoneConnection>) : android.os
     .Handler() {
-        override fun dispatchMessage(msg: android.os.Message?) {
-            if (msg?.what == MESSAGE_CLOSE_CONNECTION) {
+        override fun dispatchMessage(msg: android.os.Message) {
+            if (msg.what == MESSAGE_CLOSE_CONNECTION) {
                 phoneConnection.get()?.stop()
             }
         }
