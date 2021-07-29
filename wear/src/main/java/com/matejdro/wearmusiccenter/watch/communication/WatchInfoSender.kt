@@ -2,6 +2,7 @@ package com.matejdro.wearmusiccenter.watch.communication
 
 import android.content.Context
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.support.wearable.input.WearableButtons
@@ -11,6 +12,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
+import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearutils.miscutils.BitmapUtils
@@ -43,14 +45,14 @@ class WatchInfoSender(val context: Context, val urgent : Boolean) {
                 // Button count includes non-customizable primary button. Subtract one.
                 val buttonCount = WearableButtons.getButtonCount(context) - 1
                 for (buttonIndex in 0 until buttonCount) {
-                    val buttonLabel = WearableButtons.getButtonLabel(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
+                    val buttonLabel: CharSequence? = WearableButtons.getButtonLabel(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
 
                     builder.addButtons(WatchInfo.WatchButton
                             .newBuilder()
-                            .setLabel(buttonLabel.toString()))
+                            .setLabel(buttonLabel?.toString() ?: context.getString(R.string.button)))
 
 
-                    val buttonImage = WearableButtons.getButtonIcon(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
+                    val buttonImage: Drawable? = WearableButtons.getButtonIcon(context, KeyEvent.KEYCODE_STEM_1 + buttonIndex)
                     val imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
 
                     if (imageBytes != null) {
