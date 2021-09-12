@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.wear.widget.CurvingLayoutCallback
@@ -28,7 +29,7 @@ import com.matejdro.wearutils.preferences.definition.Preferences
 
 @SuppressLint("NotifyDataSetChanged")
 class ActionsMenuFragment : Fragment() {
-    private lateinit var viewmodel: MusicViewModel
+    private val viewmodel: MusicViewModel by activityViewModels()
 
     private lateinit var recycler: WearableRecyclerView
     private lateinit var recyclerClickDetector: RecyclerClickDetector
@@ -49,7 +50,6 @@ class ActionsMenuFragment : Fragment() {
 
         activity = context as MainActivity
 
-        viewmodel = activity.viewModel
         viewmodel.actionsMenuConfig.config.observe(activity, actionItemsListener)
         viewmodel.preferences.observe(activity, preferencesListener)
 

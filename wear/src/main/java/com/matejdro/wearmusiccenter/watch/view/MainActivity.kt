@@ -10,9 +10,9 @@ import android.os.*
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.drawer.WearableDrawerLayout
@@ -65,14 +65,12 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private lateinit var preferences: SharedPreferences
 
-    lateinit var viewModel: MusicViewModel
+    private val viewModel: MusicViewModel by viewModels()
 
     private var rotatingInputDisabledUntil = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel = ViewModelProviders.of(this)[MusicViewModel::class.java]
 
         binding = androidx.databinding.DataBindingUtil.setContentView(
             this,
