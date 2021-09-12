@@ -581,11 +581,11 @@ class MainActivity : WearCompanionWatchActivity(),
     private class TimeoutsHandler(val activity: WeakReference<MainActivity>) :
         Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
-            when {
-                msg.what == MESSAGE_HIDE_VOLUME -> {
+            when (msg.what) {
+                MESSAGE_HIDE_VOLUME -> {
                     activity.get()?.binding?.volumeBar?.visibility = View.GONE
                 }
-                msg.what == MESSAGE_UPDATE_CLOCK -> {
+                MESSAGE_UPDATE_CLOCK -> {
                     removeMessages(MESSAGE_UPDATE_CLOCK)
 
                     val activity = activity.get() ?: return
@@ -601,7 +601,7 @@ class MainActivity : WearCompanionWatchActivity(),
                         sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
                     }
                 }
-                msg.what == MESSAGE_DISMISS_NOTIFICATION -> {
+                MESSAGE_DISMISS_NOTIFICATION -> {
                     activity.get()?.hideNotification()
                 }
             }
