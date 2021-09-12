@@ -120,7 +120,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
         WatchInfoSender(this, true).sendWatchInfoToPhone()
         actionsMenuFragment =
-            fragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
+            supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
     }
 
     override fun onStart() {

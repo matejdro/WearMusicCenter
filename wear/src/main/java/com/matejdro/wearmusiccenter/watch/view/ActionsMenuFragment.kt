@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.watch.view
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Fragment
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.wear.widget.CurvingLayoutCallback
@@ -25,6 +26,7 @@ import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearutils.preferences.definition.Preferences
 
 
+@SuppressLint("NotifyDataSetChanged")
 class ActionsMenuFragment : Fragment() {
     private lateinit var viewmodel: MusicViewModel
 
@@ -42,7 +44,7 @@ class ActionsMenuFragment : Fragment() {
 
     private var alwaysPickCenter = false
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         activity = context as MainActivity
@@ -65,7 +67,7 @@ class ActionsMenuFragment : Fragment() {
 
         recycler = view.findViewById(R.id.recycler)
 
-        layoutManager = MenuLayoutManager(context)
+        layoutManager = MenuLayoutManager(requireContext())
         recycler.layoutManager = layoutManager
         recycler.isEdgeItemsCenteringEnabled = true
         recycler.adapter = adapter
@@ -111,8 +113,8 @@ class ActionsMenuFragment : Fragment() {
 
         //Find button with lowest Y value (furthest from user) - that will be close button
         closeDrawerKeycode = (KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3)
-                .mapNotNull { WearableButtons.getButtonInfo(context, it) }
-                .minBy { it.y }?.keycode ?: -1
+            .mapNotNull { WearableButtons.getButtonInfo(context, it) }
+            .minByOrNull { it.y }?.keycode ?: -1
     }
 
     fun scrollToTop() {
