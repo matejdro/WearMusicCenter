@@ -440,11 +440,18 @@ class MainActivity : WearCompanionWatchActivity(),
             return false
         }
 
-        if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
-            val delta = -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(this)
+        if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(
+                ev
+            )
+        ) {
+            val delta =
+                -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(this)
+
+            val multipler =
+                Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
 
             showVolumeBar()
-            binding.volumeBar.incrementVolume(delta * 0.0025f)
+            binding.volumeBar.incrementVolume(delta * 0.0025f * multipler)
             viewModel.updateVolume(binding.volumeBar.volume)
 
 

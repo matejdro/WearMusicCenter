@@ -13,6 +13,9 @@ object MiscPreferences {
     val ROTATING_CROWN_OFF_PERIOD: PreferenceDefinition<Int>
             = SimplePreferenceDefinition("rotating_crown_off_period", 300)
 
+    val ROTATING_CROWN_SENSITIVITY: PreferenceDefinition<Int>
+            = SimplePreferenceDefinition("rotating_crown_sensitivity", 100)
+
     val HAPTIC_FEEDBACK: PreferenceDefinition<Boolean>
             = SimplePreferenceDefinition("haptic_feedback", true)
 

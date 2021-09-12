@@ -30,6 +30,12 @@
             android:title="@string/setting_rotating_crown_off_period"
             android:summary="@string/setting_rotating_crown_off_period_description" />
 
+        <com.matejdro.wearutils.preferences.compat.NumericEditTextPreference
+            android:defaultValue="100"
+            android:key="rotating_crown_sensitivity"
+            android:title="@string/setting_rotating_sensitivity"
+            android:summary="@string/setting_rotating_sensitivity_description" />
+
         <com.matejdro.wearutils.preferences.compat.SwitchPreferenceEx
             android:defaultValue="false"
             android:key="disable_ambient_physical_double_click"
