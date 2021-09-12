@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
+import com.google.android.wearable.input.WearableInputDevice
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchInfo
@@ -43,29 +44,29 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 // Button count includes non-customizable primary button. Subtract one.
-                val buttonCount = WearableButtons.getButtonCount(context) - 1
-                for (buttonIndex in 0 until buttonCount) {
-                    val buttonCode = KeyEvent.KEYCODE_STEM_1 + buttonIndex
-                    val buttonLabel: CharSequence? = WearableButtons.getButtonLabel(context, buttonCode)
+                val buttons = WearableInputDevice.getAvailableButtonKeyCodes(context)
+                        .filter { it in KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3 }
+                        .map { buttonCode ->
+                            val buttonLabel: CharSequence? = WearableButtons.getButtonLabel(context, buttonCode)
 
-                    builder.addButtons(
-                        WatchInfo.WatchButton
-                            .newBuilder()
-                            .setLabel(buttonLabel?.toString() ?: context.getString(R.string.button))
-                            .setCode(buttonCode)
-                    )
+                            val buttonImage: Drawable? = WearableButtons.getButtonIcon(context, buttonCode)
+                            val imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
 
+                            if (imageBytes != null) {
+                                putDataRequest.putAsset(
+                                        CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonCode,
+                                        Asset.createFromBytes(imageBytes)
+                                )
+                            }
 
-                    val buttonImage: Drawable? = WearableButtons.getButtonIcon(context, buttonCode)
-                    val imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
+                            WatchInfo.WatchButton
+                                    .newBuilder()
+                                    .setLabel(buttonLabel?.toString() ?: context.getString(R.string.button))
+                                    .setCode(buttonCode)
+                                    .build()
+                        }
 
-                    if (imageBytes != null) {
-                        putDataRequest.putAsset(
-                            CommPaths.ASSET_WATCH_INFO_BUTTON_PREFIX + "/" + buttonCode,
-                            Asset.createFromBytes(imageBytes)
-                        )
-                    }
-                }
+                builder.addAllButtons(buttons)
             }
 
             if (urgent) {
@@ -84,8 +85,8 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
 
     init {
         googleApiClient = GoogleApiClient.Builder(context)
-            .addApi(Wearable.API)
-            .addConnectionCallbacks(connectionCallback)
-            .build()
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(connectionCallback)
+                .build()
     }
 }

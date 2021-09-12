@@ -42,7 +42,7 @@ class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, 
             return false
         }
 
-        return buttonHandlers[keyCode].also { println("Handler $it") }?.onKeyDown() ?: false
+        return buttonHandlers[keyCode]?.onKeyDown() ?: false
     }
 
     @TargetApi(Build.VERSION_CODES.N)
