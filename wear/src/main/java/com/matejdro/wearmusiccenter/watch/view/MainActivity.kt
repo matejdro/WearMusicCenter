@@ -578,7 +578,8 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.executeAction(ButtonInfo(false, quadrant, GESTURE_LONG_TAP))
     }
 
-    private class TimeoutsHandler(val activity: WeakReference<MainActivity>) : Handler() {
+    private class TimeoutsHandler(val activity: WeakReference<MainActivity>) :
+        Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when {
                 msg.what == MESSAGE_HIDE_VOLUME -> {
