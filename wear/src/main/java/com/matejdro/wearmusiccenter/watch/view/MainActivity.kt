@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.preference.PreferenceManager
-import android.support.wearable.input.RotaryEncoder
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -19,6 +18,7 @@ import androidx.wear.widget.drawer.WearableDrawerLayout
 import androidx.wear.widget.drawer.WearableDrawerView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.wearable.input.RotaryEncoderHelper
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -460,12 +460,12 @@ class MainActivity : WearCompanionWatchActivity(),
             return false
         }
 
-        if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(
+        if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoderHelper.isFromRotaryEncoder(
                 ev
             )
         ) {
             val delta =
-                -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(this)
+                -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(this)
 
             val multipler =
                 Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
