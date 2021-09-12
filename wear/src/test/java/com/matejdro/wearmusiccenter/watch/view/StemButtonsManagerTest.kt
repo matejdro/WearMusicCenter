@@ -15,7 +15,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressWithOthersDisabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = false
         buttonsManager.enabledLongPressActions[0] = false
 
@@ -31,7 +31,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressWithOthersEnabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -49,7 +49,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressWithOnlyDoubleEnabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = false
 
@@ -67,7 +67,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressWithOnlyLongEnabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = false
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -83,7 +83,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressOutOfBounds() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -98,7 +98,7 @@ class StemButtonsManagerTest {
     @Test
     fun testRepeatingEvents() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = false
 
@@ -123,7 +123,7 @@ class StemButtonsManagerTest {
     @Test
     fun testSinglePressSecondButton() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(2, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -141,7 +141,7 @@ class StemButtonsManagerTest {
     @Test
     fun testDoublePress() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
         buttonsManager.enableDoublePressInAmbient = true
@@ -166,7 +166,7 @@ class StemButtonsManagerTest {
     @Test
     fun testDoublePressWithOnlyItEnabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = false
 
@@ -191,7 +191,7 @@ class StemButtonsManagerTest {
     @Test
     fun testDoublePressSecondButton() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(2, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
         buttonsManager.enabledDoublePressActions[1] = true
@@ -221,7 +221,7 @@ class StemButtonsManagerTest {
     @Test
     fun testAmbientGlitch() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -248,7 +248,7 @@ class StemButtonsManagerTest {
     @Test
     fun testAmbientGlitch2() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -274,7 +274,7 @@ class StemButtonsManagerTest {
     @Test
     fun testAmbientGlitch3WithAmbientDoubleClickDisabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
         buttonsManager.enableDoublePressInAmbient = false
@@ -301,7 +301,7 @@ class StemButtonsManagerTest {
     @Test
     fun testAmbientGlitch4() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -328,7 +328,7 @@ class StemButtonsManagerTest {
     @Test
     fun testFastDoublePress() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -352,7 +352,7 @@ class StemButtonsManagerTest {
     @Test
     fun testDoublePressFromAmbient() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -381,7 +381,7 @@ class StemButtonsManagerTest {
     @Test
     fun testFastDoublePressFromAmbient() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -411,7 +411,7 @@ class StemButtonsManagerTest {
     @Test
     fun testDoublePressWhenDisabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = false
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -438,7 +438,7 @@ class StemButtonsManagerTest {
     @Test
     fun testLongPressWithLongPressDisabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = false
 
@@ -457,7 +457,7 @@ class StemButtonsManagerTest {
     @Test
     fun testLongPress() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -475,7 +475,7 @@ class StemButtonsManagerTest {
     @Test
     fun testLongPressWithOnlyItEnabled() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(1, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
         buttonsManager.enabledDoublePressActions[0] = false
         buttonsManager.enabledLongPressActions[0] = true
 
@@ -493,7 +493,7 @@ class StemButtonsManagerTest {
     @Test
     fun testLongPressSecondButton() {
         val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(2, listener)
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
         buttonsManager.enabledDoublePressActions[0] = true
         buttonsManager.enabledLongPressActions[0] = true
         buttonsManager.enabledDoublePressActions[1] = true

@@ -33,7 +33,7 @@ constructor(playbackConfig: Boolean,
     }
 
     override fun getScreenAction(buttonInfo: ButtonInfo): PhoneAction? {
-        return configMap[buttonInfo]
+        return configMap[buttonInfo] ?: configMap[buttonInfo.getLegacyButtonInfo()]
     }
 
     override fun getAllActions(): Collection<Map.Entry<ButtonInfo, PhoneAction>> {

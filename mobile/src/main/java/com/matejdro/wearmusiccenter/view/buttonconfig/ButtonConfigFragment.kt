@@ -116,11 +116,12 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
         val inflater = LayoutInflater.from(activity)
         for (buttonIndex in 0 until buttonsCount) {
-            val icon = watchInfo!!.icons[buttonIndex]
-            icon?.setTint(Color.BLACK)
-
             val buttonInfo = watchInfo!!.watchInfo.buttonsList[buttonIndex]
             val buttonTitle = buttonInfo.label
+            val buttonCode = if (buttonInfo.hasCode()) buttonInfo.code else buttonIndex
+
+            val icon = watchInfo!!.icons[buttonCode]
+            icon?.setTint(Color.BLACK)
 
             val buttonBinding = DataBindingUtil.inflate<ItemWatchButtonBinding>(inflater,
                     R.layout.item_watch_button,
@@ -131,7 +132,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
             buttonBinding.button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
             buttonBinding.button.setOnClickListener {
                 val buttonName = "$buttonTitle button"
-                configureButton(true, buttonIndex, buttonName)
+                configureButton(true, buttonCode, buttonName)
             }
         }
     }
@@ -170,8 +171,8 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         configureButton(false, quadrant, buttonName)
     }
 
-    fun configureButton(physicalButton : Boolean, buttonIndex : Int, buttonName : String) {
-        val buttonInfo = ButtonInfo(physicalButton, buttonIndex, GESTURE_SINGLE_TAP)
+    fun configureButton(physicalButton : Boolean, buttonCode : Int, buttonName : String) {
+        val buttonInfo = ButtonInfo(physicalButton, buttonCode, GESTURE_SINGLE_TAP)
 
         val gesturePicker = GesturePickerFragment.newInstance(setsPlaybackActions,
                 buttonInfo,

@@ -25,11 +25,11 @@ class WatchActionConfigProvider(private val googleApiClient: GoogleApiClient, ra
     var volumeStep = 0.1f
 
     fun getAction(buttonInfo: ButtonInfo) : ButtonAction? {
-        return configMap.get(buttonInfo)
+        return (configMap.get(buttonInfo) ?: configMap.get(buttonInfo.getLegacyButtonInfo())).also { println("Returned action $it") }
     }
 
     fun isActionActive(buttonInfo: ButtonInfo) : Boolean {
-        return configMap.containsKey(buttonInfo)
+        return configMap.containsKey(buttonInfo) || configMap.containsKey(buttonInfo.getLegacyButtonInfo())
     }
 
     private val rawConfigObserver = Observer<DataItem> {

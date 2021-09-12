@@ -13,27 +13,25 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import java.lang.ref.WeakReference
-import kotlin.math.max
 
 private const val MESSAGE_PRESS_BUTTON = 1
 private const val MESSAGE_HOLD_BUTTON = 2
 private const val AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP = 15
 
 @TargetApi(Build.VERSION_CODES.N)
-class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gesture: Int) -> Unit) {
+class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, gesture: Int) -> Unit) {
     constructor(context: Context, listener: (buttonIndex: Int, gesture: Int) -> Unit) :
-            this(max(0, WearableButtons.getButtonCount(context)), listener)
+            this(List(WearableButtons.getButtonCount(context)) { KeyEvent.KEYCODE_STEM_1 + it }, listener)
 
-    var enabledDoublePressActions = Array(numStemButtons) { false }
-    var enabledLongPressActions = Array(numStemButtons) { false }
+    var enabledDoublePressActions = stemButtons.associateWith { false }.toMutableMap()
+    var enabledLongPressActions = stemButtons.associateWith { false }.toMutableMap()
     var enableDoublePressInAmbient: Boolean = true
 
 
-    private var buttonHandlers = Array<SingleButtonHandler>(numStemButtons) {
-        SingleButtonHandler(it,
-                it + KeyEvent.KEYCODE_STEM_1,
-                { enabledDoublePressActions[it] },
-                { enabledLongPressActions[it] },
+    private var buttonHandlers = stemButtons.associateWith { buttonKeyCode ->
+        SingleButtonHandler(buttonKeyCode,
+                { enabledDoublePressActions[buttonKeyCode] ?: false },
+                { enabledLongPressActions[buttonKeyCode] ?: false },
                 { enableDoublePressInAmbient },
                 listener)
     }
@@ -44,41 +42,32 @@ class StemButtonsManager(numStemButtons: Int, listener: (buttonIndex: Int, gestu
             return false
         }
 
-        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode < KeyEvent.KEYCODE_STEM_1 + buttonHandlers.size) {
-            val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
-            return buttonHandlers[buttonIndex].onKeyDown()
-        }
-        return false
+        return buttonHandlers[keyCode].also { println("Handler $it") }?.onKeyDown() ?: false
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     fun onKeyUp(keyCode: Int): Boolean {
-        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode < KeyEvent.KEYCODE_STEM_1 + buttonHandlers.size) {
-            val buttonIndex = keyCode - KeyEvent.KEYCODE_STEM_1
-            return buttonHandlers[buttonIndex].onKeyUp()
-        }
-        return false
+        return buttonHandlers[keyCode]?.onKeyUp() ?: false
     }
 
     fun onEnterAmbient() {
-        for (it in buttonHandlers) {
+        for (it in buttonHandlers.values) {
             it.onEnterAmbient()
         }
     }
 
     fun onExitAmbient() {
-        for (it in buttonHandlers) {
+        for (it in buttonHandlers.values) {
             it.onExitAmbient()
         }
     }
 }
 
-private class SingleButtonHandler(private val buttonIndex: Int,
-                                  private val buttonKeyCode: Int,
+private class SingleButtonHandler(private val buttonKeyCode: Int,
                                   private val isDoubleClickEnabled: () -> Boolean,
                                   private val isLongClickEnabled: () -> Boolean,
                                   private val isDoubleClickInAmbientEnabled: () -> Boolean,
-                                  private val listener: (buttonIndex: Int, gesture: Int) -> Unit) {
+                                  private val listener: (buttonKeyCode: Int, gesture: Int) -> Unit) {
 
     private val handler = TimeoutsHandler(WeakReference(this))
 
@@ -160,7 +149,7 @@ private class SingleButtonHandler(private val buttonIndex: Int,
     }
 
     private fun reportGesture(gesture: Int) {
-        listener.invoke(buttonIndex, gesture)
+        listener.invoke(buttonKeyCode, gesture)
 
         ignoreSecondClick = false
         waitingForSecondPress = false

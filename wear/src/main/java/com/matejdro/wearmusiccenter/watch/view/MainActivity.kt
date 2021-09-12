@@ -329,14 +329,14 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
 
-    private val stemButtonListener = { buttonIndex: Int, gesture: Int ->
+    private val stemButtonListener = { buttonKeyCode: Int, gesture: Int ->
         if (gesture == GESTURE_DOUBLE_TAP) {
             handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
         } else {
             buzz()
         }
 
-        viewModel.executeAction(ButtonInfo(true, buttonIndex, gesture))
+        viewModel.executeAction(ButtonInfo(true, buttonKeyCode, gesture))
     }
 
     fun openMenuDrawer() {
