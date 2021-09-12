@@ -14,7 +14,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.wear.ambient.AmbientMode
+import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.drawer.WearableDrawerLayout
 import androidx.wear.widget.drawer.WearableDrawerView
 import com.google.android.gms.common.ConnectionResult
@@ -43,7 +43,7 @@ import java.lang.ref.WeakReference
 // LifecycleRegistryOwner must be used, because there is no alternative for non-compat activities
 class MainActivity : WearCompanionWatchActivity(),
     FourWayTouchLayout.UserActionListener,
-    AmbientMode.AmbientCallbackProvider {
+    AmbientModeSupport.AmbientCallbackProvider {
 
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0
@@ -58,7 +58,7 @@ class MainActivity : WearCompanionWatchActivity(),
     private lateinit var drawerContentContainer: View
     private lateinit var actionsMenuFragment: ActionsMenuFragment
     private lateinit var vibrator: Vibrator
-    private lateinit var ambientController: AmbientMode.AmbientController
+    private lateinit var ambientController: AmbientModeSupport.AmbientController
     private lateinit var stemButtonsManager: StemButtonsManager
     private val handler = TimeoutsHandler(WeakReference(this))
 
@@ -101,7 +101,7 @@ class MainActivity : WearCompanionWatchActivity(),
         timeFormat = android.text.format.DateFormat.getTimeFormat(this)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        ambientController = AmbientMode.attachAmbientSupport(this)
+        ambientController = AmbientModeSupport.attach(this)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         viewModel.albumArt.observe(this, albumArtObserver)
@@ -379,8 +379,8 @@ class MainActivity : WearCompanionWatchActivity(),
         actionsMenuFragment.refreshMenu(type)
     }
 
-    override fun getAmbientCallback(): AmbientMode.AmbientCallback =
-        object : AmbientMode.AmbientCallback() {
+    override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback =
+        object : AmbientModeSupport.AmbientCallback() {
             override fun onEnterAmbient(ambientDetails: Bundle?) {
                 stemButtonsManager.onEnterAmbient()
                 binding.ambientClock.visibility = View.VISIBLE
