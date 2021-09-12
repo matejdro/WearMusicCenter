@@ -67,7 +67,7 @@ class AppPlayAction : SelectableAction {
 
         GlobalScope.launch(Dispatchers.Main) {
             dispatchUpDownEvents(pickedDeviceID)
-            delay(500)
+            delay(2000)
 
             if (service.currentMediaController?.packageName == receiverComponent.packageName &&
                     service.currentMediaController?.isPlaying() == true) {
