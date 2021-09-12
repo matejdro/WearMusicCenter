@@ -69,11 +69,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         phoneConnection.executeCustomMenuAction(listId, itemId)
     }
 
-    fun executeAction(buttonInfo: ButtonInfo) {
-        val action = currentButtonConfig.value?.getAction(buttonInfo) ?: return
+    fun executeAction(buttonInfo: ButtonInfo): Boolean {
+        val action = currentButtonConfig.value?.getAction(buttonInfo) ?: return false
+
         if (!executeActionOnWatch(action)) {
             phoneConnection.executeButtonAction(buttonInfo)
         }
+
+        return true
     }
 
     private fun executeActionOnWatch(action: ButtonAction): Boolean {

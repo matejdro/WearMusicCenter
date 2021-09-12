@@ -8,4 +8,5 @@
     <string name="error">ERROR</string>
     <string name="error_play_services">Play Services error</string>
     <string name="button">Button</string>
+    <string name="back_button">Back button</string>
 </resources>

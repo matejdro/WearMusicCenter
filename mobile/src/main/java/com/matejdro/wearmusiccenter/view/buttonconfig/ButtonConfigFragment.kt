@@ -12,9 +12,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
+import com.matejdro.wearmusiccenter.common.actions.StandardIcons
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
@@ -120,7 +122,12 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
             val buttonTitle = buttonInfo.label
             val buttonCode = if (buttonInfo.hasCode()) buttonInfo.code else buttonIndex
 
-            val icon = watchInfo!!.icons[buttonCode]
+            val icon = if (StandardIcons.hasIcon(buttonCode)) {
+                ContextCompat.getDrawable(requireContext(), StandardIcons.getIcon(buttonCode))
+            }  else {
+                watchInfo!!.icons[buttonCode]
+            }
+
             icon?.setTint(Color.BLACK)
 
             val buttonBinding = DataBindingUtil.inflate<ItemWatchButtonBinding>(inflater,

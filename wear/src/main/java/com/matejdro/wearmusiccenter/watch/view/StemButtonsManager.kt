@@ -12,6 +12,7 @@ import android.view.ViewConfiguration
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
+import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import java.lang.ref.WeakReference
 
 private const val MESSAGE_PRESS_BUTTON = 1
@@ -19,9 +20,9 @@ private const val MESSAGE_HOLD_BUTTON = 2
 private const val AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP = 15
 
 @TargetApi(Build.VERSION_CODES.N)
-class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, gesture: Int) -> Unit) {
-    constructor(context: Context, listener: (buttonIndex: Int, gesture: Int) -> Unit) :
-            this(List(WearableButtons.getButtonCount(context)) { KeyEvent.KEYCODE_STEM_1 + it }, listener)
+class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, gesture: Int) -> Boolean) {
+    constructor(context: Context, listener: (buttonIndex: Int, gesture: Int) -> Boolean) :
+            this(WatchInfoSender.getAvailableButtonsOnWatch(context), listener)
 
     var enabledDoublePressActions = stemButtons.associateWith { false }.toMutableMap()
     var enabledLongPressActions = stemButtons.associateWith { false }.toMutableMap()
@@ -67,7 +68,7 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
                                   private val isDoubleClickEnabled: () -> Boolean,
                                   private val isLongClickEnabled: () -> Boolean,
                                   private val isDoubleClickInAmbientEnabled: () -> Boolean,
-                                  private val listener: (buttonKeyCode: Int, gesture: Int) -> Unit) {
+                                  private val listener: (buttonKeyCode: Int, gesture: Int) -> Boolean) {
 
     private val handler = TimeoutsHandler(WeakReference(this))
 
@@ -96,8 +97,7 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
         lastStemUpEvent = -1
 
         if (!isDoubleClickEnabled() && !isLongClickEnabled()) {
-            reportGesture(GESTURE_SINGLE_TAP)
-            return true
+            return reportGesture(GESTURE_SINGLE_TAP)
         }
 
         if (isDoubleClickEnabled()) {
@@ -130,31 +130,32 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
             return true
         }
 
-        onFirstPress()
-        return true
+        return onFirstPress()
     }
 
-    private fun onFirstPress() {
-        if (isDoubleClickEnabled()) {
+    private fun onFirstPress(): Boolean {
+        return if (isDoubleClickEnabled()) {
             val timeout = ViewConfiguration.getDoubleTapTimeout()
 
             handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_PRESS_BUTTON), timeout.toLong())
 
             lastStemPress = SystemClock.elapsedRealtime()
             waitingForSecondPress = true
-
+            true
         } else {
             reportGesture(GESTURE_SINGLE_TAP)
         }
     }
 
-    private fun reportGesture(gesture: Int) {
-        listener.invoke(buttonKeyCode, gesture)
+    private fun reportGesture(gesture: Int): Boolean {
+        val anythingExecuted = listener.invoke(buttonKeyCode, gesture)
 
         ignoreSecondClick = false
         waitingForSecondPress = false
         waitingForButtonUp = false
         handler.removeCallbacksAndMessages(null)
+
+        return anythingExecuted
     }
 
     @TargetApi(Build.VERSION_CODES.N)

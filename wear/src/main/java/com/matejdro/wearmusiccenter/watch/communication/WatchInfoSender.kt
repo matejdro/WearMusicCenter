@@ -2,7 +2,6 @@ package com.matejdro.wearmusiccenter.watch.communication
 
 import android.content.Context
 import android.graphics.Point
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.support.wearable.input.WearableButtons
@@ -44,13 +43,26 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 // Button count includes non-customizable primary button. Subtract one.
-                val buttons = WearableInputDevice.getAvailableButtonKeyCodes(context)
-                        .filter { it in KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3 }
+                val buttons = getAvailableButtonsOnWatch(context)
                         .map { buttonCode ->
-                            val buttonLabel: CharSequence? = WearableButtons.getButtonLabel(context, buttonCode)
+                            val buttonLabel: CharSequence?
+                            val imageBytes: ByteArray?
 
-                            val buttonImage: Drawable? = WearableButtons.getButtonIcon(context, buttonCode)
-                            val imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
+                            when (buttonCode) {
+                                in KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3 -> {
+                                    buttonLabel = WearableButtons.getButtonLabel(context, buttonCode)
+                                    val buttonImage = WearableButtons.getButtonIcon(context, buttonCode)
+                                    imageBytes = BitmapUtils.serialize(BitmapUtils.getBitmap(buttonImage))
+                                }
+                                KeyEvent.KEYCODE_BACK -> {
+                                    buttonLabel = context.getString(R.string.back_button)
+                                    imageBytes = null
+                                }
+                                else -> {
+                                    buttonLabel = null
+                                    imageBytes = null
+                                }
+                            }
 
                             if (imageBytes != null) {
                                 putDataRequest.putAsset(
@@ -88,5 +100,26 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(connectionCallback)
                 .build()
+    }
+
+    companion object {
+        fun getAvailableButtonsOnWatch(context: Context): List<Int> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return emptyList()
+            }
+
+            return buildList {
+                addAll(
+                        WearableInputDevice.getAvailableButtonKeyCodes(context)
+                        .filter { it in KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3 }
+                )
+
+                // Samsung watches have extra hardware back button
+                if (Build.BRAND == "samsung") {
+                    add(KeyEvent.KEYCODE_BACK)
+                }
+            }
+
+        }
     }
 }
