@@ -10,6 +10,7 @@ import android.os.*
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
@@ -275,7 +276,7 @@ class MainActivity : WearCompanionWatchActivity(),
             return@Observer
         }
 
-        val notificationPopup = binding.notificationPopup!!
+        val notificationPopup = binding.notificationPopup
 
         notificationPopup.title.text = it.title
         notificationPopup.body.text = it.description
@@ -433,7 +434,10 @@ class MainActivity : WearCompanionWatchActivity(),
 
                 binding.notificationPopup.backgroundImage.visibility = View.VISIBLE
                 binding.notificationPopup.solidBackground.background =
-                    getDrawable(R.drawable.notification_popup_background)
+                    AppCompatResources.getDrawable(
+                        this@MainActivity,
+                        R.drawable.notification_popup_background
+                    )
 
                 if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
                     binding.loadingIndicator.visibility = View.VISIBLE
@@ -465,7 +469,9 @@ class MainActivity : WearCompanionWatchActivity(),
             )
         ) {
             val delta =
-                -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(this)
+                -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(
+                    this
+                )
 
             val multipler =
                 Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
