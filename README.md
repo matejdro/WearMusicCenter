@@ -22,5 +22,3 @@ See Play Store's description for more information.
 Run command `git submodule update --init`
 
 #### 3. Open the project in the Android Studio and wait for its dependencies to resolve
-
-#### 4. Either comment out Fabric plugin from `/mobile/build.gradle` or [generate your own Fabric API key](https://docs.fabric.io/android/fabric/settings/api-keys.html)

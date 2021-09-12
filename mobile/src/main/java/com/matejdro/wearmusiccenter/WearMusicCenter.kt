@@ -2,7 +2,6 @@ package com.matejdro.wearmusiccenter
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
-import com.crashlytics.android.Crashlytics
 import com.matejdro.wearmusiccenter.di.DaggerAppComponent
 import com.matejdro.wearmusiccenter.logging.CrashlyticsExceptionWearHandler
 import com.matejdro.wearmusiccenter.logging.TimberCrashlytics
@@ -10,7 +9,6 @@ import com.matejdro.wearutils.logging.FileLogger
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import io.fabric.sdk.android.Fabric
 import pl.tajchert.exceptionwear.ExceptionDataListenerService
 import timber.log.Timber
 import javax.inject.Inject
@@ -34,7 +32,6 @@ class WearMusicCenter : Application(), HasAndroidInjector {
         Timber.plant(Timber.AndroidDebugTree(isDebuggable))
 
         if (!isDebuggable) {
-            Fabric.with(this, Crashlytics())
             Timber.plant(TimberCrashlytics())
             ExceptionDataListenerService.setHandler(CrashlyticsExceptionWearHandler())
         }
