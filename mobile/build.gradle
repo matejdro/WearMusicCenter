@@ -11,8 +11,8 @@ android {
         applicationId "com.matejdro.wearmusiccenter"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 16
-        versionName "1.4.3"
+        versionCode 17
+        versionName "1.5"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         wearAppUnbundled true
         multiDexEnabled true
