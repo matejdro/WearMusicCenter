@@ -5,19 +5,20 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
-import androidx.fragment.app.DialogFragment
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
@@ -115,6 +116,8 @@ class GesturePickerFragment : DialogFragment() {
         updateButton(binding.singlePressButton, GESTURE_SINGLE_TAP)
         updateButton(binding.doublePressButton, GESTURE_DOUBLE_TAP)
         updateButton(binding.longPressButton, GESTURE_LONG_TAP)
+
+        binding.customizeIcon.isVisible = !baseButtonInfo.physicalButton
     }
 
     fun changeAction(gesture: Int) {
@@ -214,7 +217,7 @@ class GesturePickerFragment : DialogFragment() {
             anythingChanged = anythingChanged || action != actions[gesture]
 
             actions[gesture] = action
-            updateButton(buttons[gesture],  action)
+            updateButton(buttons[gesture], action)
         } else if (requestCode == REQUEST_CODE_PICK_ICON) {
             val iconUri = data.data!!
 
