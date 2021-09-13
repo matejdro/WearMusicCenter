@@ -9,4 +9,6 @@
     <string name="error_play_services">Play Services error</string>
     <string name="button">Button</string>
     <string name="back_button">Back</string>
+    <string name="turn_bezel_cw">Turn bezel CW</string>
+    <string name="turn_bezel_ccw">Turn bezel CCW</string>
 </resources>

@@ -24,10 +24,7 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
-import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
-import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
-import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
-import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.*
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
@@ -232,11 +229,11 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         with(stemButtonsManager) {
-            for (i in 0 until enabledDoublePressActions.size) {
-                enabledDoublePressActions[i] =
-                    config.isActionActive(ButtonInfo(true, i, GESTURE_DOUBLE_TAP))
-                enabledLongPressActions[i] =
-                    config.isActionActive(ButtonInfo(true, i, GESTURE_LONG_TAP))
+            for (button in WatchInfoSender.getAvailableButtonsOnWatch(this@MainActivity)) {
+                enabledDoublePressActions[button] =
+                    config.isActionActive(ButtonInfo(true, button, GESTURE_DOUBLE_TAP))
+                enabledLongPressActions[button] =
+                    config.isActionActive(ButtonInfo(true, button, GESTURE_LONG_TAP))
             }
 
         }
@@ -332,7 +329,7 @@ class MainActivity : WearCompanionWatchActivity(),
     private val stemButtonListener = { buttonKeyCode: Int, gesture: Int ->
         if (gesture == GESTURE_DOUBLE_TAP) {
             handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
-        } else {
+        } else if (buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CW && buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CCW ) {
             buzz()
         }
 
@@ -470,6 +467,16 @@ class MainActivity : WearCompanionWatchActivity(),
                 -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(
                     this
                 )
+
+            if (WatchInfoSender.hasDiscreteRotaryInput()) {
+                val keyCode = if (delta > 0) {
+                    SpecialButtonCodes.TURN_ROTARY_CW
+                } else {
+                    SpecialButtonCodes.TURN_ROTARY_CCW
+                }
+
+                return stemButtonsManager.simulateKeyPress(keyCode)
+            }
 
             val multipler =
                 Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f

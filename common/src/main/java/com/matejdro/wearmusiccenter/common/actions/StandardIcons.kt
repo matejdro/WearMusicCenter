@@ -2,6 +2,7 @@ package com.matejdro.wearmusiccenter.common.actions
 
 import android.view.KeyEvent
 import com.matejdro.common.R
+import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 
 object StandardIcons {
     private val iconMap = mapOf(
@@ -15,7 +16,9 @@ object StandardIcons {
             StandardActions.ACTION_SKIP_30_SECONDS to R.drawable.action_skip_30_seconds,
             StandardActions.ACTION_REVERSE_30_SECONDS to R.drawable.action_reverse_30_seconds,
 
-            getButtonKey(KeyEvent.KEYCODE_BACK) to R.drawable.button_back
+            getButtonKey(KeyEvent.KEYCODE_BACK) to R.drawable.button_back,
+            getButtonKey(SpecialButtonCodes.TURN_ROTARY_CW) to R.drawable.button_turn_cw,
+            getButtonKey(SpecialButtonCodes.TURN_ROTARY_CCW) to R.drawable.button_turn_ccw
     )
 
     fun hasIcon(key: String): Boolean = iconMap.containsKey(key)

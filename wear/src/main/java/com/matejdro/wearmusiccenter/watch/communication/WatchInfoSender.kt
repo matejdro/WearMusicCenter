@@ -14,6 +14,7 @@ import com.google.android.gms.wearable.Wearable
 import com.google.android.wearable.input.WearableInputDevice
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
+import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearutils.miscutils.BitmapUtils
 
@@ -56,6 +57,14 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                                 }
                                 KeyEvent.KEYCODE_BACK -> {
                                     buttonLabel = context.getString(R.string.back_button)
+                                    imageBytes = null
+                                }
+                                SpecialButtonCodes.TURN_ROTARY_CW -> {
+                                    buttonLabel = context.getString(R.string.turn_bezel_cw)
+                                    imageBytes = null
+                                }
+                                SpecialButtonCodes.TURN_ROTARY_CCW -> {
+                                    buttonLabel = context.getString(R.string.turn_bezel_ccw)
                                     imageBytes = null
                                 }
                                 else -> {
@@ -118,8 +127,22 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                 if (Build.BRAND == "samsung") {
                     add(KeyEvent.KEYCODE_BACK)
                 }
+
+                if (hasDiscreteRotaryInput()) {
+                    add(SpecialButtonCodes.TURN_ROTARY_CW)
+                    add(SpecialButtonCodes.TURN_ROTARY_CCW)
+                }
             }
 
+        }
+
+        /**
+         * Returns *true* if device has a rotary input that moves in discrete steps (for example, notches on rotating bezel)
+         *
+         * this kind of input is treated like a button instead of as a rotary input, which allows for more customization
+         */
+        fun hasDiscreteRotaryInput(): Boolean {
+            return Build.BRAND == "samsung" && Build.DEVICE.startsWith("wise")
         }
     }
 }

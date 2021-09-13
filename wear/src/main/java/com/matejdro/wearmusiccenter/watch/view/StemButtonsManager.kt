@@ -51,6 +51,16 @@ class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, 
         return buttonHandlers[keyCode]?.onKeyUp() ?: false
     }
 
+    fun simulateKeyPress(keyCode: Int): Boolean {
+        val handled = onKeyDown(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+
+        if (handled) {
+            onKeyUp(keyCode)
+        }
+
+        return handled
+    }
+
     fun onEnterAmbient() {
         for (it in buttonHandlers.values) {
             it.onEnterAmbient()
