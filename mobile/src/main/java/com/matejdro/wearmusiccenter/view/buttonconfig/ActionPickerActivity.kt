@@ -2,9 +2,7 @@ package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.viewModels
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
@@ -32,7 +31,7 @@ class ActionPickerActivity : AppCompatActivity() {
         const val EXTRA_DISPLAY_NONE = "DisplayNone"
     }
 
-    private lateinit var viewModel : ActionPickerViewModel
+    private val viewModel : ActionPickerViewModel by viewModels { viewModelFactory }
     private lateinit var recycler : RecyclerView
     private lateinit var adapter : ActionsAdapter
 
@@ -52,12 +51,10 @@ class ActionPickerActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        val binding = DataBindingUtil.setContentView<PopupActionPickerBinding>(this,
-                com.matejdro.wearmusiccenter.R.layout.popup_action_picker)
-        binding.activity = this
+        val binding = PopupActionPickerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[ActionPickerViewModel::class.java]
         viewModel.displayedActions.observe(this, listObserver)
         viewModel.selectedAction.observe(this, pickObserver)
         viewModel.activityStarter.observe(this, activityOpenObserver)
@@ -78,6 +75,7 @@ class ActionPickerActivity : AppCompatActivity() {
             )
         )
 
+        binding.cancelButton.setOnClickListener { finish() }
 
         setFinishOnTouchOutside(true)
     }

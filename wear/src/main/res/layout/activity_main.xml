@@ -1,157 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.wear.widget.drawer.WearableDrawerLayout
-        android:id="@+id/drawer_layout"
+<androidx.wear.widget.drawer.WearableDrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:deviceIds="wear">
+
+    <ImageView
+        android:id="@+id/album_art"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.matejdro.wearsandbox.MainActivity"
-        tools:deviceIds="wear">
+        android:alpha="0.333"
+        tools:ignore="ContentDescription" />
+
+    <androidx.wear.widget.BoxInsetLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/music_screen_text_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:boxedEdges="all">
+
+            <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
+                android:id="@+id/text_artist"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLength="30"
+                android:textColor="@color/white"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                tools:text="Artist" />
+
+            <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
+                android:id="@+id/text_title"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLength="40"
+                android:textColor="@color/white"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                tools:text="Title" />
+
+        </LinearLayout>
+
+    </androidx.wear.widget.BoxInsetLayout>
+
+    <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
+        android:id="@+id/volume_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+        android:id="@+id/four_way_touch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        tools:deviceIds="wear"
+        tools:ignore="KeyboardInaccessibleWidget">
 
         <ImageView
-            android:id="@+id/album_art"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.333"
-            tools:ignore="ContentDescription" />
+            android:id="@+id/icon_top"
+            android:layout_width="@dimen/music_screen_icon_size"
+            android:layout_height="@dimen/music_screen_icon_size"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="@dimen/music_screen_icon_offset"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/action_volume_up" />
 
-        <androidx.wear.widget.BoxInsetLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/music_screen_text_margin">
+        <ImageView
+            android:id="@+id/icon_bottom"
+            android:layout_width="@dimen/music_screen_icon_size"
+            android:layout_height="@dimen/music_screen_icon_size"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="@dimen/music_screen_icon_offset"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/action_volume_down" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:boxedEdges="all">
+        <ImageView
+            android:id="@+id/icon_left"
+            android:layout_width="@dimen/music_screen_icon_size"
+            android:layout_height="@dimen/music_screen_icon_size"
+            android:layout_gravity="center|left"
+            android:layout_marginLeft="@dimen/music_screen_icon_offset"
+            tools:ignore="ContentDescription,RtlHardcoded"
+            tools:src="@drawable/action_pause" />
 
-                <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
-                    android:id="@+id/text_artist"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLength="30"
-                    android:textColor="@color/white"
-                    app:autoSizeStepGranularity="1sp"
-                    app:autoSizeTextType="uniform"
-                    tools:text="Artist" />
+        <ImageView
+            android:id="@+id/icon_right"
+            android:layout_width="@dimen/music_screen_icon_size"
+            android:layout_height="@dimen/music_screen_icon_size"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="@dimen/music_screen_icon_offset"
+            tools:ignore="ContentDescription,RtlHardcoded"
+            tools:src="@android:mipmap/sym_def_app_icon" />
 
-                <com.matejdro.wearmusiccenter.watch.view.OutlineTextView
-                    android:id="@+id/text_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLength="40"
-                    android:textColor="@color/white"
-                    android:textSize="48sp"
-                    android:textStyle="bold"
-                    app:autoSizeStepGranularity="1sp"
-                    app:autoSizeTextType="uniform"
-                    tools:text="Title" />
-
-            </LinearLayout>
-
-        </androidx.wear.widget.BoxInsetLayout>
-
-        <com.matejdro.wearmusiccenter.watch.view.CircularVolumeBar
-            android:id="@+id/volume_bar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <TextView
+            android:id="@+id/ambient_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:paddingTop="5sp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
             android:visibility="gone" />
 
-        <com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
-            android:id="@+id/four_way_touch"
+        <requestFocus />
+
+    </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/notification_popup"
+        layout="@layout/popup_notification" />
+
+    <com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView
+        android:id="@+id/action_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        app:drawerContent="@+id/drawer_content">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@id/drawer_content"
+            android:name="com.matejdro.wearmusiccenter.watch.view.ActionsMenuFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            tools:deviceIds="wear"
-            tools:ignore="KeyboardInaccessibleWidget">
+            android:layout_height="match_parent" />
 
-            <ImageView
-                android:id="@+id/icon_top"
-                android:layout_width="@dimen/music_screen_icon_size"
-                android:layout_height="@dimen/music_screen_icon_size"
-                android:layout_gravity="center|top"
-                android:layout_marginTop="@dimen/music_screen_icon_offset"
-                tools:ignore="ContentDescription"
-                tools:src="@drawable/action_volume_up" />
+    </com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView>
 
-            <ImageView
-                android:id="@+id/icon_bottom"
-                android:layout_width="@dimen/music_screen_icon_size"
-                android:layout_height="@dimen/music_screen_icon_size"
-                android:layout_gravity="center|bottom"
-                android:layout_marginBottom="@dimen/music_screen_icon_offset"
-                tools:ignore="ContentDescription"
-                tools:src="@drawable/action_volume_down" />
-
-            <ImageView
-                android:id="@+id/icon_left"
-                android:layout_width="@dimen/music_screen_icon_size"
-                android:layout_height="@dimen/music_screen_icon_size"
-                android:layout_gravity="center|left"
-                android:layout_marginLeft="@dimen/music_screen_icon_offset"
-                tools:ignore="ContentDescription,RtlHardcoded"
-                tools:src="@drawable/action_pause" />
-
-            <ImageView
-                android:id="@+id/icon_right"
-                android:layout_width="@dimen/music_screen_icon_size"
-                android:layout_height="@dimen/music_screen_icon_size"
-                android:layout_gravity="center|right"
-                android:layout_marginRight="@dimen/music_screen_icon_offset"
-                tools:ignore="ContentDescription,RtlHardcoded"
-                tools:src="@android:mipmap/sym_def_app_icon" />
-
-            <TextView
-                android:id="@+id/ambient_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|top"
-                android:paddingTop="5sp"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:visibility="gone" />
-
-            <requestFocus />
-
-        </com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout>
-
-        <ProgressBar
-            android:id="@+id/loading_indicator"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/notification_popup"
-            layout="@layout/popup_notification" />
-
-        <com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView
-            android:id="@+id/action_drawer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom"
-            app:drawerContent="@+id/drawer_content">
-
-            <fragment
-                android:id="@id/drawer_content"
-                android:name="com.matejdro.wearmusiccenter.watch.view.ActionsMenuFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </com.matejdro.wearmusiccenter.watch.view.NoSwipeCloseDrawerView>
-
-    </androidx.wear.widget.drawer.WearableDrawerLayout>
-</layout>
+</androidx.wear.widget.drawer.WearableDrawerLayout>

@@ -1,23 +1,23 @@
 package com.matejdro.wearmusiccenter.view.mainactivity
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import com.google.android.material.navigation.NavigationView
-import androidx.fragment.app.Fragment
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
+import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import android.view.MenuItem
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import com.google.android.material.navigation.NavigationView
 import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
+import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.di.InjectableViewModelFactory
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.FabFragment
@@ -30,13 +30,11 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import javax.inject.Inject
 
 
 class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationItemSelectedListener,
         TitledActivity, ActivityResultReceiver, HasAndroidInjector {
-    private lateinit var viewmodel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
@@ -49,16 +47,18 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
     @Inject
     lateinit var viewModelFactory: InjectableViewModelFactory<MainActivityViewModel>
 
+    private val viewmodel: MainActivityViewModel by viewModels { viewModelFactory }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
 
-        viewmodel = ViewModelProviders.of(this, viewModelFactory)[MainActivityViewModel::class.java]
-
         viewmodel.watchInfoProvider.observe(this, watchInfoObserver)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 

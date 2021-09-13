@@ -26,6 +26,7 @@ import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.*
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
+import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
@@ -52,7 +53,7 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private lateinit var timeFormat: java.text.DateFormat
-    private lateinit var binding: com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var drawerContentContainer: View
     private lateinit var actionsMenuFragment: ActionsMenuFragment
     private lateinit var vibrator: Vibrator
@@ -69,10 +70,8 @@ class MainActivity : WearCompanionWatchActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = androidx.databinding.DataBindingUtil.setContentView(
-            this,
-            R.layout.activity_main
-        )
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         drawerContentContainer = findViewById(R.id.drawer_content)
 
         // Hide peek container - we only want full blown drawer without peeks

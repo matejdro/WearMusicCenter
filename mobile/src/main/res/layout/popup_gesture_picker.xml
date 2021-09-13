@@ -1,114 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="200dp"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingTop="10dp"
+    android:paddingRight="10dp">
 
-        <import type="com.matejdro.wearmusiccenter.view.buttonconfig.GesturePickerFragment" />
+    <Button
+        android:id="@+id/customize_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:drawableStart="@drawable/ic_palette"
+        android:drawablePadding="10dp"
+        android:text="@string/change_icon" />
 
-        <variable
-            name="fragment"
-            type="com.matejdro.wearmusiccenter.view.buttonconfig.GesturePickerFragment" />
-    </data>
+
+    <TextView
+        android:id="@+id/single_press_description"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gesture_single_press" />
+
+    <Button
+        android:id="@+id/single_press_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:drawablePadding="10dp"
+        tools:drawableLeft="@drawable/action_volume_up"
+        tools:drawableTint="@android:color/black"
+        tools:text="Volume up" />
+
+    <TextView
+        android:id="@+id/double_press_description"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gesture_double_press" />
+
+    <Button
+        android:id="@+id/double_press_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:drawablePadding="10dp"
+        tools:drawableLeft="@drawable/action_volume_up"
+        tools:drawableTint="@android:color/black"
+        tools:text="Volume down" />
+
+    <TextView
+        android:id="@+id/long_press_description"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gesture_long_press" />
+
+    <Button
+        android:id="@+id/long_press_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="10dp"
+        tools:drawableLeft="@drawable/action_pause"
+        tools:drawableTint="@android:color/black"
+        tools:text="Pause" />
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="200dp"
-        android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp">
+        android:layout_gravity="end"
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/customize_icon"
+            android:id="@+id/cancel_button"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:drawablePadding="10dp"
-            android:drawableStart="@drawable/ic_palette"
-            android:onClick="@{() -> fragment.startIconSelection()}"
-            android:text="@string/change_icon" />
-
-
-        <TextView
-            android:id="@+id/single_press_description"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/gesture_single_press" />
+            android:text="@android:string/cancel" />
 
         <Button
-            android:id="@+id/single_press_button"
+            android:id="@+id/ok_button"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:drawablePadding="10dp"
-            android:onClick="@{() -> fragment.changeAction(0)}"
-            tools:drawableLeft="@drawable/action_volume_up"
-            tools:drawableTint="@color/black"
-            tools:text="Volume up" />
+            android:text="@android:string/ok" />
 
-        <TextView
-            android:id="@+id/double_press_description"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/gesture_double_press" />
-
-        <Button
-            android:id="@+id/double_press_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:drawablePadding="10dp"
-            android:onClick="@{() -> fragment.changeAction(1)}"
-            tools:drawableLeft="@drawable/action_volume_up"
-            tools:drawableTint="@color/black"
-            tools:text="Volume down" />
-
-        <TextView
-            android:id="@+id/long_press_description"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/gesture_long_press" />
-
-        <Button
-            android:id="@+id/long_press_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawablePadding="10dp"
-            android:onClick="@{() -> fragment.changeAction(2)}"
-            tools:drawableLeft="@drawable/action_pause"
-            tools:drawableTint="@color/black"
-            tools:text="Pause" />
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/cancel_button"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{() -> fragment.dismiss()}"
-                android:text="@android:string/cancel" />
-
-            <Button
-                android:id="@+id/ok_button"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{() -> fragment.save()}"
-                android:text="@android:string/ok" />
-
-        </LinearLayout>
     </LinearLayout>
+</LinearLayout>
 
-</layout>

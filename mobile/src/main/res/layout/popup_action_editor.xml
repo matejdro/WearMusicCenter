@@ -1,82 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="200dp"
+    android:orientation="vertical"
+    android:paddingTop="10dp">
 
-        <import type="com.matejdro.wearmusiccenter.view.actionlist.ActionEditorActivity" />
+    <ImageButton
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/action_play"
+        tools:tint="@android:color/black" />
 
-        <variable
-            name="view"
-            type="com.matejdro.wearmusiccenter.view.actionlist.ActionEditorActivity" />
-    </data>
+    <EditText
+        android:id="@+id/name_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/icon"
+        android:layout_toEndOf="@id/icon"
+        android:hint="@string/action_text"
+        tools:text="@string/action_play" />
 
+    <Button
+        android:id="@+id/swap_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name_box"
+        android:text="@string/swap_action" />
 
-    <RelativeLayout
+    <Button
+        android:id="@+id/delete_button"
+        style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="200dp"
-        android:orientation="vertical"
-        android:paddingTop="10dp">
+        android:layout_below="@id/swap_button"
+        android:text="@string/delete" />
 
-        <ImageButton
-            android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentStart="true"
-            android:onClick="@{() -> view.swapIcon()}"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/action_play"
-            tools:tint="@color/black" />
+    <Button
+        android:id="@+id/ok_button"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/delete_button"
+        android:layout_alignParentEnd="true"
+        android:text="@android:string/ok" />
 
-        <EditText
-            android:id="@+id/name_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/icon"
-            android:layout_toEndOf="@id/icon"
-            android:hint="@string/action_text"
-            tools:text="@string/action_play" />
+    <Button
+        android:id="@+id/cancel_button"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/delete_button"
+        android:layout_toStartOf="@id/ok_button"
+        android:text="@android:string/cancel" />
 
-        <Button
-            android:id="@+id/swap_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/name_box"
-            android:onClick="@{() -> view.swapAction()}"
-            android:text="@string/swap_action" />
+</RelativeLayout>
 
-        <Button
-            android:id="@+id/delete_button"
-            style="?attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/swap_button"
-            android:onClick="@{() -> view.delete()}"
-            android:text="@string/delete" />
-
-        <Button
-            android:id="@+id/ok_button"
-            style="?attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/delete_button"
-            android:layout_alignParentEnd="true"
-            android:onClick="@{() -> view.save()}"
-            android:text="@android:string/ok" />
-
-        <Button
-            android:id="@+id/cancel_button"
-            style="?attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/delete_button"
-            android:layout_toStartOf="@id/ok_button"
-            android:onClick="@{() -> view.cancel()}"
-            android:text="@android:string/cancel" />
-
-    </RelativeLayout>
-
-</layout>

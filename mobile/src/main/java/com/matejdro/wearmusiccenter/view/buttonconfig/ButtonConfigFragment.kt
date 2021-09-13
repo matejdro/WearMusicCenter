@@ -9,10 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
@@ -50,7 +49,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     private var watchInfo: WatchInfoWithIcons? = null
 
     private lateinit var binding: FragmentButtonConfigBinding
-    private lateinit var viewModel: ButtonConfigViewModel
+    private val viewModel: ButtonConfigViewModel by viewModels { viewModelFactory }
 
     @Inject
     lateinit var viewModelFactory: InjectableViewModelFactory<ButtonConfigViewModel>
@@ -78,14 +77,12 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[ButtonConfigViewModel::class.java]
-
         viewModel.watchInfoProvider.observe(viewLifecycleOwner, watchInfoObserver)
         viewModel.buttonConfig.observe(viewLifecycleOwner, buttonsConfigObserver)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_button_config, container, false)
+        binding = FragmentButtonConfigBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -130,10 +127,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
             icon?.setTint(Color.BLACK)
 
-            val buttonBinding = DataBindingUtil.inflate<ItemWatchButtonBinding>(inflater,
-                    R.layout.item_watch_button,
-                    binding.watchButtonContainer,
-                    true)
+            val buttonBinding = ItemWatchButtonBinding.inflate(inflater, binding.watchButtonContainer, true)
 
             buttonBinding.button.text = buttonTitle
             buttonBinding.button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
@@ -45,8 +44,8 @@ class ActionEditorActivity : Activity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.popup_action_editor)
-        binding.view = this
+        binding = PopupActionEditorBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val currentActionBundle: PersistableBundle?
         if (savedInstanceState != null) {
@@ -65,6 +64,12 @@ class ActionEditorActivity : Activity() {
         } else {
             populateFields()
         }
+
+        binding.icon.setOnClickListener { swapIcon() }
+        binding.swapButton.setOnClickListener { swapAction() }
+        binding.deleteButton.setOnClickListener { delete() }
+        binding.okButton.setOnClickListener { save() }
+        binding.cancelButton.setOnClickListener { cancel() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

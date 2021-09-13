@@ -1,11 +1,8 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.graphics.drawable.NinePatchDrawable
 import android.graphics.drawable.VectorDrawable
@@ -13,16 +10,18 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.os.Vibrator
 import android.provider.Settings
-import androidx.fragment.app.Fragment
-import androidx.core.content.res.ResourcesCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator
 import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter
 import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange
@@ -47,7 +46,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         private const val STATE_LAST_EDITED_ACTION_POSITION = "LastEditedActionPosition"
     }
 
-    private lateinit var viewModel: ActionListViewModel
+    private val viewModel: ActionListViewModel by viewModels { viewModelFactory }
     private lateinit var binding: FragmentActionListBinding
     private lateinit var adapter: RecyclerView.Adapter<ListItemHolder>
     private lateinit var dragDropManager: RecyclerViewDragDropManager
@@ -90,7 +89,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_action_list, container, false)
+        binding = FragmentActionListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -114,26 +113,23 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         recycler.adapter = adapter
         recycler.itemAnimator = DraggableItemAnimator()
         recycler.layoutManager =
-            LinearLayoutManager(
-                context,
-                LinearLayoutManager.VERTICAL,
-                false
-            )
+                LinearLayoutManager(
+                        context,
+                        LinearLayoutManager.VERTICAL,
+                        false
+                )
 
         recycler.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL
+                )
         )
         dragDropManager.attachRecyclerView(recycler)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[ActionListViewModel::class.java]
 
         viewModel.actions.observe(viewLifecycleOwner, actionListListener)
         viewModel.openActionEditor.observe(viewLifecycleOwner, openEditDialogListener)

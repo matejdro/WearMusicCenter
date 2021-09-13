@@ -32,7 +32,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
-        dataBinding true
+        viewBinding true
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -52,6 +52,8 @@ dependencies {
     implementation libs.google.material
     implementation libs.androidx.constraintLayout
     implementation libs.androidx.core
+    implementation libs.androidx.lifecycle.service
+    implementation libs.androidx.lifecycle.viewmodel
 
     implementation libs.google.playServices.wearable
     compileOnly libs.google.wearableLibrary

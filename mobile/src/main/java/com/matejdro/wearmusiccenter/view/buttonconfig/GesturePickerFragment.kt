@@ -17,7 +17,6 @@ import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
@@ -103,8 +102,7 @@ class GesturePickerFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.popup_gesture_picker, container, false)
-        binding.fragment = this
+        binding = PopupGesturePickerBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -125,6 +123,13 @@ class GesturePickerFragment : DialogFragment() {
 
         binding.longPressDescription.isVisible = supportsLongPress
         binding.longPressButton.isVisible = supportsLongPress
+
+        binding.customizeIcon.setOnClickListener { startIconSelection() }
+        binding.singlePressButton.setOnClickListener { changeAction(GESTURE_SINGLE_TAP) }
+        binding.doublePressButton.setOnClickListener { changeAction(GESTURE_DOUBLE_TAP) }
+        binding.longPressButton.setOnClickListener { changeAction(GESTURE_LONG_TAP) }
+        binding.okButton.setOnClickListener { save() }
+        binding.cancelButton.setOnClickListener { dismiss() }
     }
 
     fun changeAction(gesture: Int) {
