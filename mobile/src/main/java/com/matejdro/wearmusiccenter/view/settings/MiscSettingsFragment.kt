@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -22,7 +23,7 @@ import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
 
 
-class MiscSettingsFragment : PreferenceFragmentCompatEx() {
+class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         private const val VIBRATION_CENTER_PACKAGE = "com.matejdro.wearvibrationcenter"
     }
@@ -148,9 +149,23 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
     override fun onStop() {
         super.onStop()
 
+        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        pushPreferencesToWatch()
+    }
+
+    private fun pushPreferencesToWatch() {
         if (googleApiClient.isConnected) {
             PreferencePusher.pushPreferences(googleApiClient, preferenceManager.sharedPreferences, CommPaths.PREFERENCES_PREFIX, false)
         }
