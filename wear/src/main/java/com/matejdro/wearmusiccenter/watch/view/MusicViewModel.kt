@@ -56,7 +56,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     fun executeActionFromMenu(index: Int) {
         val action = actionsMenuConfig.config.value?.get(index) ?: return
 
-        closeActionsMenu.postValue(null)
+        closeActionsMenu.postValue(Unit)
 
         if (executeActionOnWatch(action, 1f)) {
             return
@@ -66,7 +66,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun executeItemFromCustomMenu(listId: String, itemId: String) {
-        closeActionsMenu.postValue(null)
+        closeActionsMenu.postValue(Unit)
         phoneConnection.executeCustomMenuAction(listId, itemId)
     }
 
