@@ -463,8 +463,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     }
 
     private class AckTimeoutHandler(val service: WeakReference<MusicService>) : android.os.Handler() {
-        override fun handleMessage(msg: Message?) {
-            if (msg?.what == MESSAGE_STOP_SELF) {
+        override fun handleMessage(msg: Message) {
+            if (msg.what == MESSAGE_STOP_SELF) {
                 Timber.d("TIMEOUT!")
                 service.get()?.stopSelf()
             }

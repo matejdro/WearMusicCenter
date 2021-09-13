@@ -76,7 +76,7 @@ class WatchInfoProvider @Inject constructor(private val context: Context) :
             Uri.parse("wear://*" + CommPaths.DATA_WATCH_INFO)
         )
             .setResultCallback {
-                val latestWatchData = it.maxBy { WatchInfo.parseFrom(it.data).time }
+                val latestWatchData = it.maxByOrNull { WatchInfo.parseFrom(it.data).time }
                 parseDataItem(latestWatchData)
                 it.release()
             }
