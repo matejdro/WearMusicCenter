@@ -13,6 +13,7 @@ import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import javax.inject.Inject
 
@@ -56,7 +57,8 @@ class DefaultConfigGenerator @Inject constructor(private val context : Context,
                 }
 
         val watchInfo = watchInfoProvider.value
-        val numPhysicalButtons = watchInfo?.watchInfo?.buttonsCount ?: 0
+        val buttons = watchInfo?.watchInfo?.buttonsList ?: emptyList()
+        val numPhysicalButtons = buttons.size
 
         if (numPhysicalButtons > 1) {
             val lastButton = numPhysicalButtons - 1
@@ -81,6 +83,17 @@ class DefaultConfigGenerator @Inject constructor(private val context : Context,
                     ButtonInfo(true, 0, GESTURE_SINGLE_TAP),
                     PlayAction(context))
         }
+
+        if (buttons.any { it.code == SpecialButtonCodes.TURN_ROTARY_CW}) {
+            playingConfig.saveButtonAction(
+                    ButtonInfo(true, SpecialButtonCodes.TURN_ROTARY_CW, GESTURE_SINGLE_TAP),
+                    IncreaseVolumeAction(context))
+            playingConfig.saveButtonAction(
+                    ButtonInfo(true, SpecialButtonCodes.TURN_ROTARY_CCW, GESTURE_SINGLE_TAP),
+                    DecreaseVolumeAction(context))
+
+        }
+
     }
 
     fun generateDefaultActionList(actionList: ActionList) {
