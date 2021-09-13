@@ -2,12 +2,14 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath libs.android.gradle
         classpath libs.kotlin.gradle
         classpath libs.google.playServices.gradle
         classpath libs.google.firebase.crashlytics.gradle
+        classpath libs.versionsPlugin.gradle
     }
 }
 
@@ -20,11 +22,31 @@ allprojects {
 }
 
 allprojects {
+    apply plugin: "com.github.ben-manes.versions"
+
+    tasks.named("dependencyUpdates").configure {
+        rejectVersionIf {
+            !it.currentVersion.contains("alpha") &&
+                    !it.currentVersion.contains("beta") &&
+                    !it.currentVersion.contains("RC") &&
+                    !it.currentVersion.contains("rc") &&
+                    !it.currentVersion.contains("M") &&
+                    (
+                            it.candidate.version.contains("alpha") ||
+                                    it.candidate.version.contains("beta") ||
+                                    it.candidate.version.contains("RC") ||
+                                    it.candidate.version.contains("rc") ||
+                                    it.candidate.version.contains("M")
+                    )
+
+        }
+    }
+
     afterEvaluate { project ->
         def keystoreProperties = rootProject.file('keystore.properties')
         def debugConfig = 'debug'
 
-        if (hasProperty("android") && keystoreProperties.exists() && android.signingConfigs.hasProperty(debugConfig)) {
+        if (project.plugins.findPlugin("com.android.base") != null && keystoreProperties.exists() && android.signingConfigs.hasProperty(debugConfig)) {
             def props = new Properties()
             props.load(new FileInputStream(keystoreProperties))
             android.signingConfigs[debugConfig].storeFile = file(props['storeFile'])

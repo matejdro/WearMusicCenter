@@ -232,8 +232,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
 
         override fun getItemId(position: Int): Long = actions[position].id.toLong()
 
-        override fun onGetItemDraggableRange(holder: ListItemHolder?, position: Int)
-                : ItemDraggableRange? = null
+        override fun onGetItemDraggableRange(holder: ListItemHolder, position: Int): ItemDraggableRange? = null
 
         override fun onCheckCanDrop(draggingPosition: Int, dropPosition: Int): Boolean = true
 

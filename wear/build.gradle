@@ -41,7 +41,6 @@ dependencies {
     implementation libs.google.wearableSupport
     compileOnly libs.google.wearableLibrary
 
-    implementation libs.androidx.lifecycle.extensions
     implementation libs.androidx.cardView
     implementation libs.androidx.appCompat
     implementation libs.androidx.core
