@@ -1,18 +1,18 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
@@ -124,7 +124,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
             val icon = if (StandardIcons.hasIcon(buttonCode)) {
                 ContextCompat.getDrawable(requireContext(), StandardIcons.getIcon(buttonCode))
-            }  else {
+            } else {
                 watchInfo!!.icons[buttonCode]
             }
 
@@ -139,7 +139,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
             buttonBinding.button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
             buttonBinding.button.setOnClickListener {
                 val buttonName = "$buttonTitle button"
-                configureButton(true, buttonCode, buttonName)
+                configureButton(true, buttonCode, buttonName, buttonInfo.supportsLongPress)
             }
         }
     }
@@ -175,15 +175,16 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         val quadrantName = ScreenQuadrant.QUADRANT_NAMES[quadrant]
         val buttonName = "$quadrantName touch"
 
-        configureButton(false, quadrant, buttonName)
+        configureButton(false, quadrant, buttonName, true)
     }
 
-    fun configureButton(physicalButton : Boolean, buttonCode : Int, buttonName : String) {
+    fun configureButton(physicalButton: Boolean, buttonCode: Int, buttonName: String, supportsLongPress: Boolean) {
         val buttonInfo = ButtonInfo(physicalButton, buttonCode, GESTURE_SINGLE_TAP)
 
         val gesturePicker = GesturePickerFragment.newInstance(setsPlaybackActions,
                 buttonInfo,
-                buttonName)
+                buttonName,
+                supportsLongPress)
         gesturePicker.show(requireFragmentManager(), "GesturePickerFragment")
     }
 

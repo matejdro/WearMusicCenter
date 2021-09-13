@@ -48,6 +48,7 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                         .map { buttonCode ->
                             val buttonLabel: CharSequence?
                             val imageBytes: ByteArray?
+                            var supportsLongPress = true
 
                             when (buttonCode) {
                                 in KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3 -> {
@@ -62,10 +63,12 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                                 SpecialButtonCodes.TURN_ROTARY_CW -> {
                                     buttonLabel = context.getString(R.string.turn_bezel_cw)
                                     imageBytes = null
+                                    supportsLongPress = false
                                 }
                                 SpecialButtonCodes.TURN_ROTARY_CCW -> {
                                     buttonLabel = context.getString(R.string.turn_bezel_ccw)
                                     imageBytes = null
+                                    supportsLongPress = false
                                 }
                                 else -> {
                                     buttonLabel = null
@@ -84,6 +87,7 @@ class WatchInfoSender(val context: Context, val urgent: Boolean) {
                                     .newBuilder()
                                     .setLabel(buttonLabel?.toString() ?: context.getString(R.string.button))
                                     .setCode(buttonCode)
+                                    .setSupportsLongPress(supportsLongPress)
                                     .build()
                         }
 

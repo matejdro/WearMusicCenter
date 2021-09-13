@@ -40,19 +40,21 @@ class GesturePickerFragment : DialogFragment() {
         private const val PARAM_SETS_PLAYBACK_ACTIONS = "SetsPlaybackActions"
         private const val PARAM_BUTTON_INFO = "ButtonInfo"
         private const val PARAM_BUTTON_NAME = "ButtonName"
+        private const val PARAM_SUPPORTS_LONG_PRESS = "SupportsLongPress"
 
         private const val REQUEST_CODE_PICK_ACTION = 5891
         private const val REQUEST_CODE_PICK_ACTION_TO = REQUEST_CODE_PICK_ACTION + NUM_BUTTON_GESTURES
 
         private const val REQUEST_CODE_PICK_ICON = 5991
 
-        fun newInstance(setsPlaybackButtons: Boolean, baseButtonInfo: ButtonInfo, buttonName: String): GesturePickerFragment {
+        fun newInstance(setsPlaybackButtons: Boolean, baseButtonInfo: ButtonInfo, buttonName: String, supportsLongPress: Boolean): GesturePickerFragment {
             val fragment = GesturePickerFragment()
 
             val args = Bundle()
             args.putBoolean(PARAM_SETS_PLAYBACK_ACTIONS, setsPlaybackButtons)
             args.putParcelable(PARAM_BUTTON_INFO, baseButtonInfo.serialize())
             args.putString(PARAM_BUTTON_NAME, buttonName)
+            args.putBoolean(PARAM_SUPPORTS_LONG_PRESS, supportsLongPress)
 
             fragment.arguments = args
             return fragment
@@ -63,6 +65,7 @@ class GesturePickerFragment : DialogFragment() {
     private lateinit var binding: PopupGesturePickerBinding
     private lateinit var baseButtonInfo: ButtonInfo
     private lateinit var buttonName: String
+    private var supportsLongPress: Boolean = false
 
     private lateinit var actions: Array<PhoneAction?>
 
@@ -83,6 +86,7 @@ class GesturePickerFragment : DialogFragment() {
         baseButtonInfo = ButtonInfo(arguments!!.getParcelable<PersistableBundle>(PARAM_BUTTON_INFO)!!)
         buttonName = arguments!!.getString(PARAM_BUTTON_NAME)!!
         setsPlaybackButtons = arguments!!.getBoolean(PARAM_SETS_PLAYBACK_ACTIONS)
+        supportsLongPress = requireArguments().getBoolean(PARAM_SUPPORTS_LONG_PRESS)
 
         AndroidSupportInjection.inject(this)
 
@@ -118,6 +122,9 @@ class GesturePickerFragment : DialogFragment() {
         updateButton(binding.longPressButton, GESTURE_LONG_TAP)
 
         binding.customizeIcon.isVisible = !baseButtonInfo.physicalButton
+
+        binding.longPressDescription.isVisible = supportsLongPress
+        binding.longPressButton.isVisible = supportsLongPress
     }
 
     fun changeAction(gesture: Int) {

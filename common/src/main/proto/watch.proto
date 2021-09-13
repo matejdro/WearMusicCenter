@@ -17,6 +17,7 @@ message WatchInfo {
   message WatchButton {
     required string label = 1;
     optional int32 code = 2;
+    optional bool supportsLongPress = 3 [default = true];
   }
 }
 
