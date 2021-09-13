@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
@@ -57,7 +58,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
         closeActionsMenu.postValue(null)
 
-        if (executeActionOnWatch(action)) {
+        if (executeActionOnWatch(action, 1f)) {
             return
         }
 
@@ -72,24 +73,32 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     fun executeAction(buttonInfo: ButtonInfo): Boolean {
         val action = currentButtonConfig.value?.getAction(buttonInfo) ?: return false
 
-        if (!executeActionOnWatch(action)) {
+        val multiplier = if (buttonInfo.buttonCode == SpecialButtonCodes.TURN_ROTARY_CW ||
+                buttonInfo.buttonCode == SpecialButtonCodes.TURN_ROTARY_CCW) {
+            Preferences.getInt(preferences.value!!, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
+        } else {
+            1f
+        }
+
+        if (!executeActionOnWatch(action, multiplier)) {
             phoneConnection.executeButtonAction(buttonInfo)
         }
 
         return true
     }
 
-    private fun executeActionOnWatch(action: ButtonAction): Boolean {
+    private fun executeActionOnWatch(action: ButtonAction, multiplier: Float): Boolean {
         return when {
             action.key == StandardActions.ACTION_VOLUME_UP -> {
-                updateVolume(Math.min(1f, volume.value!! + (currentButtonConfig.value?.volumeStep
-                        ?: 0.1f)))
+                val volumeStep = (currentButtonConfig.value?.volumeStep ?: 0.1f) * multiplier
+                updateVolume(Math.min(1f, volume.value!! + volumeStep))
                 popupVolumeBar.call()
                 true
             }
             action.key == StandardActions.ACTION_VOLUME_DOWN -> {
-                updateVolume(Math.max(0f, volume.value!! - (currentButtonConfig.value?.volumeStep
-                        ?: 0.1f)))
+                val volumeStep = (currentButtonConfig.value?.volumeStep ?: 0.1f) * multiplier
+
+                updateVolume(Math.max(0f, volume.value!! - volumeStep))
                 popupVolumeBar.call()
                 true
             }
