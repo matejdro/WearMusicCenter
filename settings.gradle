@@ -4,6 +4,9 @@ enableFeaturePreview("VERSION_CATALOGS")
 
 dependencyResolutionManagement {
     versionCatalogs {
+        libs {
+            from(files("libs.toml"))
+        }
         wearUtilsLibs {
             from(files("wearutils/libs.toml"))
         }

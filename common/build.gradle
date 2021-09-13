@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.17'
+        classpath libs.google.protobuf.gradle
     }
 }
 
@@ -36,13 +36,12 @@ android {
 dependencies {
     implementation project(path: ':wearutils')
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation libs.androidx.appCompat
+    // Must have API to forward compiled protobuf files
+    api libs.google.protobuf.liteRuntime
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-
-    api 'com.google.protobuf:protobuf-lite:3.0.1'
-
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit4
+    testImplementation libs.junit4.get()
 }
 repositories {
     mavenCentral()
@@ -57,7 +56,8 @@ kotlin {
 protobuf {
     plugins {
         javalite {
-            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+            def dependency = libs.google.protobuf.liteGen.get()
+            artifact = "${dependency.module}:${dependency.versionConstraint}"
         }
     }
     generateProtoTasks {

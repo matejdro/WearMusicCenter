@@ -38,52 +38,27 @@ dependencies {
     implementation project(path: ':wearutils')
     implementation project(path: ':common')
 
-    implementation 'com.google.android.support:wearable:2.8.1'
-    compileOnly 'com.google.android.wearable:wearable:2.8.1'
+    implementation libs.google.wearableSupport
+    compileOnly libs.google.wearableLibrary
 
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.wear:wear:1.1.0'
-    implementation 'androidx.fragment:fragment-ktx:1.3.6'
-    implementation 'androidx.activity:activity-ktx:1.3.1'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.cardView
+    implementation libs.androidx.appCompat
+    implementation libs.androidx.core
+    implementation libs.androidx.wear
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+    implementation libs.androidx.preference
 
-    implementation "com.google.android.gms:play-services-wearable:$play_services_version"
+    implementation libs.google.playServices.wearable
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation libs.kotlin.coroutines
 
-    testImplementation "com.nhaarman:mockito-kotlin:1.6.0"
-    testImplementation "org.mockito:mockito-core:3.5.13"
-    testImplementation "org.robolectric:robolectric:4.6.1"
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.mockito.core
+    testImplementation libs.robolectric
+    testImplementation libs.junit4
 }
 repositories {
     mavenCentral()
-}
-
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}
-
-
-allprojects {
-    afterEvaluate { project ->
-        def keystoreProperties = rootProject.file('keystore.properties')
-        def debugConfig = 'debug'
-
-        if (keystoreProperties.exists() && android.signingConfigs.hasProperty(debugConfig)) {
-            def props = new Properties()
-            props.load(new FileInputStream(keystoreProperties))
-            android.signingConfigs[debugConfig].storeFile = file(props['storeFile'])
-            android.signingConfigs[debugConfig].storePassword = props['storePassword']
-            android.signingConfigs[debugConfig].keyAlias = props['keyAlias']
-            android.signingConfigs[debugConfig].keyPassword = props['keyPassword']
-        }
-    }
 }

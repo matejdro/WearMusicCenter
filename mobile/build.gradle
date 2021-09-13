@@ -47,67 +47,40 @@ dependencies {
     implementation project(path: ':wearutils')
     implementation project(path: ':common')
 
-    implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation libs.androidx.preference
+    implementation libs.androidx.appCompat
+    implementation libs.google.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.core
 
-    implementation "com.google.android.gms:play-services-wearable:$play_services_version"
-    compileOnly 'com.google.android.wearable:wearable:2.8.1'
+    implementation libs.google.playServices.wearable
+    compileOnly libs.google.wearableLibrary
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation libs.kotlin.coroutines
 
     //noinspection AnnotationProcessorOnCompilePath
-    implementation 'com.google.auto.factory:auto-factory:1.0-beta7'
-    annotationProcessor 'com.google.auto.factory:auto-factory:1.0-beta7'
-    kapt 'com.google.auto.factory:auto-factory:1.0-beta7'
+    implementation libs.google.autoFactory
+    kapt libs.google.autoFactory
 
     //noinspection AnnotationProcessorOnCompilePath
-    implementation 'com.google.auto.value:auto-value:1.7.4'
-    kapt 'com.google.auto.value:auto-value:1.7.4'
-    annotationProcessor 'com.google.auto.value:auto-value:1.7.4'
-    implementation 'com.google.auto.value:auto-value-annotations:1.7.4'
+    implementation libs.google.autoValue
+    implementation libs.google.autoValue.annotations
+    kapt libs.google.autoValue
 
-    implementation "com.google.dagger:dagger:2.38.1"
-    implementation 'com.google.dagger:dagger-android:2.38.1'
-    implementation 'com.google.dagger:dagger-android-support:2.38.1'
-    kapt 'com.google.dagger:dagger-android-processor:2.38.1'
-    kapt "com.google.dagger:dagger-compiler:2.38.1"
+    implementation libs.dagger
+    implementation libs.dagger.android
+    implementation libs.dagger.android.support
+    kapt libs.dagger.compiler
+    kapt libs.dagger.android.processor
 
-    implementation 'com.github.h6ah4i:android-advancedrecyclerview:0.11.0'
-    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.0'
+    implementation libs.advancedRecyclerView
+    implementation libs.licensesDialog
 
-    implementation platform('com.google.firebase:firebase-bom:28.4.0')
+    implementation platform(libs.google.firebase.bom)
 
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation libs.google.firebase.crashlytics
+    implementation libs.google.firebase.analytics
 
-    testImplementation 'junit:junit:4.13.2'
-}
-
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}
-
-
-allprojects {
-    afterEvaluate { project ->
-        def keystoreProperties = rootProject.file('keystore.properties')
-        def debugConfig = 'debug'
-
-        if (keystoreProperties.exists() && android.signingConfigs.hasProperty(debugConfig)) {
-            def props = new Properties()
-            props.load(new FileInputStream(keystoreProperties))
-            android.signingConfigs[debugConfig].storeFile = file(props['storeFile'])
-            android.signingConfigs[debugConfig].storePassword = props['storePassword']
-            android.signingConfigs[debugConfig].keyAlias = props['keyAlias']
-            android.signingConfigs[debugConfig].keyPassword = props['keyPassword']
-        }
-    }
+    testImplementation libs.junit4
 }
