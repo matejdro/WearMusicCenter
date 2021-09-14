@@ -1,6 +1,7 @@
 package com.matejdro.wearmusiccenter.watch.config
 
 import android.content.Context
+import android.view.KeyEvent
 import androidx.collection.SimpleArrayMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearmusiccenter.watch.communication.getIcon
 import kotlinx.coroutines.*
@@ -28,6 +30,12 @@ class WatchActionConfigProvider(context: Context, scope: CoroutineScope, rawConf
     }
 
     fun isActionActive(buttonInfo: ButtonInfo): Boolean {
+        if (buttonInfo.physicalButton &&
+                buttonInfo.buttonCode == KeyEvent.KEYCODE_BACK &&
+                buttonInfo.gesture == GESTURE_LONG_TAP) {
+            return false
+        }
+
         return configMap.containsKey(buttonInfo) || configMap.containsKey(buttonInfo.getLegacyButtonInfo())
     }
 
