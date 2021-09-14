@@ -1,12 +1,15 @@
 package com.matejdro.wearmusiccenter.di
 
+import androidx.lifecycle.lifecycleScope
 import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.view.actionlist.ActionListFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ButtonConfigFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.GesturePickerFragment
+import com.matejdro.wearmusiccenter.view.mainactivity.MainActivity
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
+import kotlinx.coroutines.CoroutineScope
 
 @Module
 class MainActivityModule {
@@ -14,8 +17,12 @@ class MainActivityModule {
     @Provides
     @PerContextLifecycle
     @LocalActivityConfig
-    fun provideLocalConfig(@GlobalConfig globalConfig: ActionConfig): ActionConfig
-            = globalConfig
+    fun provideLocalConfig(@GlobalConfig globalConfig: ActionConfig): ActionConfig = globalConfig
+
+    @Provides
+    fun provideCoroutineScope(activity: MainActivity): CoroutineScope {
+        return activity.lifecycleScope
+    }
 }
 
 @Module

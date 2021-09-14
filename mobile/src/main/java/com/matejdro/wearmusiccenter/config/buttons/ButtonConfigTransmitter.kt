@@ -3,10 +3,6 @@ package com.matejdro.wearmusiccenter.config.buttons
 import android.content.Context
 import android.media.AudioManager
 import android.net.Uri
-import android.os.Bundle
-import androidx.annotation.WorkerThread
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
@@ -19,11 +15,10 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
+import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
+import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @AutoFactory
 class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
@@ -31,26 +26,16 @@ class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
                               @Provided private val watchInfoProvider: WatchInfoProvider,
                               @Provided private val customIconStorage: CustomIconStorage,
                               private val endpointPath: String) {
-    private val apiClient: GoogleApiClient = GoogleApiClient.Builder(context)
-            .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
-                override fun onConnected(p0: Bundle?) {
-                    resendIfNeeded(buttonConfig)
-                }
 
-                override fun onConnectionSuspended(p0: Int) = Unit
-            })
-            .addApi(Wearable.API)
-            .build()
+    private val dataClient = Wearable.getDataClient(context)
 
     init {
-        apiClient.connect()
+        resendIfNeeded(buttonConfig)
     }
 
     private fun resendIfNeeded(buttonConfig: ButtonConfig) {
-        GlobalScope.launch(Dispatchers.Default) {
-            val dataOnWatch = Wearable.DataApi.getDataItems(apiClient,
-                    Uri.parse("wear://*$endpointPath"))
-                    .await()
+        GlobalScope.launchWithPlayServicesErrorHandling(context) {
+            val dataOnWatch = dataClient.getDataItems(Uri.parse("wear://*$endpointPath")).await()
 
             if (!dataOnWatch.any()) {
                 sendConfigToWatch(buttonConfig.getAllActions())
@@ -60,14 +45,7 @@ class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
         }
     }
 
-    @WorkerThread
-    fun sendConfigToWatch(buttons: Collection<Map.Entry<ButtonInfo, PhoneAction>>): Boolean {
-        val connectionStatus = apiClient.blockingConnect()
-        if (!connectionStatus.isSuccess) {
-            GoogleApiAvailability.getInstance().showErrorNotification(context, connectionStatus)
-            return false
-        }
-
+    suspend fun sendConfigToWatch(buttons: Collection<Map.Entry<ButtonInfo, PhoneAction>>) {
         val density = watchInfoProvider.value?.watchInfo?.displayDensity ?: 1f
         val targetIconSize = (ConfigConstants.BUTTON_ICON_SIZE_DP * density).toInt()
 
@@ -106,8 +84,7 @@ class ButtonConfigTransmitter(buttonConfig: ButtonConfig,
 
         putDataRequest.data = protoBuilder.build().toByteArray()
 
-        val result = Wearable.DataApi.putDataItem(apiClient, putDataRequest).await()
-        return result.status.isSuccess
+        dataClient.putDataItem(putDataRequest).await()
     }
 
     private val volumeStep by lazy {

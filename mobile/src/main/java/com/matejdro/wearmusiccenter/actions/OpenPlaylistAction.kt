@@ -12,16 +12,17 @@ import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.proto.CustomList
+import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
+import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class OpenPlaylistAction : SelectableAction {
     constructor(context: Context) : super(context)
     constructor(context: Context, bundle: PersistableBundle) : super(context, bundle)
 
     override fun execute(service: MusicService) {
-        GlobalScope.launch {
+        GlobalScope.launchWithPlayServicesErrorHandling(context) {
             // TODO take density of Watch's display into account
             val targetIconSize = (ConfigConstants.BUTTON_ICON_SIZE_DP)
 
@@ -74,7 +75,7 @@ class OpenPlaylistAction : SelectableAction {
 
             putDataRequest.data = protoData.toByteArray()
 
-            Wearable.DataApi.putDataItem(service.googleApiClient, putDataRequest)
+            Wearable.getDataClient(context).putDataItem(putDataRequest).await()
         }
     }
 

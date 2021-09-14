@@ -4,9 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
-import android.os.HandlerThread
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
@@ -16,19 +15,19 @@ import com.matejdro.wearmusiccenter.proto.CustomList
 import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
+import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection.Companion.MESSAGE_CLOSE_CONNECTION
+import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
+import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.*
-import com.matejdro.wearutils.messages.DataUtils
-import com.matejdro.wearutils.messages.getOtherNodeId
+import com.matejdro.wearutils.messages.*
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
+import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 
-class PhoneConnection(private val context: Context) : DataApi.DataListener, CapabilityApi.CapabilityListener, LiveDataLifecycleListener {
+class PhoneConnection(private val context: Context, private val scope: CoroutineScope) : DataClient.OnDataChangedListener,
+        CapabilityClient.OnCapabilityChangedListener,
+        LiveDataLifecycleListener {
 
     companion object {
         const val MESSAGE_CLOSE_CONNECTION = 0
@@ -47,10 +46,10 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
     private val lifecycleObserver = LiveDataLifecycleCombiner(this)
 
-    val googleApiClient: GoogleApiClient
-    private val connectionThread: HandlerThread = HandlerThread("Phone Connection")
-    private val connectionHandler: Handler
-
+    private val messageClient = Wearable.getMessageClient(context)
+    private val dataClient = Wearable.getDataClient(context)
+    private val capabilityClient = Wearable.getCapabilityClient(context)
+    private val nodeClient = Wearable.getNodeClient(context)
     private val closeHandler = ConnectionCloseHandler(WeakReference(this))
 
     private var sendingVolume = false
@@ -59,14 +58,6 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
     var running = false
 
     init {
-        connectionThread.start()
-        connectionHandler = Handler(connectionThread.looper)
-
-        googleApiClient = GoogleApiClient.Builder(context)
-                .addApi(Wearable.API)
-                .build()
-
-
         lifecycleObserver.addLiveData(musicState)
         lifecycleObserver.addLiveData(albumArt)
     }
@@ -76,37 +67,24 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
             return
         }
 
-        connectionHandler.post {
-            val result = googleApiClient.blockingConnect()
-
-            if (!result.isSuccess) {
-                val errorText = result.errorMessage
-                        ?: context.getString(R.string.error_play_services)
-                musicState.postValue(Resource.error(errorText, null, result))
-
-                Timber.e("Play Services error: %d %s", result.errorCode, result.errorMessage)
-                return@post
-            }
-
-            val capabilities = Wearable.CapabilityApi.getCapability(googleApiClient,
+        scope.launchWithErrorHandling(context, musicState) {
+            val capabilities = capabilityClient.getCapability(
                     CommPaths.PHONE_APP_CAPABILITY,
-                    CapabilityApi.FILTER_REACHABLE)
-                    .await()
-                    .capability
+                    CapabilityClient.FILTER_REACHABLE
+            ).await()
 
             onWatchConnectionUpdated(capabilities)
 
-            Wearable.DataApi.addListener(googleApiClient, this)
-
-            Wearable.CapabilityApi.addCapabilityListener(googleApiClient, this, CommPaths.PHONE_APP_CAPABILITY)
+            dataClient.addListener(this)
+            capabilityClient.addListener(this, CommPaths.PHONE_APP_CAPABILITY)
 
             loadCurrentActionConfig(CommPaths.DATA_PLAYING_ACTION_CONFIG, rawPlaybackConfig)
             loadCurrentActionConfig(CommPaths.DATA_STOPPING_ACTION_CONFIG, rawStoppedConfig)
             loadCurrentActionConfig(CommPaths.DATA_LIST_ITEMS, rawActionMenuConfig)
-        }
 
-        running = true
-        musicState.value = Resource.loading(null)
+            running = true
+            musicState.value = Resource.loading(null)
+        }
     }
 
     fun stop() {
@@ -116,125 +94,99 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
         running = false
 
-        connectionHandler.post {
-            Wearable.DataApi.removeListener(googleApiClient, this)
+        scope.launchWithErrorHandling(context, musicState) {
+            dataClient.removeListener(this)
 
-            val phoneNode = getOtherNodeId(googleApiClient)
+            val phoneNode = nodeClient.getNearestNodeId()
             if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_CLOSED, null).await()
+                messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED, null).await()
             }
-
-            googleApiClient.disconnect()
         }
     }
 
     private fun onWatchConnectionUpdated(capabilityInfo: CapabilityInfo) {
-        val watchConnected = capabilityInfo.nodes.firstOrNull()?.isNearby == true
+        val firstNode = capabilityInfo.nodes.firstOrNull { it.isNearby }
 
-        if (watchConnected) {
-            Wearable.MessageApi.sendMessage(googleApiClient, capabilityInfo.nodes.first()!!.id, CommPaths.MESSAGE_WATCH_OPENED, null).await()
+        if (firstNode != null) {
+            scope.launchWithErrorHandling(context, musicState) {
+                messageClient.sendMessage(capabilityInfo.nodes.first().id, CommPaths.MESSAGE_WATCH_OPENED, null).await()
+            }
         } else {
             musicState.postValue(Resource.error(context.getString(R.string.no_phone), null))
         }
     }
 
-    fun sendManualCloseMessage() {
+    suspend fun sendManualCloseMessage() {
         if (!running) {
             return
         }
 
-        connectionHandler.post {
-            val phoneNode = getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
-            }
+        val phoneNode = nodeClient.getNearestNodeId()
+        if (phoneNode != null) {
+            messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
         }
     }
 
     fun close() {
         stop()
-        connectionThread.quitSafely()
     }
 
     fun sendVolume(newVolume: Float) {
-        GlobalScope.launch(Dispatchers.Main) {
+        scope.launchWithErrorHandling(context, musicState) {
             nextVolume = -1f
 
             if (sendingVolume) {
                 nextVolume = newVolume
-                return@launch
+                return@launchWithErrorHandling
             }
 
             sendingVolume = true
 
-            withContext(Dispatchers.Default) {
-                val phoneNode = getOtherNodeId(googleApiClient)
-                if (phoneNode != null) {
-                    Wearable.MessageApi.sendMessage(googleApiClient,
-                            phoneNode,
-                            CommPaths.MESSAGE_CHANGE_VOLUME,
-                            FloatPacker.packFloat(newVolume)).await()
-                }
-            }
+            messageClient.sendMessageToNearestClient(
+                    nodeClient,
+                    CommPaths.MESSAGE_CHANGE_VOLUME,
+                    FloatPacker.packFloat(newVolume)
+            )
+        }
 
-            sendingVolume = false
-            if (nextVolume >= 0) {
-                sendVolume(nextVolume)
-            }
+        sendingVolume = false
+        if (nextVolume >= 0) {
+            sendVolume(nextVolume)
         }
     }
 
-    fun executeButtonAction(buttonInfo: ButtonInfo) {
-        connectionHandler.post {
-            val phoneNode = getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient,
-                        phoneNode,
-                        CommPaths.MESSAGE_EXECUTE_ACTION,
-                        buttonInfo.buildProtoVersion().build().toByteArray()).await()
-            }
-
-        }
+    suspend fun executeButtonAction(buttonInfo: ButtonInfo) {
+        messageClient.sendMessageToNearestClient(
+                nodeClient,
+                CommPaths.MESSAGE_EXECUTE_ACTION,
+                buttonInfo.buildProtoVersion().build().toByteArray()
+        )
     }
 
-    fun executeMenuAction(index: Int) {
-        connectionHandler.post {
-            val phoneNode = getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient,
-                        phoneNode,
-                        CommPaths.MESSAGE_EXECUTE_MENU_ACTION,
-                        ByteBuffer.allocate(4).putInt(index).array()).await()
-            }
-
-        }
+    suspend fun executeMenuAction(index: Int) {
+        messageClient.sendMessageToNearestClient(
+                nodeClient,
+                CommPaths.MESSAGE_EXECUTE_MENU_ACTION,
+                ByteBuffer.allocate(4).putInt(index).array()
+        )
     }
 
-    fun executeCustomMenuAction(listId: String, entryId: String) {
-        connectionHandler.post {
-            val phoneNode = getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(googleApiClient,
-                        phoneNode,
-                        CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED,
-                        CustomListItemAction.newBuilder()
-                                .setListId(listId)
-                                .setEntryId(entryId)
-                                .build()
-                                .toByteArray()
-                )
-            }
-
-        }
+    suspend fun executeCustomMenuAction(listId: String, entryId: String) {
+        messageClient.sendMessageToNearestClient(
+                nodeClient,
+                CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED,
+                CustomListItemAction.newBuilder()
+                        .setListId(listId)
+                        .setEntryId(entryId)
+                        .build()
+                        .toByteArray()
+        )
 
     }
 
 
-    private fun sendAck() {
-        val phoneNode = getOtherNodeId(googleApiClient)
-        if (phoneNode != null) {
-            Wearable.MessageApi.sendMessage(googleApiClient, phoneNode, CommPaths.MESSAGE_ACK, null)
-        }
+    private suspend fun sendAck() {
+        messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_ACK)
     }
 
     override fun onDataChanged(data: DataEventBuffer?) {
@@ -242,14 +194,14 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
             return
         }
 
-        data.filter { it.type == DataEvent.TYPE_CHANGED }
-                .map { it.dataItem }
-                .forEach {
-                    when (it.uri.path) {
-                        CommPaths.DATA_MUSIC_STATE -> {
-                            val dataItem = it.freeze()
+        scope.launchWithErrorHandling(context, musicState) {
+            data.filter { it.type == DataEvent.TYPE_CHANGED }
+                    .map { it.dataItem }
+                    .forEach {
+                        when (it.uri.path) {
+                            CommPaths.DATA_MUSIC_STATE -> {
+                                val dataItem = it.freeze()
 
-                            connectionHandler.post {
                                 val receivedMusicState = MusicState.parseFrom(dataItem.data)
 
                                 if (receivedMusicState.error) {
@@ -259,21 +211,19 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
                                     sendAck()
 
-                                    val albumArtData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_ALBUM_ART],
-                                            googleApiClient)
+                                    val albumArtData = dataItem.assets[CommPaths.ASSET_ALBUM_ART]
+                                            ?.let { asset -> dataClient.getByteArrayAsset(asset) }
                                     albumArt.postValue(BitmapUtils.deserialize(albumArtData))
                                 }
                             }
-                        }
-                        CommPaths.DATA_NOTIFICATION -> {
-                            val dataItem = it.freeze()
-                            connectionHandler.post {
+                            CommPaths.DATA_NOTIFICATION -> {
+                                val dataItem = it.freeze()
                                 val receivedNotification = Notification.parseFrom(dataItem.data)
 
                                 sendAck()
 
-                                val pictureData = DataUtils.getByteArrayAsset(dataItem.assets[CommPaths.ASSET_NOTIFICATION_BACKGROUND],
-                                        googleApiClient)
+                                val pictureData = dataItem.assets[CommPaths.ASSET_NOTIFICATION_BACKGROUND]
+                                        ?.let { asset -> dataClient.getByteArrayAsset(asset) }
                                 val picture = BitmapUtils.deserialize(pictureData)
 
                                 val mergedNotification = com.matejdro.wearmusiccenter.watch.model.Notification(
@@ -284,21 +234,17 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
 
                                 notification.postValue(mergedNotification)
                             }
-                        }
-                        CommPaths.DATA_PLAYING_ACTION_CONFIG -> rawPlaybackConfig.postValue(it.freeze())
-                        CommPaths.DATA_STOPPING_ACTION_CONFIG -> rawStoppedConfig.postValue(it.freeze())
-                        CommPaths.DATA_LIST_ITEMS -> rawActionMenuConfig.postValue(it.freeze())
-                        CommPaths.DATA_CUSTOM_LIST -> {
-                            val dataItem = it.freeze()
-                            connectionHandler.post {
+                            CommPaths.DATA_PLAYING_ACTION_CONFIG -> rawPlaybackConfig.postValue(it.freeze())
+                            CommPaths.DATA_STOPPING_ACTION_CONFIG -> rawStoppedConfig.postValue(it.freeze())
+                            CommPaths.DATA_LIST_ITEMS -> rawActionMenuConfig.postValue(it.freeze())
+                            CommPaths.DATA_CUSTOM_LIST -> {
+                                val dataItem = it.freeze()
                                 val receivedCustomList = CustomList.parseFrom(dataItem.data)
 
                                 val listItems = receivedCustomList.actionsList
                                         .mapIndexed { index, rawListEntry ->
-                                            val pictureData = DataUtils.getByteArrayAsset(
-                                                    dataItem.assets[index.toString()],
-                                                    googleApiClient
-                                            )
+                                            val pictureData = dataItem.assets[index.toString()]
+                                                    ?.let { asset -> dataClient.getByteArrayAsset(asset) }
 
                                             val picture = BitmapUtils.deserialize(pictureData)
 
@@ -319,26 +265,25 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
                             }
                         }
                     }
-                }
 
-        data.release()
+            data.release()
+        }
     }
 
     override fun onCapabilityChanged(capability: CapabilityInfo) {
-        connectionHandler.post { onWatchConnectionUpdated(capability) }
+        onWatchConnectionUpdated(capability)
     }
 
-    private fun loadCurrentActionConfig(configPath: String, targetLiveData: MutableLiveData<DataItem>) {
-        val dataItems = Wearable.DataApi.getDataItems(googleApiClient,
-                Uri.parse("wear://*" + configPath),
-                DataApi.FILTER_LITERAL)
+    private suspend fun loadCurrentActionConfig(configPath: String, targetLiveData: MutableLiveData<DataItem>) {
+        val dataItems = dataClient.getDataItems(
+                Uri.parse("wear://*$configPath"),
+                DataClient.FILTER_LITERAL)
+                .await()
 
-        val items = dataItems.await()
-
-        val dataItem = items.firstOrNull() ?: return
+        val dataItem = dataItems.firstOrNull() ?: return
 
         targetLiveData.postValue(dataItem.freeze())
-        items.release()
+        dataItems.release()
     }
 
     override fun onInactive() {
@@ -353,27 +298,15 @@ class PhoneConnection(private val context: Context) : DataApi.DataListener, Capa
         start()
     }
 
-    fun openPlaybackQueue() {
-        connectionHandler.post {
-            val phoneNode = getOtherNodeId(googleApiClient)
-            if (phoneNode != null) {
-                Wearable.MessageApi.sendMessage(
-                        googleApiClient,
-                        phoneNode,
-                        CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE,
-                        null
-                )
-            }
+    suspend fun openPlaybackQueue() {
+        messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE)
+    }
+}
+
+private class ConnectionCloseHandler(val phoneConnection: WeakReference<PhoneConnection>) : Handler(Looper.getMainLooper()) {
+    override fun dispatchMessage(msg: android.os.Message) {
+        if (msg.what == MESSAGE_CLOSE_CONNECTION) {
+            phoneConnection.get()?.stop()
         }
     }
-
-    private class ConnectionCloseHandler(val phoneConnection: java.lang.ref.WeakReference<PhoneConnection>) : android.os
-    .Handler() {
-        override fun dispatchMessage(msg: android.os.Message) {
-            if (msg.what == MESSAGE_CLOSE_CONNECTION) {
-                phoneConnection.get()?.stop()
-            }
-        }
-    }
-
 }

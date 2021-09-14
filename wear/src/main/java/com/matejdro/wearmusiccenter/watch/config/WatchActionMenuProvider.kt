@@ -1,18 +1,19 @@
 package com.matejdro.wearmusiccenter.watch.config
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.DataItem
+import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchList
-import com.matejdro.wearmusiccenter.watch.communication.IconGetter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import com.matejdro.wearmusiccenter.watch.communication.getIcon
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawData: LiveData<DataItem>) {
+class WatchActionMenuProvider(context: Context, coroutineScope: CoroutineScope, rawData: LiveData<DataItem>) {
+    private val dataClient = Wearable.getDataClient(context)
     val config = MutableLiveData<List<ButtonAction>>()
 
     private val dataObserver = Observer<DataItem> { dataItem ->
@@ -20,15 +21,17 @@ class WatchActionMenuProvider(private val googleApiClient: GoogleApiClient, rawD
             return@Observer
         }
 
-        GlobalScope.launch(Dispatchers.Default) {
+        coroutineScope.launch {
+            @Suppress("BlockingMethodInNonBlockingContext")
             val listProto = WatchList.parseFrom(dataItem.data)
 
             val actions = listProto.actionsList.withIndex().map {
                 val iconKey = CommPaths.ASSET_BUTTON_ICON_PREFIX + it.index
-                val icon = IconGetter.getIcon(googleApiClient,
+                val icon = dataClient.getIcon(
                         dataItem,
                         iconKey,
-                        it.value.actionKey)
+                        it.value.actionKey
+                )
 
                 ButtonAction(it.value.actionKey,
                         icon,

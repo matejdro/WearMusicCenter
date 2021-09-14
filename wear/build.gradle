@@ -52,6 +52,7 @@ dependencies {
     implementation libs.google.playServices.wearable
 
     implementation libs.kotlin.coroutines
+    implementation libs.kotlin.coroutines.playServices
 
     testImplementation libs.mockito.kotlin
     testImplementation libs.mockito.core

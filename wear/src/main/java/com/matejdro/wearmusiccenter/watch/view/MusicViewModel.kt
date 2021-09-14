@@ -11,21 +11,23 @@ import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection
+import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.config.WatchActionMenuProvider
 import com.matejdro.wearmusiccenter.watch.model.Notification
+import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import com.matejdro.wearutils.preferences.definition.Preferences
 import timber.log.Timber
 
 class MusicViewModel(application: Application) : AndroidViewModel(application) {
-    private val phoneConnection = PhoneConnection(getApplication())
+    private val phoneConnection = PhoneConnection(getApplication(), viewModelScope)
 
-    private val playbackConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawPlaybackConfig)
-    private val stoppedConfig = WatchActionConfigProvider(phoneConnection.googleApiClient, phoneConnection.rawStoppedConfig)
+    private val playbackConfig = WatchActionConfigProvider(application, viewModelScope, phoneConnection.rawPlaybackConfig)
+    private val stoppedConfig = WatchActionConfigProvider(application, viewModelScope, phoneConnection.rawStoppedConfig)
 
     private val handler = Handler()
     private var closeDeadline = Long.MAX_VALUE
@@ -33,7 +35,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val currentButtonConfig = MediatorLiveData<WatchActionConfigProvider>()
     val musicState = MediatorLiveData<Resource<MusicState>>()
     val customList = MediatorLiveData<CustomListWithBitmaps>()
-    val actionsMenuConfig = WatchActionMenuProvider(phoneConnection.googleApiClient, phoneConnection.rawActionMenuConfig)
+    val actionsMenuConfig = WatchActionMenuProvider(application, viewModelScope, phoneConnection.rawActionMenuConfig)
     val preferences = PreferencesBus as LiveData<SharedPreferences>
 
     val notification: LiveData<Notification> = phoneConnection.notification
@@ -62,12 +64,17 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        phoneConnection.executeMenuAction(index)
+        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+            phoneConnection.executeMenuAction(index)
+        }
     }
 
     fun executeItemFromCustomMenu(listId: String, itemId: String) {
         closeActionsMenu.postValue(Unit)
-        phoneConnection.executeCustomMenuAction(listId, itemId)
+
+        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+            phoneConnection.executeCustomMenuAction(listId, itemId)
+        }
     }
 
     fun executeAction(buttonInfo: ButtonInfo): Boolean {
@@ -81,7 +88,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (!executeActionOnWatch(action, multiplier)) {
-            phoneConnection.executeButtonAction(buttonInfo)
+            viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+                phoneConnection.executeButtonAction(buttonInfo)
+            }
         }
 
         return true
@@ -117,11 +126,15 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sendManualCloseMessage() {
-        phoneConnection.sendManualCloseMessage()
+        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+            phoneConnection.sendManualCloseMessage()
+        }
     }
 
     fun openPlaybackQueue() {
-        phoneConnection.openPlaybackQueue()
+        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+            phoneConnection.openPlaybackQueue()
+        }
     }
 
     private val configChangeListener = Observer<WatchActionConfigProvider> {
@@ -171,6 +184,10 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     init {
+        viewModelScope.launchWithErrorHandling(application, musicState) {
+            WatchInfoSender(application, true).sendWatchInfoToPhone()
+        }
+
         musicState.addSource(phoneConnection.musicState, musicStateListener)
         musicState.addSource(phoneConnection.customList) { customList.value = it }
         swapConfig(stoppedConfig)

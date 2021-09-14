@@ -17,8 +17,8 @@ import androidx.preference.PreferenceManager
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.drawer.WearableDrawerLayout
 import androidx.wear.widget.drawer.WearableDrawerView
-import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.wearable.input.RotaryEncoderHelper
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
@@ -113,7 +113,6 @@ class MainActivity : WearCompanionWatchActivity(),
 
         stemButtonsManager = StemButtonsManager(this, stemButtonListener)
 
-        WatchInfoSender(this, true).sendWatchInfoToPhone()
         actionsMenuFragment =
             supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
     }
@@ -185,9 +184,8 @@ class MainActivity : WearCompanionWatchActivity(),
             binding.textTitle.text = it.message
 
             val errorData = it.errorData
-            if (errorData is ConnectionResult) {
-                GoogleApiAvailability.getInstance().getErrorDialog(this, errorData.errorCode, 1)
-                    ?.show()
+            if (errorData is GooglePlayServicesRepairableException) {
+                GoogleApiAvailability.getInstance().getErrorDialog(this, errorData.connectionStatusCode, 1)?.show()
             }
         } else {
             binding.textArtist.text = ""

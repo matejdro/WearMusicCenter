@@ -11,9 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
@@ -21,6 +20,7 @@ import com.matejdro.wearutils.logging.LogRetrievalTask
 import com.matejdro.wearutils.preferences.compat.PreferenceFragmentCompatEx
 import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
+import kotlinx.coroutines.launch
 
 
 class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -28,16 +28,8 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
         private const val VIBRATION_CENTER_PACKAGE = "com.matejdro.wearvibrationcenter"
     }
 
-    private lateinit var googleApiClient: GoogleApiClient
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        googleApiClient = GoogleApiClient.Builder(context!!)
-                .addApi(Wearable.API)
-                .build()
-
-        googleApiClient.connect()
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -166,14 +158,13 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     }
 
     private fun pushPreferencesToWatch() {
-        if (googleApiClient.isConnected) {
-            PreferencePusher.pushPreferences(googleApiClient, preferenceManager.sharedPreferences, CommPaths.PREFERENCES_PREFIX, false)
+        lifecycleScope.launch {
+            PreferencePusher.pushPreferences(
+                    requireContext().applicationContext,
+                    preferenceManager.sharedPreferences,
+                    CommPaths.PREFERENCES_PREFIX,
+                    false
+            )
         }
-    }
-
-    override fun onDestroy() {
-        googleApiClient.disconnect()
-
-        super.onDestroy()
     }
 }

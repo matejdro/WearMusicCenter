@@ -1,7 +1,6 @@
 package com.matejdro.wearmusiccenter
 
 import android.annotation.TargetApi
-import androidx.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,7 +10,7 @@ import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
-import com.google.android.gms.common.api.GoogleApiClient
+import androidx.lifecycle.Observer
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -19,8 +18,12 @@ import com.matejdro.wearmusiccenter.music.ActiveMediaSessionProvider
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.music.isPlaying
 import com.matejdro.wearutils.lifecycle.Resource
-import com.matejdro.wearutils.messages.sendSingleMessage
+import com.matejdro.wearutils.messages.sendMessageToNearestClient
 import com.matejdro.wearutils.preferences.definition.Preferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class NotificationService : NotificationListenerService() {
@@ -28,7 +31,10 @@ class NotificationService : NotificationListenerService() {
     private var bound = false
 
     private var activeMediaProvider: ActiveMediaSessionProvider? = null
-    private var googleApiClient: GoogleApiClient? = null
+
+    private val coroutineScope = CoroutineScope(Job())
+    private val messageClient = Wearable.getMessageClient(applicationContext)
+    private val nodeClient = Wearable.getNodeClient(applicationContext)
 
     override fun onCreate() {
         super.onCreate()
@@ -67,11 +73,6 @@ class NotificationService : NotificationListenerService() {
             return
         }
 
-        googleApiClient = GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .build()
-        googleApiClient!!.connect()
-
         activeMediaProvider = ActiveMediaSessionProvider(this)
 
         if (Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)) {
@@ -92,6 +93,7 @@ class NotificationService : NotificationListenerService() {
         Timber.d("Service destroyed")
 
         activeMediaProvider?.removeObserver(mediaObserver)
+        coroutineScope.cancel()
 
         super.onDestroy()
     }
@@ -101,14 +103,13 @@ class NotificationService : NotificationListenerService() {
     }
 
     private fun startAppOnWatch() {
-        Timber.d("AttemptToStartApp %s", googleApiClient?.isConnected)
-        val googleApiClient = googleApiClient
-        if (googleApiClient?.isConnected == true) {
-            Timber.d("Starting app")
-            sendSingleMessage(googleApiClient,
-                    CommPaths.MESSAGE_OPEN_APP,
-                    null) {
-                Timber.d("Start success: %b", it.status.isSuccess)
+        Timber.d("AttemptToStartApp")
+        coroutineScope.launch {
+            try {
+                messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_OPEN_APP)
+                Timber.d("Start success")
+            } catch (e: Exception) {
+                Timber.e(e, "Start Fail")
             }
         }
     }

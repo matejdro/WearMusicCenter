@@ -1,5 +1,6 @@
 package com.matejdro.wearmusiccenter.music
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.*
 import android.content.Context
@@ -11,15 +12,14 @@ import android.media.session.MediaController
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
-import android.os.HandlerThread
+import android.os.Looper
 import android.os.Message
 import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.GoogleApiClient
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.OpenPlaylistAction
@@ -36,6 +36,8 @@ import com.matejdro.wearmusiccenter.notifications.NotificationProvider
 import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
+import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
+import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.EmptyObserver
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
@@ -48,7 +50,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class MusicService : LifecycleService(), MessageApi.MessageListener {
+class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener {
     companion object {
         const val ACTION_START_FROM_WATCH = "START_FROM_WATCH"
         const val ACTION_NOTIFICATION_SERVICE_ACTIVATED = "NOTIFICATION_SERVICE_ACTIVATED"
@@ -68,9 +70,8 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             private set
     }
 
-    lateinit var googleApiClient: GoogleApiClient
-    private val connectionThread: HandlerThread = HandlerThread("Phone Connection")
-    private lateinit var connectionHandler: Handler
+    private lateinit var messageClient: MessageClient
+    private lateinit var dataClient: DataClient
 
     private lateinit var preferences: SharedPreferences
 
@@ -78,7 +79,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     lateinit var mediaSessionProvider: ActiveMediaSessionProvider
 
     @Inject
-    @field:GlobalConfig
+    @GlobalConfig
     lateinit var config: ActionConfig
 
     @Inject
@@ -93,31 +94,18 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     var currentMediaController: MediaController? = null
     private var startedFromWatch = false
 
+    @SuppressLint("LaunchActivityFromNotification")
     override fun onCreate() {
         super.onCreate()
 
         AndroidInjection.inject(this)
 
+        messageClient = Wearable.getMessageClient(applicationContext)
+        dataClient = Wearable.getDataClient(applicationContext)
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        connectionThread.start()
-        connectionHandler = Handler(connectionThread.looper)
-
-        googleApiClient = GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .build()
-
-        connectionHandler.post {
-            val connectionStatus = googleApiClient.blockingConnect()
-            if (!connectionStatus.isSuccess) {
-                GoogleApiAvailability.getInstance().showErrorNotification(this, connectionStatus)
-                stopSelf()
-                return@post
-            }
-
-            Wearable.MessageApi.addListener(googleApiClient, this, Uri.parse(CommPaths.MESSAGES_PREFIX), MessageApi
-                    .FILTER_PREFIX)
-        }
+        messageClient.addListener(this, Uri.parse(CommPaths.MESSAGES_PREFIX), MessageClient.FILTER_PREFIX)
 
         mediaSessionProvider = ActiveMediaSessionProvider(this)
         mediaSessionProvider.observe(this, mediaCallback)
@@ -175,11 +163,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
     override fun onDestroy() {
         Timber.d("Service stopped")
 
-        connectionHandler.post {
-            Wearable.MessageApi.removeListener(googleApiClient, this)
-            googleApiClient.disconnect()
-        }
-        connectionThread.quitSafely()
+        messageClient.removeListener(this)
 
         ackTimeoutHandler.removeCallbacksAndMessages(null)
 
@@ -212,26 +196,27 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
             return@Observer
         }
 
-        connectionHandler.post {
-            val putDataRequest = PutDataRequest.create(CommPaths.DATA_NOTIFICATION)
+        val putDataRequest = PutDataRequest.create(CommPaths.DATA_NOTIFICATION)
 
-            val protoNotification = com.matejdro.wearmusiccenter.proto.Notification.newBuilder()
-                    .setTitle(it.title.trim())
-                    .setDescription(it.description.trim())
-                    .setTime(System.currentTimeMillis().toInt())
-                    .build()
+        val protoNotification = com.matejdro.wearmusiccenter.proto.Notification.newBuilder()
+                .setTitle(it.title.trim())
+                .setDescription(it.description.trim())
+                .setTime(System.currentTimeMillis().toInt())
+                .build()
 
-            it.imageDataPng?.let {
-                val albumArtAsset = Asset.createFromBytes(it)
-                putDataRequest.putAsset(CommPaths.ASSET_NOTIFICATION_BACKGROUND, albumArtAsset)
-            }
-
-            putDataRequest.data = protoNotification.toByteArray()
-            putDataRequest.setUrgent()
-
-            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest)
-            startTimeout()
+        it.imageDataPng?.let {
+            val albumArtAsset = Asset.createFromBytes(it)
+            putDataRequest.putAsset(CommPaths.ASSET_NOTIFICATION_BACKGROUND, albumArtAsset)
         }
+
+        putDataRequest.data = protoNotification.toByteArray()
+        putDataRequest.setUrgent()
+
+        lifecycleScope.launchWithPlayServicesErrorHandling(this) {
+            dataClient.putDataItem(putDataRequest).await()
+        }
+
+        startTimeout()
     }
 
     private fun updateVolume(newVolume: Float) {
@@ -304,31 +289,33 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         transmitToWear(musicState, albumArt)
     }
 
-    private fun transmitToWear(musicState: MusicState, originalAlbumArt: Bitmap?) = connectionHandler.post {
-        val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
+    private fun transmitToWear(musicState: MusicState, originalAlbumArt: Bitmap?) {
+        lifecycleScope.launchWithPlayServicesErrorHandling(this) {
+            val putDataRequest = PutDataRequest.create(CommPaths.DATA_MUSIC_STATE)
 
-        var albumArt = originalAlbumArt
-        val watchInfo = watchInfoProvider.value?.watchInfo
-        if (watchInfo != null && albumArt != null) {
-            albumArt = BitmapUtils.resizeAndCrop(albumArt,
-                    watchInfo.displayWidth,
-                    watchInfo.displayHeight,
-                    true)
+            var albumArt = originalAlbumArt
+            val watchInfo = watchInfoProvider.value?.watchInfo
+            if (watchInfo != null && albumArt != null) {
+                albumArt = BitmapUtils.resizeAndCrop(albumArt,
+                        watchInfo.displayWidth,
+                        watchInfo.displayHeight,
+                        true)
+            }
+
+            if (albumArt != null) {
+                val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt)!!)
+                putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
+            }
+
+            putDataRequest.data = musicState.toByteArray()
+            putDataRequest.setUrgent()
+
+            dataClient.putDataItem(putDataRequest).await()
+            startTimeout()
         }
-
-        if (albumArt != null) {
-            val albumArtAsset = Asset.createFromBytes(BitmapUtils.serialize(albumArt)!!)
-            putDataRequest.putAsset(CommPaths.ASSET_ALBUM_ART, albumArtAsset)
-        }
-
-        putDataRequest.data = musicState.toByteArray()
-        putDataRequest.setUrgent()
-
-        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
-        startTimeout()
     }
 
-    private fun transmitError(error: String) = connectionHandler.post {
+    private fun transmitError(error: String) = lifecycleScope.launchWithPlayServicesErrorHandling(this) {
         val musicStateBuilder = MusicState.newBuilder()
 
         // Add time to the first message to make sure it gets transmitted even if it is
@@ -346,7 +333,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         putDataRequest.data = musicState.toByteArray()
         putDataRequest.setUrgent()
 
-        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest).await()
+        dataClient.putDataItem(putDataRequest).await()
     }
 
     private fun showNotificationServiceErrorNotification() {
@@ -462,7 +449,7 @@ class MusicService : LifecycleService(), MessageApi.MessageListener {
         ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
     }
 
-    private class AckTimeoutHandler(val service: WeakReference<MusicService>) : android.os.Handler() {
+    private class AckTimeoutHandler(val service: WeakReference<MusicService>) : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             if (msg.what == MESSAGE_STOP_SELF) {
                 Timber.d("TIMEOUT!")
