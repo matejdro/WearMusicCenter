@@ -51,6 +51,7 @@ class WatchInfoSender(private val context: Context, private val urgent: Boolean)
                             KeyEvent.KEYCODE_BACK -> {
                                 buttonLabel = context.getString(R.string.back_button)
                                 imageBytes = null
+                                supportsLongPress = false
                             }
                             SpecialButtonCodes.TURN_ROTARY_CW -> {
                                 buttonLabel = context.getString(R.string.turn_bezel_cw)
