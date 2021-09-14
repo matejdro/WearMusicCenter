@@ -80,6 +80,13 @@ class AppPlayAction : SelectableAction {
             if (launcherActivity != null) {
                 androidContext.startActivity(launcherActivity)
                 delay(500)
+
+                if (service.currentMediaController?.packageName == receiverComponent.packageName &&
+                        service.currentMediaController?.isPlaying() == true) {
+                    // In the time it took for activity to launch, media has already started playing. Nothing to do.
+                    return@launch
+                }
+
                 dispatchUpDownEvents(pickedDeviceID)
                 delay(500)
             }
