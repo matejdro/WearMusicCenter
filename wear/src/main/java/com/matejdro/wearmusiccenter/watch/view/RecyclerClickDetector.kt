@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.widget.FrameLayout
+import kotlin.math.abs
+import kotlin.math.roundToLong
 
 /**
  * RecyclerView does not support click detection for whole view. This wrapper view provides that.
@@ -35,9 +37,9 @@ class RecyclerClickDetector @JvmOverloads constructor(
                 if (prePressed) {
                     drawableHotspotChanged(ev.x, ev.y)
 
-                    val newY = Math.round(ev.y)
-                    val oldYRound = Math.round(pressY)
-                    val fingerMovedY = Math.abs(newY - oldYRound)
+                    val newY = ev.y.roundToLong()
+                    val oldYRound = pressY.roundToLong()
+                    val fingerMovedY = abs(newY - oldYRound)
                     if (fingerMovedY > maxAllowedPressMovement) {
                         // We are scrolling.
                         cancelPress()

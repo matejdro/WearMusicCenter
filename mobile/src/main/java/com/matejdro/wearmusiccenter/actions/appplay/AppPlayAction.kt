@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
 import android.view.InputDevice
 import android.view.KeyEvent
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.SelectableAction
@@ -38,13 +39,12 @@ class AppPlayAction : SelectableAction {
     }
 
     private val lazyName by lazy {
-        var appName: String
-        try {
+        val appName: String = try {
             val appInfo = context.packageManager.getApplicationInfo(receiverComponent.packageName, 0)
-            appName = context.packageManager.getApplicationLabel(appInfo).toString()
+            context.packageManager.getApplicationLabel(appInfo).toString()
         } catch (ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)
-            appName = context.getString(R.string.uninstalled_app)
+            AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
+            context.getString(R.string.uninstalled_app)
         }
 
         context.getString(R.string.play_app, appName)
@@ -129,7 +129,7 @@ class AppPlayAction : SelectableAction {
         get() = try {
             context.packageManager.getApplicationIcon(receiverComponent.packageName)
         } catch (ignored: PackageManager.NameNotFoundException) {
-            context.getDrawable(android.R.drawable.sym_def_app_icon)!!
+            AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)!!
         }
 
     override fun isEqualToAction(other: PhoneAction): Boolean {

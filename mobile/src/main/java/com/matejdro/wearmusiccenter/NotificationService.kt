@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class NotificationService : NotificationListenerService() {
-    lateinit var preferences: SharedPreferences
+    private lateinit var preferences: SharedPreferences
     private var bound = false
 
     private var activeMediaProvider: ActiveMediaSessionProvider? = null
@@ -134,7 +134,7 @@ class NotificationService : NotificationListenerService() {
             return enabledListeners != null && enabledListeners.contains(component.flattenToString())
         }
 
-        val ACTION_UNBIND_SERVICE = "UNBIND"
+        const val ACTION_UNBIND_SERVICE = "UNBIND"
     }
 
     @TargetApi(Build.VERSION_CODES.N)

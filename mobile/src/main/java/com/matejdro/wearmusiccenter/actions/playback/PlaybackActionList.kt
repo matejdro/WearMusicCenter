@@ -3,11 +3,11 @@ package com.matejdro.wearmusiccenter.actions.playback
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
-import java.lang.UnsupportedOperationException
 
 class PlaybackActionList : PhoneAction {
     constructor(context : Context) : super(context)
@@ -34,7 +34,7 @@ class PlaybackActionList : PhoneAction {
 
     override val defaultIcon: Drawable
         get() {
-            return context.getDrawable(R.drawable.action_play)!!
+            return AppCompatResources.getDrawable(context, R.drawable.action_play)!!
         }
 
 }

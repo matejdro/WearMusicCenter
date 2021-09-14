@@ -53,11 +53,11 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
     }
 
     private fun getActiveSessions(): List<MediaController> {
-        try {
-            return mediaSessionManager.getActiveSessions(notificationListenerComponent)
+        return try {
+            mediaSessionManager.getActiveSessions(notificationListenerComponent)
         } catch (e: SecurityException) {
             value = Resource.error(context.getString(R.string.error_notification_access), null)
-            return emptyList()
+            emptyList()
         }
     }
 
@@ -107,7 +107,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
 
     private val mediaCallback: MediaController.Callback
 
-    inner class OwnedPlaybackCallback(val controller : MediaController) : MediaController.Callback() {
+    inner class OwnedPlaybackCallback(private val controller: MediaController) : MediaController.Callback() {
         init {
             controller.registerCallback(this)
         }
@@ -136,7 +136,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
     }
 
     init {
-        this.idlePlayers = ArrayList<OwnedPlaybackCallback>()
+        this.idlePlayers = ArrayList()
         this.mediaCallback = object : MediaController.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackState?) {
                 updateControllerIfNeeded()

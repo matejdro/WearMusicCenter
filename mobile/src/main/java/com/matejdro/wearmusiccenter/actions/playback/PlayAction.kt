@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.PersistableBundle
 import android.view.KeyEvent
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.SelectableAction
 import com.matejdro.wearmusiccenter.music.MusicService
@@ -32,5 +33,5 @@ class PlayAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_play)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.action_play)!!
+        get() = AppCompatResources.getDrawable(context, R.drawable.action_play)!!
 }

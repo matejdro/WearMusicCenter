@@ -15,10 +15,5 @@ interface ButtonConfig {
 
 fun ButtonConfig.getScreenActionFallback(context: Context, buttonInfo: ButtonInfo): PhoneAction {
     val action = getScreenAction(buttonInfo)
-
-    if (action == null) {
-        return NullAction(context)
-    } else {
-        return action
-    }
+    return action ?: NullAction(context)
 }

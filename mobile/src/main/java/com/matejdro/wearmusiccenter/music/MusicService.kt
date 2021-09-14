@@ -204,8 +204,8 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 .setTime(System.currentTimeMillis().toInt())
                 .build()
 
-        it.imageDataPng?.let {
-            val albumArtAsset = Asset.createFromBytes(it)
+        it.imageDataPng?.let { imageData ->
+            val albumArtAsset = Asset.createFromBytes(imageData)
             putDataRequest.putAsset(CommPaths.ASSET_NOTIFICATION_BACKGROUND, albumArtAsset)
         }
 
@@ -391,34 +391,34 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
 
         Timber.d("Message %s", event.path)
 
-        when {
-            event.path == CommPaths.MESSAGE_WATCH_CLOSED -> {
+        when (event.path) {
+            CommPaths.MESSAGE_WATCH_CLOSED -> {
                 stopSelf()
             }
-            event.path == CommPaths.MESSAGE_ACK -> {
+            CommPaths.MESSAGE_ACK -> {
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
             }
-            event.path == CommPaths.MESSAGE_CHANGE_VOLUME -> {
+            CommPaths.MESSAGE_CHANGE_VOLUME -> {
                 updateVolume(FloatPacker.unpackFloat(event.data))
             }
-            event.path == CommPaths.MESSAGE_EXECUTE_ACTION -> {
+            CommPaths.MESSAGE_EXECUTE_ACTION -> {
                 executeAction(ButtonInfo(WatchActions.ProtoButtonInfo.parseFrom(event.data)))
             }
-            event.path == CommPaths.MESSAGE_EXECUTE_MENU_ACTION -> {
+            CommPaths.MESSAGE_EXECUTE_MENU_ACTION -> {
                 executeMenuAction(ByteBuffer.wrap(event.data).int)
             }
-            event.path == CommPaths.MESSAGE_WATCH_OPENED -> {
+            CommPaths.MESSAGE_WATCH_OPENED -> {
 
                 ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
                 buildMusicStateAndTransmit(currentMediaController)
             }
-            event.path == CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY -> {
+            CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY -> {
                 onWatchSwipeExited()
             }
-            event.path == CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED -> {
+            CommPaths.MESSAGE_CUSTOM_LIST_ITEM_SELECTED -> {
                 onCustomMenuItemPresed(CustomListItemAction.parseFrom(event.data))
             }
-            event.path == CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE -> {
+            CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE -> {
                 openPlaybackQueueOnWatch()
             }
         }

@@ -27,7 +27,7 @@ class MainActivityModule {
 
 @Module
 abstract class MainActivityFragments {
-    @ContributesAndroidInjector(modules = arrayOf(ButtonConfigFragment.Module::class))
+    @ContributesAndroidInjector(modules = [ButtonConfigFragment.Module::class])
     abstract fun contributeButtonConfigFragment(): ButtonConfigFragment
 
     @ContributesAndroidInjector

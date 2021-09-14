@@ -55,7 +55,7 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
     private var sendingVolume = false
     private var nextVolume = -1f
 
-    var running = false
+    private var running = false
 
     init {
         lifecycleObserver.addLiveData(musicState)

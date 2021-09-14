@@ -4,13 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
+import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceDialogFragmentCompat
-import android.util.AttributeSet
-import android.view.View
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.preferences.compat.PreferenceWithDialog
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +70,7 @@ constructor(context: Context, attributeSet: AttributeSet? = null) :
                 val fragment = MusicAppListPreferenceDialog()
 
                 val arguments = Bundle(1)
-                arguments.putString(PreferenceDialogFragmentCompat.ARG_KEY, key)
+                arguments.putString(ARG_KEY, key)
 
                 fragment.arguments = arguments
                 return fragment

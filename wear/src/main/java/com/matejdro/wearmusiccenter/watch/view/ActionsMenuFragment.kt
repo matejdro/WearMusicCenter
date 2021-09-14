@@ -25,6 +25,7 @@ import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearutils.preferences.definition.Preferences
+import kotlin.math.abs
 
 
 @SuppressLint("NotifyDataSetChanged")
@@ -200,7 +201,7 @@ class ActionsMenuFragment : Fragment() {
 
         override fun onClick(v: View?) {
             activity.buzz()
-            executeAction(adapterPosition)
+            executeAction(bindingAdapterPosition)
         }
     }
 
@@ -214,7 +215,7 @@ class ActionsMenuFragment : Fragment() {
             val closestChildViewHolder = closestChildViewHolder
                     ?: throw IllegalStateException("View not layouted yet")
 
-            return closestChildViewHolder.adapterPosition
+            return closestChildViewHolder.bindingAdapterPosition
         }
 
         private fun prepareChildrenLayout() {
@@ -269,7 +270,7 @@ class ActionsMenuFragment : Fragment() {
                 val yRelativeToCenterOffset = child.y / recycler.height + centerOffset
 
                 // Normalize for center
-                val progressToCenter = Math.abs(0.5f - yRelativeToCenterOffset)
+                val progressToCenter = abs(0.5f - yRelativeToCenterOffset)
 
                 val holder = child.tag as MenuItemViewHolder
 

@@ -3,6 +3,7 @@ package com.matejdro.wearmusiccenter.actions.playback
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.SelectableAction
 import com.matejdro.wearmusiccenter.music.MusicService
@@ -18,5 +19,5 @@ class SkipToPrevAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_skip_prev)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.action_skip_prev)!!
+        get() = AppCompatResources.getDrawable(context, R.drawable.action_skip_prev)!!
 }

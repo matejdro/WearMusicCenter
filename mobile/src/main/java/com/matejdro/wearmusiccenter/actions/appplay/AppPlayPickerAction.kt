@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.music.MusicService
@@ -20,11 +21,11 @@ class AppPlayPickerAction : PhoneAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.start_playback)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.ic_apps)!!
+        get() = AppCompatResources.getDrawable(context, R.drawable.ic_apps)!!
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         val actions = getAllMusicApps(context)
-                .map { AppPlayAction(context, it) as PhoneAction }
+                .map { AppPlayAction(context, it) }
                 .sortedBy { it.title }
 
         actionPicker.updateDisplayedActionsWithBackStack(actions)

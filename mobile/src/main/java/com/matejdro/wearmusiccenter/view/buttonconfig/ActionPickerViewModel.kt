@@ -1,9 +1,9 @@
 package com.matejdro.wearmusiccenter.view.buttonconfig
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.RootActionList
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
@@ -15,7 +15,7 @@ import javax.inject.Named
 class ActionPickerViewModel @Inject constructor(@Named(ARG_SHOW_NONE) showNone: Boolean, context: Context) : ViewModel() {
     val displayedActions = MutableLiveData<List<PhoneAction>>()
     val selectedAction = SingleLiveEvent<PhoneAction>()
-    val activityStarter = SingleLiveEvent<Intent>()
+    val activityStarter = SingleLiveEvent<Intent?>()
 
     private val backStack = Stack<List<PhoneAction>>()
     private var activityResultReceiver: ActivityResultReceiver? = null

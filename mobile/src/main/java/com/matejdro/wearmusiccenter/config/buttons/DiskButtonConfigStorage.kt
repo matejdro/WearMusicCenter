@@ -14,7 +14,7 @@ import java.io.IOException
 
 @AutoFactory
 class DiskButtonConfigStorage(@Provided private val context: Context, fileSuffix: String) {
-    private val storageFile = File(context.filesDir, "action_config" + fileSuffix)
+    private val storageFile = File(context.filesDir, "action_config$fileSuffix")
 
     fun loadButtons(target: ButtonConfig): Boolean {
         try {

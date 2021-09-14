@@ -9,9 +9,9 @@ import android.graphics.Color
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AlertDialog
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
@@ -47,11 +47,10 @@ class ActionEditorActivity : Activity() {
         binding = PopupActionEditorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val currentActionBundle: PersistableBundle?
-        if (savedInstanceState != null) {
-            currentActionBundle = savedInstanceState.getParcelable<PersistableBundle>(STATE_ACTION)
+        val currentActionBundle: PersistableBundle? = if (savedInstanceState != null) {
+            savedInstanceState.getParcelable(STATE_ACTION)
         } else {
-            currentActionBundle = intent.getParcelableExtra<PersistableBundle?>(EXTRA_ACTION)
+            intent.getParcelableExtra(EXTRA_ACTION)
         }
 
         if (currentActionBundle != null) {
@@ -81,7 +80,7 @@ class ActionEditorActivity : Activity() {
         super.onSaveInstanceState(outState)
     }
 
-    fun swapAction() {
+    private fun swapAction() {
         val startIntent = Intent(this, ActionPickerActivity::class.java)
         startIntent.putExtra(ActionPickerActivity.EXTRA_DISPLAY_NONE, false)
         startActivityForResult(startIntent, REQUEST_CODE_PICK_ACTION)
@@ -100,7 +99,7 @@ class ActionEditorActivity : Activity() {
         }
 
         val customTitle = binding.nameBox.text.toString()
-        if (!customTitle.isBlank() && customTitle != currentAction.title) {
+        if (customTitle.isNotBlank() && customTitle != currentAction.title) {
             currentAction.customTitle = customTitle
         }
 
@@ -110,7 +109,7 @@ class ActionEditorActivity : Activity() {
         finish()
     }
 
-    fun delete() {
+    private fun delete() {
         val returnIntent = Intent()
         returnIntent.putExtra(EXTRA_DELETING, true)
 
@@ -118,7 +117,7 @@ class ActionEditorActivity : Activity() {
         finish()
     }
 
-    fun swapIcon() {
+    private fun swapIcon() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestStoragePermission()

@@ -1,7 +1,9 @@
 package com.matejdro.wearmusiccenter.watch.view
 
-class CircularVolumeBar : android.view.View
-{
+import kotlin.math.max
+import kotlin.math.min
+
+class CircularVolumeBar : android.view.View {
     private val foregroundPaint: android.graphics.Paint = android.graphics.Paint()
     private val backgroundPaint: android.graphics.Paint
 
@@ -34,7 +36,7 @@ class CircularVolumeBar : android.view.View
         }
 
     fun incrementVolume(change : Float) {
-        updateVolume(Math.min(1f, Math.max(0f, volume + change)))
+        updateVolume(min(1f, max(0f, volume + change)))
     }
 
     private fun updateVolume(newVolume : Float) {
@@ -44,7 +46,7 @@ class CircularVolumeBar : android.view.View
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        viewSize = Math.max(measuredWidth, measuredHeight).toFloat()
+        viewSize = max(measuredWidth, measuredHeight).toFloat()
 
         val circleSize = viewSize - foregroundPaint.strokeWidth / 2
 

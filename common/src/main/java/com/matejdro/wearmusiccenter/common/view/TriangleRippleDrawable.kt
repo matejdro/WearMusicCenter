@@ -1,17 +1,25 @@
 package com.matejdro.wearmusiccenter.common.view
 
+import android.content.res.ColorStateList
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.RippleDrawable
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
+import kotlin.math.max
 
-class TriangleRippleDrawable(var quadrant: Int, color: android.content.res.ColorStateList) : android.graphics.drawable.RippleDrawable(color, null, android.graphics.drawable.ColorDrawable(android.graphics.Color.WHITE)) {
-    private val path: android.graphics.Path = android.graphics.Path()
+class TriangleRippleDrawable(private var quadrant: Int, color: ColorStateList) : RippleDrawable(color, null, ColorDrawable(Color.WHITE)) {
+    private val path: Path = Path()
 
-    override fun onBoundsChange(bounds: android.graphics.Rect) {
+    override fun onBoundsChange(bounds: Rect) {
         super.onBoundsChange(bounds)
         updatePath(bounds)
     }
 
-    private fun updatePath(bounds: android.graphics.Rect) {
-        val size = Math.max(bounds.width(), bounds.height())
+    private fun updatePath(bounds: Rect) {
+        val size = max(bounds.width(), bounds.height())
 
         path.reset()
 
@@ -41,7 +49,7 @@ class TriangleRippleDrawable(var quadrant: Int, color: android.content.res.Color
         path.close()
     }
 
-    override fun draw(canvas: android.graphics.Canvas) {
+    override fun draw(canvas: Canvas) {
         canvas.clipPath(path)
         super.draw(canvas)
     }

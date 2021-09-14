@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.common
 
 object CustomLists {
-    val PLAYLIST = "Playlist"
+    const val PLAYLIST = "Playlist"
 
-    val SPECIAL_ITEM_ERROR = "ErrorItem"
+    const val SPECIAL_ITEM_ERROR = "ErrorItem"
 }

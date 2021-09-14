@@ -3,6 +3,7 @@ package com.matejdro.wearmusiccenter.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
+import androidx.appcompat.content.res.AppCompatResources
 import com.google.android.gms.wearable.Asset
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
@@ -81,5 +82,5 @@ class OpenPlaylistAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.open_playlist_menu)
     override val defaultIcon: Drawable
-        get() = context.getDrawable(R.drawable.action_open_playlist)!!
+        get() = AppCompatResources.getDrawable(context, R.drawable.action_open_playlist)!!
 }

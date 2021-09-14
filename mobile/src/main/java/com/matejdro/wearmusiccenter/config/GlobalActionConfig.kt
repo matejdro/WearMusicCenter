@@ -1,7 +1,7 @@
 package com.matejdro.wearmusiccenter.config
 
-import androidx.lifecycle.Observer
 import android.content.Context
+import androidx.lifecycle.Observer
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import com.matejdro.wearmusiccenter.config.actionlist.GlobalActionList
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
@@ -28,7 +28,7 @@ class GlobalActionConfig(private val context: Context,
                     File(context.filesDir, "action_config_stopped").exists() &&
                     File(context.filesDir, "actions_list").exists()
 
-    private val defaultConfigCreatorListener = object : Observer<WatchInfoWithIcons> {
+    private val defaultConfigCreatorListener = object : Observer<WatchInfoWithIcons?> {
         override fun onChanged(t: WatchInfoWithIcons?) {
             watchInfoProvider.removeObserver(this)
             defaultConfigGenerator.generateDefaultButtons(this@GlobalActionConfig)

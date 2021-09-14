@@ -28,10 +28,6 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
         private const val VIBRATION_CENTER_PACKAGE = "com.matejdro.wearvibrationcenter"
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
@@ -51,12 +47,12 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
 
                         if (newValue) {
                             NotificationListenerService.requestRebind(
-                                    ComponentName(context!!, NotificationService::class.java)
+                                    ComponentName(requireContext(), NotificationService::class.java)
                             )
                         } else {
-                            val serviceStopIntent = Intent(context!!, NotificationService::class.java)
+                            val serviceStopIntent = Intent(requireContext(), NotificationService::class.java)
                             serviceStopIntent.action = NotificationService.ACTION_UNBIND_SERVICE
-                            context!!.startService(serviceStopIntent)
+                            requireContext().startService(serviceStopIntent)
                         }
 
                         true
@@ -71,7 +67,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
             }
 
             if (!isVibrationCenterInstalledAndEnabled()) {
-                AlertDialog.Builder(context!!)
+                AlertDialog.Builder(requireContext())
                         .setTitle(R.string.app_required)
                         .setMessage(R.string.vibration_center_required_description)
                         .setNegativeButton(android.R.string.cancel, null)
@@ -93,7 +89,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
 
         try {
             findPreference<Preference>("version")!!.summary =
-                    activity!!.packageManager.getPackageInfo(activity!!.packageName, 0).versionName
+                    requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName
         } catch (ignored: PackageManager.NameNotFoundException) {
         }
 
@@ -108,19 +104,19 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     }
 
     private fun isVibrationCenterInstalledAndEnabled(): Boolean {
-        try {
-            val appInfo = context!!.packageManager.getApplicationInfo(VIBRATION_CENTER_PACKAGE, 0)
-            return appInfo.enabled
+        return try {
+            val appInfo = requireContext().packageManager.getApplicationInfo(VIBRATION_CENTER_PACKAGE, 0)
+            appInfo.enabled
         } catch (e: PackageManager.NameNotFoundException) {
-            return false
+            false
         }
     }
 
     private fun openVibrationCenterPlayStore() {
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + VIBRATION_CENTER_PACKAGE)))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$VIBRATION_CENTER_PACKAGE")))
         } catch (_: android.content.ActivityNotFoundException) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + VIBRATION_CENTER_PACKAGE)))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$VIBRATION_CENTER_PACKAGE")))
         }
     }
 

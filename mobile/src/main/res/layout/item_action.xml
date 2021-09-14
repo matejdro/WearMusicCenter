@@ -20,18 +20,16 @@
         tools:tint="@color/black"
         android:scaleType="fitXY"/>
 
-    <TextView android:id="@android:id/text1"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center_vertical"
-              android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-              android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-              android:textAppearance="?android:attr/textAppearanceListItem"
-              android:textSize="24sp"
-              tools:text="@string/group_playback_controls"
-        />
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textSize="24sp"
+        tools:text="@string/group_playback_controls" />
 
 
 </LinearLayout>

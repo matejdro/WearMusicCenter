@@ -7,8 +7,8 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import androidx.collection.ArraySet
 import android.util.LruCache
+import androidx.collection.ArraySet
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.actionlist.ActionList
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @Reusable
 class CustomIconStorage @Inject constructor(private val context: Context,
-                                            private @GlobalConfig val configLazy: Lazy<ActionConfig>) {
+                                            @GlobalConfig private val configLazy: Lazy<ActionConfig>) {
     companion object {
         private val UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^\\w.\\-_]")
 
@@ -137,8 +137,7 @@ class CustomIconStorage @Inject constructor(private val context: Context,
         utilizedIconUris.addAll(getAllCustomUriFiles(actionConfig.getStoppedConfig()))
         utilizedIconUris.addAll(getAllCustomUriFiles(actionConfig.getActionList()))
 
-        storageFolder
-                .listFiles()
+        (storageFolder.listFiles() ?: emptyArray())
                 .filter { !utilizedIconUris.contains(it.name) }
                 .forEach { it.delete() }
 

@@ -1,5 +1,6 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -39,6 +40,7 @@ import com.matejdro.wearutils.miscutils.VibratorCompat
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
+@SuppressLint("NotifyDataSetChanged")
 class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.OnItemDragEventListener {
     companion object {
         const val REQUEST_CODE_EDIT_WINDOW = 1031
@@ -70,7 +72,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             lastEditedActionPosition = savedInstanceState.getInt(STATE_LAST_EDITED_ACTION_POSITION)
         }
 
-        vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -88,7 +90,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentActionListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -159,7 +161,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         ignoreNextUpdate = false
     }
 
-    private val openEditDialogListener = Observer<Int> {
+    private val openEditDialogListener = Observer<Int?> {
         if (it == null || it < 0) {
             return@Observer
         }
@@ -178,7 +180,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     }
 
     private fun isHapticEnabled(): Boolean {
-        val contentResolver = activity!!.contentResolver
+        val contentResolver = requireActivity().contentResolver
 
         val setting = Settings.System.getInt(contentResolver,
                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 0)
@@ -247,8 +249,8 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
     }
 
     private inner class ListItemHolder(itemView: View) : AbstractDraggableItemViewHolder(itemView) {
-        val icon = itemView.findViewById<ImageView>(R.id.icon)
-        val text = itemView.findViewById<TextView>(R.id.text)
+        val icon: ImageView = itemView.findViewById(R.id.icon)
+        val text: TextView = itemView.findViewById(R.id.text)
 
         init {
             itemView.setOnClickListener {
@@ -270,7 +272,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
             val actionBundle = data.getParcelableExtra<PersistableBundle>(
                     ActionEditorActivity.EXTRA_ACTION) ?: return
 
-            val newAction = PhoneAction.deserialize<PhoneAction>(context!!, actionBundle) ?: return
+            val newAction = PhoneAction.deserialize<PhoneAction>(requireContext(), actionBundle) ?: return
 
             if (lastEditedActionPosition < 0) {
                 viewModel.addAction(newAction)

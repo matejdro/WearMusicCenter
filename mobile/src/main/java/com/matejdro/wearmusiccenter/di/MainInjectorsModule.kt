@@ -13,12 +13,12 @@ abstract class MainInjectorsModule {
     abstract fun contributeMusicServiceInjector(): MusicService
 
     @PerContextLifecycle
-    @ContributesAndroidInjector(modules = arrayOf(MainActivityModule::class, MainActivityFragments::class))
+    @ContributesAndroidInjector(modules = [MainActivityModule::class, MainActivityFragments::class])
     abstract fun contributeMainActivity(): MainActivity
 
-    @ContributesAndroidInjector(modules = arrayOf(ActionPickerActivity.Module::class))
+    @ContributesAndroidInjector(modules = [ActionPickerActivity.Module::class])
     abstract fun contributeActionPickerActivity(): ActionPickerActivity
 
-    @ContributesAndroidInjector()
+    @ContributesAndroidInjector
     abstract fun contributeActionEditorActivity(): ActionEditorActivity
 }

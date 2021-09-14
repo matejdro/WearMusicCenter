@@ -68,7 +68,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
         binding.navView.setNavigationItemSelectedListener(this)
 
-        binding.appBar?.fab?.setOnClickListener {
+        binding.appBar.fab.setOnClickListener {
             val currentFragment = currentFragment ?: return@setOnClickListener
             if (currentFragment is FabFragment) {
                 currentFragment.onFabClicked()
@@ -86,19 +86,17 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
     private fun disableDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         drawerToggle.isDrawerIndicatorEnabled = false
         drawerToggle.syncState()
     }
 
     private fun enableDrawer() {
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-        drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED)
         drawerToggle.isDrawerIndicatorEnabled = true
         drawerToggle.syncState()
     }
 
-    private val watchInfoObserver = Observer<WatchInfoWithIcons> {
+    private val watchInfoObserver = Observer<WatchInfoWithIcons?> {
         if (it != null) {
             enableDrawer()
 
@@ -130,12 +128,12 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
         }
 
         if (newFragment is FabFragment) {
-            binding.appBar?.fab?.let {
+            binding.appBar.fab.let {
                 it.show()
                 newFragment.prepareFab(it)
             }
         } else {
-            binding.appBar?.fab?.hide()
+            binding.appBar.fab.hide()
         }
     }
 
@@ -150,10 +148,10 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
                 .setTitle(getString(R.string.error_service_not_enabled))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setMessage(getString(R.string.error_service_not_enabled_description))
-                .setPositiveButton(getString(R.string.action_open_settings),
-                        { _, _ ->
-                            openNotificationListener()
-                        })
+                .setPositiveButton(getString(R.string.action_open_settings)
+                ) { _, _ ->
+                    openNotificationListener()
+                }
 
         builder.show()
     }
@@ -214,6 +212,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
     override fun getWatchAppPresenceCapability(): String = CommPaths.WATCH_APP_CAPABILITY
 
+    @Suppress("UNCHECKED_CAST")
     override fun androidInjector(): AndroidInjector<Any> {
         return fragmentInjector as AndroidInjector<Any>
     }

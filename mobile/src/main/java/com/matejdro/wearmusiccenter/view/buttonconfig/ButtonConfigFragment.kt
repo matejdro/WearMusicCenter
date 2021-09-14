@@ -59,7 +59,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setsPlaybackActions = arguments!!.getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
+        setsPlaybackActions = requireArguments().getBoolean(ARGUMENT_SETS_PLAYBACK_ACTIONS)
         AndroidSupportInjection.inject(this)
 
         super.onCreate(savedInstanceState)
@@ -90,7 +90,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         binding.fourWayTouch.listener = this
     }
 
-    private val watchInfoObserver = Observer<WatchInfoWithIcons> {
+    private val watchInfoObserver = Observer<WatchInfoWithIcons?> {
         this.watchInfo = it
 
         while (binding.watchButtonContainer.childCount > 0) {
@@ -172,7 +172,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         configureButton(false, quadrant, buttonName, true)
     }
 
-    fun configureButton(physicalButton: Boolean, buttonCode: Int, buttonName: String, supportsLongPress: Boolean) {
+    private fun configureButton(physicalButton: Boolean, buttonCode: Int, buttonName: String, supportsLongPress: Boolean) {
         val buttonInfo = ButtonInfo(physicalButton, buttonCode, GESTURE_SINGLE_TAP)
 
         val gesturePicker = GesturePickerFragment.newInstance(setsPlaybackActions,

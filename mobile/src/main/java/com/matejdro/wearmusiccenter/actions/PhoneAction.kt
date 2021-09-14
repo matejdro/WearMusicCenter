@@ -28,9 +28,9 @@ abstract class PhoneAction : Bundlable {
         customTitle = bundle.getString(KEY_CUSTOM_TITLE)
     }
 
-    abstract fun execute(service : MusicService)
-    abstract fun onActionPicked(actionPicker : ActionPickerViewModel)
-    abstract protected fun retrieveTitle(): String
+    abstract fun execute(service: MusicService)
+    abstract fun onActionPicked(actionPicker: ActionPickerViewModel)
+    protected abstract fun retrieveTitle(): String
     abstract val defaultIcon: Drawable
 
     val title: String
@@ -67,16 +67,16 @@ abstract class PhoneAction : Bundlable {
 
         @Suppress("UNCHECKED_CAST")
         fun <T : PhoneAction> deserialize(context : Context, bundle: PersistableBundle?) : T? {
-            val className = bundle?.getString(Bundlable.CLASS_KEY) ?: return null
+            val className = bundle?.getString(CLASS_KEY) ?: return null
 
-            try {
+            return try {
                 val cls = Class.forName(className)
                 val constructor = cls.getConstructor(Context::class.java, PersistableBundle::class.java)
 
-                return constructor.newInstance(context, bundle) as T?
-            } catch(e: ReflectiveOperationException) {
+                constructor.newInstance(context, bundle) as T?
+            } catch (e: ReflectiveOperationException) {
                 Timber.e(e, "PhoneAction deserialization error")
-                return null
+                null
             }
         }
     }

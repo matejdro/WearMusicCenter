@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @Reusable
 class WatchInfoProvider @Inject constructor(private val context: Context) :
-        LiveData<WatchInfoWithIcons>(), DataClient.OnDataChangedListener {
+        LiveData<WatchInfoWithIcons?>(), DataClient.OnDataChangedListener {
 
     private val dataClient = Wearable.getDataClient(context)
 

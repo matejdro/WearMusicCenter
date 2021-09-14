@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
+import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.music.MusicService
@@ -30,7 +31,7 @@ class TaskerTaskPickerAction : PhoneAction, ActivityResultReceiver {
             return try {
                 context.packageManager.getApplicationIcon(TaskerIntent.TASKER_PACKAGE_MARKET)
             } catch (ignored: PackageManager.NameNotFoundException) {
-                context.getDrawable(android.R.drawable.sym_def_app_icon)!!
+                AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)!!
             }
         }
 

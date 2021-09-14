@@ -334,7 +334,7 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.executeAction(ButtonInfo(true, buttonKeyCode, gesture))
     }
 
-    fun openMenuDrawer() {
+    private fun openMenuDrawer() {
         binding.actionDrawer.controller.openDrawer()
     }
 

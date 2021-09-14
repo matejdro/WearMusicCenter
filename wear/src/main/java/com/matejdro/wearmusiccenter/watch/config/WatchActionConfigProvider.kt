@@ -20,7 +20,7 @@ class WatchActionConfigProvider(context: Context, scope: CoroutineScope, rawConf
 
     val updateListener = MutableLiveData<WatchActionConfigProvider>()
 
-    var configMap =
+    private var configMap =
             SimpleArrayMap<ButtonInfo, ButtonAction>()
 
     var volumeStep = 0.1f

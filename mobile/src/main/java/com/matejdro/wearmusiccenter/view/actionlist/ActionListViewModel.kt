@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class ActionListViewModel @Inject constructor(@param:LocalActivityConfig val actionConfig: ActionConfig) : ViewModel() {
     val actions = MutableLiveData<List<IdentifiedItem<PhoneAction>>>()
-    val openActionEditor = SingleLiveEvent<Int>()
+    val openActionEditor = SingleLiveEvent<Int?>()
     private var actionStore: MutableList<IdentifiedItem<PhoneAction>>
 
     private var lastId = 0

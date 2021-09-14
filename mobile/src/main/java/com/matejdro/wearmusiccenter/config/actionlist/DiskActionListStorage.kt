@@ -61,7 +61,7 @@ class DiskActionListStorage @Inject constructor(private val context: Context) {
         val actions = (0 until numActions)
                 .map { it.toString() }
                 .mapNotNull {
-                    PhoneAction.deserialize<PhoneAction>(context, bundle.getPersistableBundle(it))
+                    PhoneAction.deserialize(context, bundle.getPersistableBundle(it))
                 }
                 .toList()
 
