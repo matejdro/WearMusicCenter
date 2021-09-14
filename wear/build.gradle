@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: "kotlin-kapt"
+apply plugin: 'de.mobilej.unmock'
 
 android {
     compileSdkVersion 31
@@ -31,7 +32,37 @@ android {
         jvmTarget = '1.8'
 
         freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalStdlibApi"
+        freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
     }
+}
+
+unMock {
+    keep "android.widget.BaseAdapter"
+    keep "android.widget.ArrayAdapter"
+    keep "android.os.Bundle"
+    keepStartingWith "android.database.MatrixCursor"
+    keep "android.database.AbstractCursor"
+    keep "android.database.CrossProcessCursor"
+    keepStartingWith "android.text.TextUtils"
+    keepStartingWith "android.util."
+    keepStartingWith "android.text."
+    keepStartingWith "android.content.ContentValues"
+    keepStartingWith "android.content.ComponentName"
+    keepStartingWith "android.content.ContentUris"
+    keepStartingWith "android.content.ContentProviderOperation"
+    keepStartingWith "android.content.ContentProviderResult"
+    keepStartingWith "android.content.UriMatcher"
+    keepStartingWith "android.content.Intent"
+    keep "android.location.Location"
+    keepStartingWith "android.content.res.Configuration"
+    keepStartingWith "org."
+    keepStartingWith "libcore."
+    keepStartingWith "com.android.internal.R"
+    keepStartingWith "com.android.internal.util."
+    keep "android.net.Uri"
+    keep "android.view.KeyEvent"
+
+    keepAndRename "java.nio.charset.Charsets" to "xjava.nio.charset.Charsets"
 }
 
 dependencies {
@@ -54,10 +85,9 @@ dependencies {
     implementation libs.kotlin.coroutines
     implementation libs.kotlin.coroutines.playServices
 
-    testImplementation libs.mockito.kotlin
-    testImplementation libs.mockito.core
-    testImplementation libs.robolectric
     testImplementation libs.junit4
+    testImplementation libs.kotlin.coroutines.test
+    unmock libs.unmock.androidSource
 }
 repositories {
     mavenCentral()

@@ -1,29 +1,32 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
-import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Message
-import android.os.SystemClock
-import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.ViewConfiguration
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
-import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
-import java.lang.ref.WeakReference
+import com.matejdro.wearmusiccenter.watch.util.DefaultSystemClockProvider
+import com.matejdro.wearmusiccenter.watch.util.SystemClockProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val MESSAGE_PRESS_BUTTON = 1
 private const val MESSAGE_HOLD_BUTTON = 2
 private const val AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP = 15
 
 @TargetApi(Build.VERSION_CODES.N)
-class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, gesture: Int) -> Boolean) {
-    constructor(context: Context, listener: (buttonIndex: Int, gesture: Int) -> Boolean) :
-            this(WatchInfoSender.getAvailableButtonsOnWatch(context), listener)
-
+class StemButtonsManager(
+        stemButtons: List<Int>,
+        listener: (buttonKeyCode: Int, gesture: Int) -> Boolean,
+        private val coroutineScope: CoroutineScope,
+        systemClock: SystemClockProvider = DefaultSystemClockProvider,
+        private val doubleTapTimeout: Int = ViewConfiguration.getDoubleTapTimeout(),
+        private val longPressTimeout: Int = ViewConfiguration.getLongPressTimeout()
+) {
     var enabledDoublePressActions = stemButtons.associateWith { false }.toMutableMap()
     var enabledLongPressActions = stemButtons.associateWith { false }.toMutableMap()
     var enableDoublePressInAmbient: Boolean = true
@@ -34,7 +37,12 @@ class StemButtonsManager(stemButtons: List<Int>, listener: (buttonKeyCode: Int, 
                 { enabledDoublePressActions[buttonKeyCode] ?: false },
                 { enabledLongPressActions[buttonKeyCode] ?: false },
                 { enableDoublePressInAmbient },
-                listener)
+                listener,
+                systemClock,
+                coroutineScope,
+                doubleTapTimeout,
+                longPressTimeout
+        )
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -78,9 +86,14 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
                                   private val isDoubleClickEnabled: () -> Boolean,
                                   private val isLongClickEnabled: () -> Boolean,
                                   private val isDoubleClickInAmbientEnabled: () -> Boolean,
-                                  private val listener: (buttonKeyCode: Int, gesture: Int) -> Boolean) {
+                                  private val listener: (buttonKeyCode: Int, gesture: Int) -> Boolean,
+                                  private val systemClock: SystemClockProvider,
+                                  private val coroutineScope: CoroutineScope,
+                                  private val doubleTapTimeout: Int,
+                                  private val longPressTimeout: Int
+) {
 
-    private val handler = TimeoutsHandler(WeakReference(this))
+    private var timeoutJob: Job? = null
 
     private var inAmbientMode = false
     private var lastStemUpEvent = -1L
@@ -92,8 +105,8 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
 
     @TargetApi(Build.VERSION_CODES.N)
     fun onKeyDown(): Boolean {
-        val now = SystemClock.elapsedRealtime()
-        if (now - lastStemUpEvent < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP) {
+        val now = systemClock.elapsedRealtime()
+        if (lastStemUpEvent > 0 && now - lastStemUpEvent < AMBIENT_REPEAT_HACK_MAX_DIFF_FROM_LAST_UP) {
             // Some watches seem to have a bug where clicks are repeated immediately after exiting ambient mode,
             // resulting in double click.
 
@@ -115,9 +128,9 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
                 ignoreSecondClick = true
             }
 
-            val timeout = ViewConfiguration.getDoubleTapTimeout()
+            val timeout = doubleTapTimeout
 
-            if (waitingForSecondPress && SystemClock.elapsedRealtime() - lastStemPress > timeout) {
+            if (waitingForSecondPress && lastStemPress > 0 && systemClock.elapsedRealtime() - lastStemPress > timeout) {
                 waitingForSecondPress = false
             }
 
@@ -134,9 +147,12 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
         }
 
         if (isLongClickEnabled()) {
-            val timeout = ViewConfiguration.getLongPressTimeout()
+            val timeout = longPressTimeout
             waitingForButtonUp = true
-            handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_HOLD_BUTTON), timeout.toLong())
+            timeoutJob = coroutineScope.launch {
+                delay(timeout.toLong())
+                reportGesture(GESTURE_LONG_TAP)
+            }
             return true
         }
 
@@ -145,11 +161,14 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
 
     private fun onFirstPress(): Boolean {
         return if (isDoubleClickEnabled()) {
-            val timeout = ViewConfiguration.getDoubleTapTimeout()
+            val timeout = doubleTapTimeout
 
-            handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_PRESS_BUTTON), timeout.toLong())
+            timeoutJob = coroutineScope.launch {
+                delay(timeout.toLong())
+                reportGesture(GESTURE_SINGLE_TAP)
+            }
 
-            lastStemPress = SystemClock.elapsedRealtime()
+            lastStemPress = systemClock.elapsedRealtime()
             waitingForSecondPress = true
             true
         } else {
@@ -163,17 +182,17 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
         ignoreSecondClick = false
         waitingForSecondPress = false
         waitingForButtonUp = false
-        handler.removeCallbacksAndMessages(null)
+        timeoutJob?.cancel()
 
         return anythingExecuted
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     fun onKeyUp(): Boolean {
-        lastStemUpEvent = SystemClock.elapsedRealtime()
+        lastStemUpEvent = systemClock.elapsedRealtime()
 
         if (waitingForButtonUp) {
-            handler.removeMessages(MESSAGE_HOLD_BUTTON)
+            timeoutJob?.cancel()
             waitingForButtonUp = false
             onFirstPress()
             return true
@@ -187,19 +206,5 @@ private class SingleButtonHandler(private val buttonKeyCode: Int,
 
     fun onExitAmbient() {
         inAmbientMode = false
-    }
-
-
-    private class TimeoutsHandler(val buttonManager: WeakReference<SingleButtonHandler>) : Handler() {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                MESSAGE_PRESS_BUTTON -> {
-                    buttonManager.get()?.reportGesture(GESTURE_SINGLE_TAP)
-                }
-                MESSAGE_HOLD_BUTTON -> {
-                    buttonManager.get()?.reportGesture(GESTURE_LONG_TAP)
-                }
-            }
-        }
     }
 }

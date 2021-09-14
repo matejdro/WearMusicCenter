@@ -4,214 +4,193 @@ import android.view.KeyEvent
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
 import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
-import com.nhaarman.mockito_kotlin.mock
+import com.matejdro.wearmusiccenter.watch.util.SystemClockProvider
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class StemButtonsManagerTest {
     @Test
-    fun testSinglePressWithOthersDisabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = false
-        buttonsManager.enabledLongPressActions[0] = false
+    fun testSinglePressWithOthersDisabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = false
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = false
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(100)
+        advanceTimeBy(100)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testSinglePressWithOthersEnabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testSinglePressWithOthersEnabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(200)
+        advanceTimeBy(200)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testSinglePressWithOnlyDoubleEnabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = false
+    fun testSinglePressWithOnlyDoubleEnabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = false
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(200)
+        advanceTimeBy(200)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testSinglePressWithOnlyLongEnabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = false
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testSinglePressWithOnlyLongEnabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = false
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testSinglePressOutOfBounds() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testSinglePressOutOfBounds() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
     }
 
     @Test
-    fun testRepeatingEvents() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = false
+    fun testRepeatingEvents() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = false
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(0L, 0L, KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN, 0))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(0L, 0L, KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN, 1))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(0L, 0L, KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN, 2))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(0L, 0L, KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN, 3))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
 
     @Test
-    fun testSinglePressSecondButton() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testSinglePressSecondButton() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(1, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_2, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testDoublePress() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testDoublePress() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
         buttonsManager.enableDoublePressInAmbient = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(100)
+        advanceTimeBy(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_DOUBLE_TAP)
     }
 
     @Test
-    fun testDoublePressWithOnlyItEnabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = false
+    fun testDoublePressWithOnlyItEnabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = false
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(100)
+        advanceTimeBy(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_DOUBLE_TAP)
     }
 
 
     @Test
-    fun testDoublePressSecondButton() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
-        buttonsManager.enabledDoublePressActions[1] = true
-        buttonsManager.enabledLongPressActions[1] = true
+    fun testDoublePressSecondButton() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_2] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_2] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
-        advanceTime(100)
+        advanceTimeBy(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(1, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_2, GESTURE_DOUBLE_TAP)
     }
 
     /**
@@ -219,294 +198,294 @@ class StemButtonsManagerTest {
      * several milliseconds after
      */
     @Test
-    fun testAmbientGlitch() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testAmbientGlitch() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(25)
+        advanceTimeBy(25)
         buttonsManager.onExitAmbient()
-        advanceTime(18)
+        advanceTimeBy(18)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
-        advanceTime(5)
+        advanceTimeBy(5)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(60)
+        advanceTimeBy(60)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testAmbientGlitch2() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testAmbientGlitch2() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(25)
+        advanceTimeBy(25)
         buttonsManager.onExitAmbient()
-        advanceTime(86)
+        advanceTimeBy(86)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
-        advanceTime(9)
+        advanceTimeBy(9)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(11)
+        advanceTimeBy(11)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testAmbientGlitch3WithAmbientDoubleClickDisabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testAmbientGlitch3WithAmbientDoubleClickDisabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
         buttonsManager.enableDoublePressInAmbient = false
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(33)
+        advanceTimeBy(33)
         buttonsManager.onExitAmbient()
-        advanceTime(94)
+        advanceTimeBy(94)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
-        advanceTime(22)
+        advanceTimeBy(22)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(16)
+        advanceTimeBy(16)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
     @Test
-    fun testAmbientGlitch4() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testAmbientGlitch4() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(25)
+        advanceTimeBy(25)
         buttonsManager.onExitAmbient()
-        advanceTime(88)
+        advanceTimeBy(88)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
-        advanceTime(9)
+        advanceTimeBy(9)
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(11)
+        advanceTimeBy(11)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
 
     @Test
-    fun testFastDoublePress() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testFastDoublePress() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(28)
+        advanceTimeBy(28)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(25)
+        advanceTimeBy(25)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(28)
+        advanceTimeBy(28)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_DOUBLE_TAP)
     }
 
     @Test
-    fun testDoublePressFromAmbient() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testDoublePressFromAmbient() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(25)
+        advanceTimeBy(25)
         buttonsManager.onExitAmbient()
-        advanceTime(25)
+        advanceTimeBy(25)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(100)
+        advanceTimeBy(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_DOUBLE_TAP)
     }
 
     @Test
-    fun testFastDoublePressFromAmbient() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testFastDoublePressFromAmbient() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         buttonsManager.onEnterAmbient()
-        advanceTime(2000)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(60)
+        advanceTimeBy(60)
         buttonsManager.onExitAmbient()
-        advanceTime(17)
+        advanceTimeBy(17)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(63)
+        advanceTimeBy(63)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(28)
+        advanceTimeBy(28)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener).invoke(0, GESTURE_DOUBLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_DOUBLE_TAP)
     }
 
 
     @Test
-    fun testDoublePressWhenDisabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = false
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testDoublePressWhenDisabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = false
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         // Whenn double press is disabled, it should produce two single click events.
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(100)
+        advanceTimeBy(100)
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(50)
+        advanceTimeBy(50)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        advanceTime(600)
+        advanceTimeBy(600)
 
-        Mockito.verify(listener, Mockito.times(2)).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        assertEquals(
+                listOf(
+                        KeyEvent.KEYCODE_STEM_1 to GESTURE_SINGLE_TAP,
+                        KeyEvent.KEYCODE_STEM_1 to GESTURE_SINGLE_TAP
+                ),
+                listener.invocations
+        )
     }
 
 
     @Test
-    fun testLongPressWithLongPressDisabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = false
+    fun testLongPressWithLongPressDisabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = false
 
         // When long press is disabled, it should revert to single press
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(1000)
+        advanceTimeBy(1000)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        Mockito.verify(listener).invoke(0, GESTURE_SINGLE_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_SINGLE_TAP)
     }
 
 
     @Test
-    fun testLongPress() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testLongPress() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         // This gesture only produces single click for now as long press is not implemented yet
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(1000)
+        advanceTimeBy(1000)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        Mockito.verify(listener).invoke(0, GESTURE_LONG_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_LONG_TAP)
     }
 
     @Test
-    fun testLongPressWithOnlyItEnabled() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener)
-        buttonsManager.enabledDoublePressActions[0] = false
-        buttonsManager.enabledLongPressActions[0] = true
+    fun testLongPressWithOnlyItEnabled() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = false
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
 
         // This gesture only produces single click for now as long press is not implemented yet
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_1, KeyEvent(KeyEvent.KEYCODE_STEM_1, KeyEvent.ACTION_DOWN))
-        advanceTime(1000)
+        advanceTimeBy(1000)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_1)
 
-        Mockito.verify(listener).invoke(0, GESTURE_LONG_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_1, GESTURE_LONG_TAP)
     }
 
     @Test
-    fun testLongPressSecondButton() {
-        val listener: Function2<Int, Int, Unit> = mock()
-        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener)
-        buttonsManager.enabledDoublePressActions[0] = true
-        buttonsManager.enabledLongPressActions[0] = true
-        buttonsManager.enabledDoublePressActions[1] = true
-        buttonsManager.enabledLongPressActions[1] = true
+    fun testLongPressSecondButton() = runBlockingTest {
+        val listener = TestFunction2()
+        val buttonsManager = StemButtonsManager(listOf(KeyEvent.KEYCODE_STEM_1, KeyEvent.KEYCODE_STEM_2), listener, this, TestSystemClock(this), 300, 500)
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_1] = true
+        buttonsManager.enabledDoublePressActions[KeyEvent.KEYCODE_STEM_2] = true
+        buttonsManager.enabledLongPressActions[KeyEvent.KEYCODE_STEM_2] = true
 
         // This gesture only produces single click for now as long press is not implemented yet
 
         buttonsManager.onKeyDown(KeyEvent.KEYCODE_STEM_2, KeyEvent(KeyEvent.KEYCODE_STEM_2, KeyEvent.ACTION_DOWN))
-        advanceTime(1000)
+        advanceTimeBy(1000)
         buttonsManager.onKeyUp(KeyEvent.KEYCODE_STEM_2)
 
-        Mockito.verify(listener).invoke(1, GESTURE_LONG_TAP)
-        advanceTime(2000)
-        Mockito.verifyNoMoreInteractions(listener)
+        listener.assertWasCalledWith(KeyEvent.KEYCODE_STEM_2, GESTURE_LONG_TAP)
+    }
+}
+
+private class TestSystemClock(private val testCoroutineScope: TestCoroutineScope) : SystemClockProvider {
+    override fun elapsedRealtime(): Long {
+        return testCoroutineScope.currentTime
+    }
+}
+
+private class TestFunction2 : Function2<Int, Int, Boolean> {
+    val invocations: MutableList<Pair<Int, Int>> = ArrayList()
+    var returnValue: Boolean = true
+
+    override fun invoke(p1: Int, p2: Int): Boolean {
+        invocations += p1 to p2
+
+        return returnValue
+    }
+
+    fun assertWasCalledWith(p1: Int, p2: Int) {
+        val lastCalled = invocations.lastOrNull() ?: throw AssertionError("Method was never called")
+
+        assertEquals(p1, lastCalled.first)
+        assertEquals(p2, lastCalled.second)
     }
 }

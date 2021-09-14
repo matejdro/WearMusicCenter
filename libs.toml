@@ -33,13 +33,13 @@ dagger = "2.38.1"
 licensesDialog = "2.2.0"
 
 junit4 = "4.13.2"
-mockito-core = "3.12.4"
-mockito-kotlin = "1.6.0"
-robolectric = "4.6.1"
+unmock-gradle = "0.7.8"
+unmock-androidSource = "10-robolectric-5803371"
 
 [libraries]
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin.coroutines" }
 kotlin-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin.coroutines" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin.coroutines" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "android.gradle" }
@@ -82,7 +82,6 @@ dagger-android-processor = { module = "com.google.dagger:dagger-android-processo
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 licensesDialog = { module = "de.psdev.licensesdialog:licensesdialog", version.ref = "licensesDialog" }
 
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito.core" }
-mockito-kotlin = { module = "com.nhaarman:mockito-kotlin", version.ref = "mockito.kotlin" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+unmock-gradle = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock.gradle" }
+unmock-androidSource = { module = "org.robolectric:android-all", version.ref = "unmock.androidSource" }

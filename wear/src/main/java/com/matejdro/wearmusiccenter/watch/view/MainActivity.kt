@@ -13,6 +13,7 @@ import android.view.ViewConfiguration
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.drawer.WearableDrawerLayout
@@ -41,8 +42,8 @@ import java.lang.ref.WeakReference
 
 // LifecycleRegistryOwner must be used, because there is no alternative for non-compat activities
 class MainActivity : WearCompanionWatchActivity(),
-    FourWayTouchLayout.UserActionListener,
-    AmbientModeSupport.AmbientCallbackProvider {
+        FourWayTouchLayout.UserActionListener,
+        AmbientModeSupport.AmbientCallbackProvider {
 
     companion object {
         private const val MESSAGE_HIDE_VOLUME = 0
@@ -76,7 +77,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
         // Hide peek container - we only want full blown drawer without peeks
         val peekContainer: android.view.ViewGroup = binding.drawerLayout.findViewById(
-            R.id.ws_drawer_view_peek_container
+                R.id.ws_drawer_view_peek_container
         )
         peekContainer.visibility = View.GONE
         while (peekContainer.childCount > 0) {
@@ -111,10 +112,10 @@ class MainActivity : WearCompanionWatchActivity(),
         viewModel.customList.observe(this, customListListener)
 
 
-        stemButtonsManager = StemButtonsManager(this, stemButtonListener)
+        stemButtonsManager = StemButtonsManager(WatchInfoSender.getAvailableButtonsOnWatch(this), stemButtonListener, lifecycleScope)
 
         actionsMenuFragment =
-            supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
+                supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
     }
 
     override fun onStart() {
@@ -125,7 +126,7 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         val crownDisableTime =
-            Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
+                Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
         if (crownDisableTime > 0) {
             rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
         }
@@ -193,7 +194,7 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         binding.textArtist.visibility =
-            if (binding.textArtist.text.isEmpty()) View.GONE else View.VISIBLE
+                if (binding.textArtist.text.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private val albumArtObserver = Observer<Bitmap?> {
@@ -207,11 +208,11 @@ class MainActivity : WearCompanionWatchActivity(),
 
         val topSingle = config.getAction(ButtonInfo(false, ScreenQuadrant.TOP, GESTURE_SINGLE_TAP))
         val bottomSingle =
-            config.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_SINGLE_TAP))
+                config.getAction(ButtonInfo(false, ScreenQuadrant.BOTTOM, GESTURE_SINGLE_TAP))
         val leftSingle =
-            config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
+                config.getAction(ButtonInfo(false, ScreenQuadrant.LEFT, GESTURE_SINGLE_TAP))
         val rightSingle =
-            config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
+                config.getAction(ButtonInfo(false, ScreenQuadrant.RIGHT, GESTURE_SINGLE_TAP))
 
         binding.iconTop.setImageDrawable(topSingle?.icon)
         binding.iconBottom.setImageDrawable(bottomSingle?.icon)
@@ -220,17 +221,17 @@ class MainActivity : WearCompanionWatchActivity(),
 
         for (i in 0 until 4) {
             binding.fourWayTouch.enabledDoubleTaps[i] =
-                config.isActionActive(ButtonInfo(false, i, GESTURE_DOUBLE_TAP))
+                    config.isActionActive(ButtonInfo(false, i, GESTURE_DOUBLE_TAP))
             binding.fourWayTouch.enabledLongTaps[i] =
-                config.isActionActive(ButtonInfo(false, i, GESTURE_LONG_TAP))
+                    config.isActionActive(ButtonInfo(false, i, GESTURE_LONG_TAP))
         }
 
         with(stemButtonsManager) {
             for (button in WatchInfoSender.getAvailableButtonsOnWatch(this@MainActivity)) {
                 enabledDoublePressActions[button] =
-                    config.isActionActive(ButtonInfo(true, button, GESTURE_DOUBLE_TAP))
+                        config.isActionActive(ButtonInfo(true, button, GESTURE_DOUBLE_TAP))
                 enabledLongPressActions[button] =
-                    config.isActionActive(ButtonInfo(true, button, GESTURE_LONG_TAP))
+                        config.isActionActive(ButtonInfo(true, button, GESTURE_LONG_TAP))
             }
 
         }
@@ -244,13 +245,13 @@ class MainActivity : WearCompanionWatchActivity(),
         preferences = it
 
         stemButtonsManager.enableDoublePressInAmbient = !Preferences.getBoolean(
-            preferences,
-            MiscPreferences.DISABLE_PHYSICAL_DOUBLE_CLICK_IN_AMBIENT
+                preferences,
+                MiscPreferences.DISABLE_PHYSICAL_DOUBLE_CLICK_IN_AMBIENT
         )
 
         if (!ambientController.isAmbient) {
             val alwaysDisplayClock =
-                Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)
+                    Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)
 
             if (alwaysDisplayClock) {
                 binding.ambientClock.visibility = View.VISIBLE
@@ -304,8 +305,8 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private val customListListener = Observer<CustomListWithBitmaps> {
         val lastListDisplayed = Preferences.getString(
-            preferences,
-            MiscPreferences.LAST_MENU_DISPLAYED
+                preferences,
+                MiscPreferences.LAST_MENU_DISPLAYED
         ).toLong()
 
         if (!binding.actionDrawer.isClosed || lastListDisplayed != it.listTimestamp) {
@@ -314,9 +315,9 @@ class MainActivity : WearCompanionWatchActivity(),
 
             val editor = preferences.edit()
             Preferences.putString(
-                editor,
-                MiscPreferences.LAST_MENU_DISPLAYED,
-                it.listTimestamp.toString()
+                    editor,
+                    MiscPreferences.LAST_MENU_DISPLAYED,
+                    it.listTimestamp.toString()
             )
             editor.apply()
         }
@@ -326,7 +327,7 @@ class MainActivity : WearCompanionWatchActivity(),
     private val stemButtonListener = { buttonKeyCode: Int, gesture: Int ->
         if (gesture == GESTURE_DOUBLE_TAP) {
             handler.postDelayed(this::buzz, ViewConfiguration.getDoubleTapTimeout().toLong())
-        } else if (buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CW && buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CCW ) {
+        } else if (buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CW && buttonKeyCode != SpecialButtonCodes.TURN_ROTARY_CCW) {
             buzz()
         }
 
@@ -356,14 +357,14 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private fun openDefaultListInDrawer() {
         val type = if (Preferences.getBoolean(
-                preferences,
-                MiscPreferences.OPEN_PLAYBACK_QUEUE_ON_SWIPE_UP
-            )
+                        preferences,
+                        MiscPreferences.OPEN_PLAYBACK_QUEUE_ON_SWIPE_UP
+                )
         ) {
             viewModel.openPlaybackQueue()
 
             ActionsMenuFragment.MenuType.Custom(
-                CustomListWithBitmaps(-1, "", emptyList())
+                    CustomListWithBitmaps(-1, "", emptyList())
             )
         } else {
             ActionsMenuFragment.MenuType.Actions
@@ -373,79 +374,79 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback =
-        object : AmbientModeSupport.AmbientCallback() {
-            override fun onEnterAmbient(ambientDetails: Bundle?) {
-                stemButtonsManager.onEnterAmbient()
-                binding.ambientClock.visibility = View.VISIBLE
+            object : AmbientModeSupport.AmbientCallback() {
+                override fun onEnterAmbient(ambientDetails: Bundle?) {
+                    stemButtonsManager.onEnterAmbient()
+                    binding.ambientClock.visibility = View.VISIBLE
 
-                handler.removeMessages(MESSAGE_UPDATE_CLOCK)
-                updateClock()
+                    handler.removeMessages(MESSAGE_UPDATE_CLOCK)
+                    updateClock()
 
-                binding.iconTop.visibility = View.GONE
-                binding.iconBottom.visibility = View.GONE
-                binding.iconLeft.visibility = View.GONE
-                binding.iconRight.visibility = View.GONE
+                    binding.iconTop.visibility = View.GONE
+                    binding.iconBottom.visibility = View.GONE
+                    binding.iconLeft.visibility = View.GONE
+                    binding.iconRight.visibility = View.GONE
 
-                binding.albumArt.visibility = View.GONE
-                binding.volumeBar.visibility = View.GONE
-                binding.loadingIndicator.visibility = View.GONE
+                    binding.albumArt.visibility = View.GONE
+                    binding.volumeBar.visibility = View.GONE
+                    binding.loadingIndicator.visibility = View.GONE
 
-                binding.root.background = ColorDrawable(Color.BLACK)
+                    binding.root.background = ColorDrawable(Color.BLACK)
 
-                binding.notificationPopup.backgroundImage.visibility = View.GONE
-                binding.notificationPopup.solidBackground.background = ColorDrawable(Color.BLACK)
+                    binding.notificationPopup.backgroundImage.visibility = View.GONE
+                    binding.notificationPopup.solidBackground.background = ColorDrawable(Color.BLACK)
 
-                binding.textArtist.displayTextOutline = true
-                binding.textTitle.displayTextOutline = true
+                    binding.textArtist.displayTextOutline = true
+                    binding.textTitle.displayTextOutline = true
 
-                binding.actionDrawer.controller.closeDrawer()
-            }
-
-            override fun onUpdateAmbient() {
-                updateClock()
-                viewModel.updateTimers()
-            }
-
-            override fun onExitAmbient() {
-                stemButtonsManager.onExitAmbient()
-
-                if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
-                    handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
-                } else {
-                    binding.ambientClock.visibility = View.GONE
-                    binding.iconTop.visibility = View.VISIBLE
+                    binding.actionDrawer.controller.closeDrawer()
                 }
 
-                binding.iconBottom.visibility = View.VISIBLE
-                binding.iconLeft.visibility = View.VISIBLE
-                binding.iconRight.visibility = View.VISIBLE
-
-                binding.albumArt.visibility = View.VISIBLE
-
-                binding.root.background = null
-
-                binding.notificationPopup.backgroundImage.visibility = View.VISIBLE
-                binding.notificationPopup.solidBackground.background =
-                    AppCompatResources.getDrawable(
-                        this@MainActivity,
-                        R.drawable.notification_popup_background
-                    )
-
-                if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
-                    binding.loadingIndicator.visibility = View.VISIBLE
+                override fun onUpdateAmbient() {
+                    updateClock()
+                    viewModel.updateTimers()
                 }
 
-                val crownDisableTime =
-                    Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
-                if (crownDisableTime > 0) {
-                    rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
+                override fun onExitAmbient() {
+                    stemButtonsManager.onExitAmbient()
+
+                    if (Preferences.getBoolean(preferences, MiscPreferences.ALWAYS_SHOW_TIME)) {
+                        handler.sendEmptyMessage(MESSAGE_UPDATE_CLOCK)
+                    } else {
+                        binding.ambientClock.visibility = View.GONE
+                        binding.iconTop.visibility = View.VISIBLE
+                    }
+
+                    binding.iconBottom.visibility = View.VISIBLE
+                    binding.iconLeft.visibility = View.VISIBLE
+                    binding.iconRight.visibility = View.VISIBLE
+
+                    binding.albumArt.visibility = View.VISIBLE
+
+                    binding.root.background = null
+
+                    binding.notificationPopup.backgroundImage.visibility = View.VISIBLE
+                    binding.notificationPopup.solidBackground.background =
+                            AppCompatResources.getDrawable(
+                                    this@MainActivity,
+                                    R.drawable.notification_popup_background
+                            )
+
+                    if (viewModel.musicState.value == null || (viewModel.musicState.value as Resource<MusicState>).status == Resource.Status.LOADING) {
+                        binding.loadingIndicator.visibility = View.VISIBLE
+                    }
+
+                    val crownDisableTime =
+                            Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_OFF_PERIOD)
+                    if (crownDisableTime > 0) {
+                        rotatingInputDisabledUntil = System.currentTimeMillis() + crownDisableTime
+                    }
+
+                    binding.textArtist.displayTextOutline = false
+                    binding.textTitle.displayTextOutline = false
                 }
 
-                binding.textArtist.displayTextOutline = false
-                binding.textTitle.displayTextOutline = false
             }
-
-        }
 
     override fun onGenericMotionEvent(ev: android.view.MotionEvent): Boolean {
         if (binding.actionDrawer.isOpened) {
@@ -457,13 +458,13 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         if (ev.action == android.view.MotionEvent.ACTION_SCROLL && RotaryEncoderHelper.isFromRotaryEncoder(
-                ev
-            )
+                        ev
+                )
         ) {
             val delta =
-                -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(
-                    this
-                )
+                    -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(
+                            this
+                    )
 
             if (WatchInfoSender.hasDiscreteRotaryInput()) {
                 val keyCode = if (delta > 0) {
@@ -476,7 +477,7 @@ class MainActivity : WearCompanionWatchActivity(),
             }
 
             val multipler =
-                Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
+                    Preferences.getInt(preferences, MiscPreferences.ROTATING_CROWN_SENSITIVITY) / 100f
 
             showVolumeBar()
             binding.volumeBar.incrementVolume(delta * 0.0025f * multipler)
@@ -583,7 +584,7 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private class TimeoutsHandler(val activity: WeakReference<MainActivity>) :
-        Handler(Looper.getMainLooper()) {
+            Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MESSAGE_HIDE_VOLUME -> {
@@ -597,10 +598,10 @@ class MainActivity : WearCompanionWatchActivity(),
                     activity.updateClock()
 
                     if (!activity.ambientController.isAmbient &&
-                        Preferences.getBoolean(
-                            activity.preferences,
-                            MiscPreferences.ALWAYS_SHOW_TIME
-                        )
+                            Preferences.getBoolean(
+                                    activity.preferences,
+                                    MiscPreferences.ALWAYS_SHOW_TIME
+                            )
                     ) {
                         sendEmptyMessageDelayed(MESSAGE_UPDATE_CLOCK, 60_000)
                     }
