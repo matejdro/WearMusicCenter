@@ -74,7 +74,7 @@ class ActionsMenuFragment : Fragment() {
         recycler.adapter = adapter
 
         recyclerClickDetector.setOnClickListener {
-            executeAction(layoutManager.getCenterItem())
+            layoutManager.getCenterItem()?.let { index -> executeAction(index) }
         }
 
     }
@@ -139,7 +139,7 @@ class ActionsMenuFragment : Fragment() {
         if (keyCode == closeDrawerKeycode) {
             (context as MainActivity).closeMenuDrawer()
         } else {
-            executeAction(layoutManager.getCenterItem())
+            layoutManager.getCenterItem()?.let { executeAction(it) }
         }
         return true
     }
@@ -211,9 +211,9 @@ class ActionsMenuFragment : Fragment() {
         private var closestDistToCenter = Float.MAX_VALUE
         private var closestChildViewHolder: MenuItemViewHolder? = null
 
-        fun getCenterItem(): Int {
+        fun getCenterItem(): Int? {
             val closestChildViewHolder = closestChildViewHolder
-                    ?: throw IllegalStateException("View not layouted yet")
+                    ?: return null
 
             return closestChildViewHolder.bindingAdapterPosition
         }
