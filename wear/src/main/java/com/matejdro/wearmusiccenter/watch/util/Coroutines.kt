@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearutils.lifecycle.Resource
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pl.tajchert.exceptionwear.ExceptionService
@@ -26,6 +27,9 @@ fun <T> CoroutineScope.launchWithErrorHandling(
             targetResource.postValue(Resource.error(errorText, null, e))
 
             Timber.e(e, "Play Services error: %d", e.connectionStatusCode)
+        } catch (e: CancellationException) {
+            // Just pass cancellation through
+            throw e
         } catch (e: Exception) {
             val errorText = androidContext.getString(R.string.error)
             targetResource.postValue(Resource.error(errorText, null, null))
