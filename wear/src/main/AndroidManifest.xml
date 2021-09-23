@@ -83,7 +83,9 @@
 
         <service android:name="com.matejdro.wearutils.logging.LogTransmitter" />
 
-        <service android:name="pl.tajchert.exceptionwear.ExceptionService" />
+        <service
+            android:name="pl.tajchert.exceptionwear.ExceptionService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name="androidx.wear.activity.ConfirmationActivity"
