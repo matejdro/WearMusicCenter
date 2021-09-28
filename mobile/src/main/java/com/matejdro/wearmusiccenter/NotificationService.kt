@@ -11,6 +11,8 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import androidx.lifecycle.Observer
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.NodeClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -33,13 +35,17 @@ class NotificationService : NotificationListenerService() {
     private var activeMediaProvider: ActiveMediaSessionProvider? = null
 
     private val coroutineScope = CoroutineScope(Job())
-    private val messageClient = Wearable.getMessageClient(applicationContext)
-    private val nodeClient = Wearable.getNodeClient(applicationContext)
+    private lateinit var messageClient: MessageClient
+    private lateinit var nodeClient: NodeClient
 
     override fun onCreate() {
         super.onCreate()
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        nodeClient = Wearable.getNodeClient(applicationContext)
+        messageClient = Wearable.getMessageClient(applicationContext)
+
         Timber.d("Service started")
     }
 
