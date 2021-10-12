@@ -15,14 +15,12 @@ import androidx.core.view.GestureDetectorCompat
 import com.matejdro.common.R
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
 import kotlin.math.abs
-import kotlin.math.max
 
 class FourWayTouchLayout : FrameLayout,
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener {
     private val gestureDetector = GestureDetectorCompat(context, this)
 
-    private var viewSize: Int = 0
     private val quadrantRipples: Array<Drawable>
 
 
@@ -92,13 +90,6 @@ class FourWayTouchLayout : FrameLayout,
 
     override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean = false
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        viewSize = max(measuredWidth, measuredHeight)
-    }
-
-
     private fun createFullScreenImageView(): android.widget.ImageView {
         val imageView = android.widget.ImageView(context)
 
@@ -112,25 +103,28 @@ class FourWayTouchLayout : FrameLayout,
     }
 
     private fun getQuadrant(x: Int, y: Int): Int {
-        if (x > viewSize / 2) {
+        val xPercent = x / width.toFloat()
+        val yPercent = y / height.toFloat()
+
+        if (x > width / 2) {
             //We are either in top OR Right OR Bottom
 
-            return if (y > viewSize / 2) {
+            return if (y > height / 2) {
                 //We are either in Right OR Bottom
-                if (x > y) ScreenQuadrant.RIGHT else ScreenQuadrant.BOTTOM
+                if (xPercent > yPercent) ScreenQuadrant.RIGHT else ScreenQuadrant.BOTTOM
             } else {
                 //We are either in Right OR Top
-                if (x > viewSize - y) ScreenQuadrant.RIGHT else ScreenQuadrant.TOP
+                if (xPercent > 1 - yPercent) ScreenQuadrant.RIGHT else ScreenQuadrant.TOP
             }
         } else {
             //We are either in left OR Right OR Bottom
 
-            return if (y > viewSize / 2) {
+            return if (y > height / 2) {
                 //We are either in Left OR Bottom
-                if (viewSize - x > y) ScreenQuadrant.LEFT else ScreenQuadrant.BOTTOM
+                if (1 - xPercent > yPercent) ScreenQuadrant.LEFT else ScreenQuadrant.BOTTOM
             } else {
                 //We are either in Left OR Top
-                if (x > y) ScreenQuadrant.TOP else ScreenQuadrant.LEFT
+                if (xPercent > yPercent) ScreenQuadrant.TOP else ScreenQuadrant.LEFT
             }
         }
     }
