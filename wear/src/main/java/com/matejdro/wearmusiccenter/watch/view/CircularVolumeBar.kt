@@ -8,7 +8,6 @@ class CircularVolumeBar : android.view.View {
     private val backgroundPaint: android.graphics.Paint
 
     private val circleBounds = android.graphics.RectF()
-    private var viewSize = 0f
 
     constructor(context: android.content.Context?) : this(context, null)
     constructor(context: android.content.Context?, attrs: android.util.AttributeSet?) : this(context, attrs, 0)
@@ -24,9 +23,6 @@ class CircularVolumeBar : android.view.View {
 
         backgroundPaint = android.graphics.Paint(foregroundPaint)
         backgroundPaint.color = resources.getColor(com.matejdro.wearmusiccenter.R.color.music_screen_volume_bar_background_color, null)
-
-        circleBounds.left = foregroundPaint.strokeWidth / 2
-        circleBounds.top = foregroundPaint.strokeWidth / 2
     }
 
     var volume = 0.5f
@@ -46,12 +42,19 @@ class CircularVolumeBar : android.view.View {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        viewSize = max(measuredWidth, measuredHeight).toFloat()
+        val viewSize = min(measuredWidth, measuredHeight).toFloat()
 
-        val circleSize = viewSize - foregroundPaint.strokeWidth / 2
+        val circleStroke = foregroundPaint.strokeWidth / 2
+        val circleSize = viewSize - foregroundPaint.strokeWidth
 
-        circleBounds.right = circleSize
-        circleBounds.bottom = circleSize
+        val horizontalMargin = measuredWidth - viewSize
+        val verticalMargin = measuredHeight - viewSize
+
+        circleBounds.left = circleStroke + horizontalMargin / 2
+        circleBounds.top = circleStroke + verticalMargin / 2
+
+        circleBounds.right = circleBounds.left + circleSize
+        circleBounds.bottom = circleBounds.top + circleSize
     }
 
     override fun onDraw(canvas: android.graphics.Canvas?) {
