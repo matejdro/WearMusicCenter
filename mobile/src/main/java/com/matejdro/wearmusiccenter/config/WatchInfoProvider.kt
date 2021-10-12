@@ -17,19 +17,15 @@ import javax.inject.Inject
 
 @Reusable
 class WatchInfoProvider @Inject constructor(private val context: Context) :
-        LiveData<WatchInfoWithIcons?>(), DataClient.OnDataChangedListener {
+        LiveData<WatchInfoWithIcons?>(null), DataClient.OnDataChangedListener {
 
     private val dataClient = Wearable.getDataClient(context)
 
     private var coroutineScope = CoroutineScope(Job())
 
-    init {
-        this.value = null
-    }
-
     private fun parseDataItem(dataItem: DataItem?) {
         if (dataItem == null) {
-            this.value = null
+            this.postValue(null)
             return
         }
 
