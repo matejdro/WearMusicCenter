@@ -81,6 +81,9 @@ dependencies {
     implementation libs.androidx.activity
     implementation libs.androidx.preference
     implementation libs.androidx.hilt.runtime
+    implementation libs.androidx.lifecycle.service
+    implementation libs.androidx.lifecycle.runtime
+    implementation libs.androidx.lifecycle.livedata
     kapt libs.androidx.hilt.compiler
 
     implementation libs.google.playServices.wearable

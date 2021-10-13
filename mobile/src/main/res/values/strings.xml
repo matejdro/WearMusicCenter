@@ -40,7 +40,6 @@
     <string name="swap_action">Swap action</string>
     <string name="open_actions_menu">Open actions menu</string>
     <string name="open_playlist_menu">Show current playlist</string>
-    <string name="music_control">Music control</string>
     <string name="misc_settings">Misc settings</string>
 
     <string name="category_about">About</string>
@@ -56,7 +55,6 @@
     <string name="setting_always_show_time">Always show time</string>
     <string name="setting_always_show_time_off_description">Current time will only be displayed in ambient mode</string>
     <string name="setting_always_show_time_on_description">Current time will always be displayed. Top action icon will not be visible (it will be replaced by clock), but action will still function normally.</string>
-    <string name="music_control_active">Music Control active</string>
     <string name="tap_to_force_stop">Tap to force stop</string>
     <string name="error_notification_access">No notification access. Check phone.</string>
     <string name="error_notifications">Error notifications</string>

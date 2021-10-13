@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".watch.WearMusicCenter"
@@ -86,6 +87,10 @@
         <service
             android:name="pl.tajchert.exceptionwear.ExceptionService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".watch.communication.WatchMusicService"
+            android:exported="false" />
 
         <activity
             android:name="androidx.wear.activity.ConfirmationActivity"

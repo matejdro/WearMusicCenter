@@ -1,7 +1,10 @@
 package com.matejdro.wearmusiccenter.watch.view
 
 import android.annotation.TargetApi
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -12,7 +15,10 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.wear.ambient.AmbientModeSupport
@@ -31,6 +37,7 @@ import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
+import com.matejdro.wearmusiccenter.watch.communication.WatchMusicService
 import com.matejdro.wearmusiccenter.watch.config.WatchActionConfigProvider
 import com.matejdro.wearmusiccenter.watch.model.Notification
 import com.matejdro.wearutils.companionnotice.WearCompanionWatchActivity
@@ -38,6 +45,8 @@ import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.VibratorCompat
 import com.matejdro.wearutils.preferences.definition.Preferences
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -117,6 +126,8 @@ class MainActivity : WearCompanionWatchActivity(),
 
         actionsMenuFragment =
                 supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
+
+        bindService(Intent(this, WatchMusicService::class.java), MusicServiceConnection(lifecycle), BIND_AUTO_CREATE)
     }
 
     override fun onStart() {
@@ -616,4 +627,18 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     override fun getPhoneAppPresenceCapability(): String = CommPaths.PHONE_APP_CAPABILITY
+
+    private class MusicServiceConnection(private val lifecycle: Lifecycle) : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+            service as WatchMusicService.Binder
+
+            lifecycle.coroutineScope.launch {
+                service.uiOpenFlow.flowWithLifecycle(lifecycle).collect()
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+        }
+
+    }
 }

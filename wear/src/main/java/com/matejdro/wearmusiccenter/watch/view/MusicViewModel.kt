@@ -4,7 +4,12 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.actions.StandardActions
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
@@ -186,10 +191,6 @@ class MusicViewModel @Inject constructor(
         currentButtonConfig.addSource(newConfig.updateListener, configChangeListener)
     }
 
-    override fun onCleared() {
-        phoneConnection.close()
-    }
-
     init {
         viewModelScope.launchWithErrorHandling(application, musicState) {
             WatchInfoSender(application, true).sendWatchInfoToPhone()
@@ -203,12 +204,7 @@ class MusicViewModel @Inject constructor(
         volume.value = 0.5f
     }
 
-    fun close() {
-        onCleared()
-    }
-
     private val closeRunnable = Runnable {
-        phoneConnection.stop()
         closeApp.call()
     }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Music Center for Wear</string>
     <string name="app_name_short">Music Center</string>
+
+    <string name="music_control">Music control</string>
+    <string name="music_control_active">Music Control active</string>
 </resources>

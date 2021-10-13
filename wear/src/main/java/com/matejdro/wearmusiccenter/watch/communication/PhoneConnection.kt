@@ -15,7 +15,6 @@ import com.matejdro.wearmusiccenter.proto.CustomList
 import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
-import com.matejdro.wearmusiccenter.watch.communication.PhoneConnection.Companion.MESSAGE_CLOSE_CONNECTION
 import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
 import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.*
@@ -27,7 +26,9 @@ import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PhoneConnection @Inject constructor(@ApplicationContext private val context: Context) : DataClient.OnDataChangedListener,
         CapabilityClient.OnCapabilityChangedListener,
         LiveDataLifecycleListener {
@@ -93,7 +94,7 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
         }
     }
 
-    fun stop() {
+    private fun stop() {
         if (!running.compareAndSet(true, false)) {
             return
         }
@@ -134,10 +135,6 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
         if (phoneNode != null) {
             messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
         }
-    }
-
-    fun close() {
-        stop()
     }
 
     fun sendVolume(newVolume: Float) {
@@ -312,12 +309,12 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
     suspend fun openPlaybackQueue() {
         messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_OPEN_PLAYBACK_QUEUE)
     }
-}
 
-private class ConnectionCloseHandler(val phoneConnection: WeakReference<PhoneConnection>) : Handler(Looper.getMainLooper()) {
-    override fun dispatchMessage(msg: android.os.Message) {
-        if (msg.what == MESSAGE_CLOSE_CONNECTION) {
-            phoneConnection.get()?.stop()
+    private class ConnectionCloseHandler(val phoneConnection: WeakReference<PhoneConnection>) : Handler(Looper.getMainLooper()) {
+        override fun dispatchMessage(msg: android.os.Message) {
+            if (msg.what == MESSAGE_CLOSE_CONNECTION) {
+                phoneConnection.get()?.stop()
+            }
         }
     }
 }
