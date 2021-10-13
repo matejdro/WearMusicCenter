@@ -5,10 +5,12 @@ import android.preference.PreferenceManager
 import com.matejdro.wearmusiccenter.watch.config.PreferencesBus
 import com.matejdro.wearutils.logging.FileLogger
 import com.matejdro.wearutils.logging.TimberExceptionWear
+import dagger.hilt.android.HiltAndroidApp
 import pl.tajchert.exceptionwear.ExceptionWear
 import timber.log.Timber
 
 
+@HiltAndroidApp
 class WearMusicCenter : android.app.Application() {
     override fun onCreate() {
         super.onCreate()

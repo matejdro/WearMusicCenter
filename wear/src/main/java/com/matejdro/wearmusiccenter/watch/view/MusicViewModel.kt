@@ -22,12 +22,17 @@ import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.lifecycle.SingleLiveEvent
 import com.matejdro.wearutils.preferences.definition.Preferences
+import dagger.hilt.android.lifecycle.HiltViewModel
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
-class MusicViewModel(application: Application) : AndroidViewModel(application) {
-    private val phoneConnection = PhoneConnection(getApplication(), viewModelScope)
+@HiltViewModel
+class MusicViewModel @Inject constructor(
+        private val application: Application,
+        private val phoneConnection: PhoneConnection
+) : ViewModel() {
 
     private val playbackConfig = WatchActionConfigProvider(application, viewModelScope, phoneConnection.rawPlaybackConfig)
     private val stoppedConfig = WatchActionConfigProvider(application, viewModelScope, phoneConnection.rawStoppedConfig)
@@ -67,7 +72,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+        viewModelScope.launchWithErrorHandling(application, musicState) {
             phoneConnection.executeMenuAction(index)
         }
     }
@@ -75,7 +80,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     fun executeItemFromCustomMenu(listId: String, itemId: String) {
         closeActionsMenu.postValue(Unit)
 
-        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+        viewModelScope.launchWithErrorHandling(application, musicState) {
             phoneConnection.executeCustomMenuAction(listId, itemId)
         }
     }
@@ -91,7 +96,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (!executeActionOnWatch(action, multiplier)) {
-            viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+            viewModelScope.launchWithErrorHandling(application, musicState) {
                 phoneConnection.executeButtonAction(buttonInfo)
             }
         }
@@ -128,13 +133,13 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sendManualCloseMessage() {
-        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+        viewModelScope.launchWithErrorHandling(application, musicState) {
             phoneConnection.sendManualCloseMessage()
         }
     }
 
     fun openPlaybackQueue() {
-        viewModelScope.launchWithErrorHandling(getApplication(), musicState) {
+        viewModelScope.launchWithErrorHandling(application, musicState) {
             phoneConnection.openPlaybackQueue()
         }
     }

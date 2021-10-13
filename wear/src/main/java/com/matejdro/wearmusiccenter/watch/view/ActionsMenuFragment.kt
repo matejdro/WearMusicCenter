@@ -25,10 +25,12 @@ import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearutils.preferences.definition.Preferences
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
 
 @SuppressLint("NotifyDataSetChanged")
+@AndroidEntryPoint
 class ActionsMenuFragment : Fragment() {
     private val viewmodel: MusicViewModel by activityViewModels()
 

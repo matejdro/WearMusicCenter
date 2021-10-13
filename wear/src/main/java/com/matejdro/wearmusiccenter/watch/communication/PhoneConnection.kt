@@ -21,13 +21,18 @@ import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.*
 import com.matejdro.wearutils.messages.*
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
+import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
 
-class PhoneConnection(private val context: Context, private val scope: CoroutineScope) : DataClient.OnDataChangedListener,
+class PhoneConnection @Inject constructor(@ApplicationContext private val context: Context) : DataClient.OnDataChangedListener,
         CapabilityClient.OnCapabilityChangedListener,
         LiveDataLifecycleListener {
+
+    private var scope: CoroutineScope? = null
 
     companion object {
         const val MESSAGE_CLOSE_CONNECTION = 0
@@ -55,7 +60,7 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
     private var sendingVolume = false
     private var nextVolume = -1f
 
-    private var running = false
+    private var running = AtomicBoolean(false)
 
     init {
         lifecycleObserver.addLiveData(musicState)
@@ -63,11 +68,13 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
     }
 
     private fun start() {
-        if (running) {
+        if (!running.compareAndSet(false, true)) {
             return
         }
 
-        scope.launchWithErrorHandling(context, musicState) {
+        scope = CoroutineScope(Job() + Dispatchers.Main)
+
+        scope?.launchWithErrorHandling(context, musicState) {
             val capabilities = capabilityClient.getCapability(
                     CommPaths.PHONE_APP_CAPABILITY,
                     CapabilityClient.FILTER_REACHABLE
@@ -82,25 +89,27 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
             loadCurrentActionConfig(CommPaths.DATA_STOPPING_ACTION_CONFIG, rawStoppedConfig)
             loadCurrentActionConfig(CommPaths.DATA_LIST_ITEMS, rawActionMenuConfig)
 
-            running = true
-            musicState.value = Resource.loading(null)
+            musicState.postValue(Resource.loading(null))
         }
     }
 
     fun stop() {
-        if (!running) {
+        if (!running.compareAndSet(true, false)) {
             return
         }
 
-        running = false
+        scope?.launchWithErrorHandling(context, musicState) {
+            try {
+                dataClient.removeListener(this)
 
-        scope.launchWithErrorHandling(context, musicState) {
-            dataClient.removeListener(this)
-
-            val phoneNode = nodeClient.getNearestNodeId()
-            if (phoneNode != null) {
-                messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED, null).await()
+                val phoneNode = nodeClient.getNearestNodeId()
+                if (phoneNode != null) {
+                    messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED, null).await()
+                }
+            } finally {
+                scope?.cancel()
             }
+
         }
     }
 
@@ -108,7 +117,7 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
         val firstNode = capabilityInfo.nodes.firstOrNull { it.isNearby }
 
         if (firstNode != null) {
-            scope.launchWithErrorHandling(context, musicState) {
+            scope?.launchWithErrorHandling(context, musicState) {
                 messageClient.sendMessage(capabilityInfo.nodes.first().id, CommPaths.MESSAGE_WATCH_OPENED, null).await()
             }
         } else {
@@ -117,7 +126,7 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
     }
 
     suspend fun sendManualCloseMessage() {
-        if (!running) {
+        if (running.get()) {
             return
         }
 
@@ -132,7 +141,7 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
     }
 
     fun sendVolume(newVolume: Float) {
-        scope.launchWithErrorHandling(context, musicState) {
+        scope?.launchWithErrorHandling(context, musicState) {
             nextVolume = -1f
 
             if (sendingVolume) {
@@ -194,8 +203,12 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
             return
         }
 
-        scope.launchWithErrorHandling(context, musicState) {
-            data.filter { it.type == DataEvent.TYPE_CHANGED }
+        val frozenData = data.use { _ ->
+            data.map { it.freeze() }
+        }
+
+        scope?.launchWithErrorHandling(context, musicState) {
+            frozenData.filter { it.type == DataEvent.TYPE_CHANGED }
                     .map { it.dataItem }
                     .forEach {
                         when (it.uri.path) {
@@ -265,8 +278,6 @@ class PhoneConnection(private val context: Context, private val scope: Coroutine
                             }
                         }
                     }
-
-            data.release()
         }
     }
 

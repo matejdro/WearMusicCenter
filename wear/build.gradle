@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: "kotlin-kapt"
+apply plugin: "dagger.hilt.android.plugin"
 apply plugin: 'de.mobilej.unmock'
 
 android {
@@ -79,6 +80,8 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.androidx.activity
     implementation libs.androidx.preference
+    implementation libs.androidx.hilt.runtime
+    kapt libs.androidx.hilt.compiler
 
     implementation libs.google.playServices.wearable
 
