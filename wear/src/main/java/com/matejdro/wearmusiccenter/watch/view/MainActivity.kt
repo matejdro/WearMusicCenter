@@ -78,6 +78,8 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private var rotatingInputDisabledUntil = 0L
 
+    private val serviceConnection = MusicServiceConnection(lifecycle)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -126,8 +128,6 @@ class MainActivity : WearCompanionWatchActivity(),
 
         actionsMenuFragment =
                 supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
-
-        bindService(Intent(this, WatchMusicService::class.java), MusicServiceConnection(lifecycle), BIND_AUTO_CREATE)
     }
 
     override fun onStart() {
@@ -144,6 +144,8 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         viewModel.updateTimers()
+
+        bindService(Intent(this, WatchMusicService::class.java), serviceConnection, BIND_AUTO_CREATE)
     }
 
     override fun onStop() {
@@ -154,6 +156,7 @@ class MainActivity : WearCompanionWatchActivity(),
         super.onStop()
 
         handler.removeMessages(MESSAGE_UPDATE_CLOCK)
+        unbindService(serviceConnection)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
