@@ -174,6 +174,12 @@ class MainActivity : WearCompanionWatchActivity(),
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        viewModel.musicState.removeObserver(musicStateObserver)
+    }
+
     private fun updateClock() {
         binding.ambientClock.text = timeFormat.format(java.util.Date())
     }
