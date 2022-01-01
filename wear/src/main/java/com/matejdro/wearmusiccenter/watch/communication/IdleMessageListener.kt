@@ -8,10 +8,15 @@ import com.matejdro.wearmusiccenter.watch.view.MainActivity
 
 class IdleMessageListener : WearableListenerService() {
     override fun onMessageReceived(messageEvent: MessageEvent) {
-        if (CommPaths.MESSAGE_OPEN_APP == messageEvent.path) {
-            val activityStartIntent = Intent(this, MainActivity::class.java)
-            activityStartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(activityStartIntent)
+        when (messageEvent.path) {
+            CommPaths.MESSAGE_OPEN_APP -> {
+                val activityStartIntent = Intent(this, MainActivity::class.java)
+                activityStartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(activityStartIntent)
+            }
+            CommPaths.MESSAGE_START_SERVICE -> {
+                startService(Intent(this, WatchMusicService::class.java))
+            }
         }
     }
 }

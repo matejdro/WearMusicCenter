@@ -12,12 +12,16 @@ import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import com.matejdro.wearmusiccenter.NotificationService
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
+import com.matejdro.wearmusiccenter.common.MiscPreferences
+import com.matejdro.wearmusiccenter.common.model.AutoStartMode
 import com.matejdro.wearutils.logging.LogRetrievalTask
 import com.matejdro.wearutils.preferences.compat.PreferenceFragmentCompatEx
+import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
 import kotlinx.coroutines.launch
@@ -37,15 +41,25 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     }
 
     private fun initAutomationSection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // On Android N and above we unbind notification service when autostart is disabled and
-            // rebind when enabled
+        migrateOldAutoStartSetting()
 
-            findPreference<Preference>("auto_start")!!.onPreferenceChangeListener =
-                    Preference.OnPreferenceChangeListener { _, newValue ->
-                        newValue as Boolean
+        findPreference<Preference>("auto_start_apps_blacklist")?.isEnabled =
+                Preferences.getEnum(preferenceManager.sharedPreferences, MiscPreferences.AUTO_START_MODE) != AutoStartMode.OFF
 
-                        if (newValue) {
+        findPreference<Preference>("auto_start_mode")!!.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _, newValue ->
+                    newValue as String
+
+                    val mode = enumValueOf<AutoStartMode>(newValue)
+
+                    findPreference<Preference>("auto_start_apps_blacklist")?.isEnabled = mode != AutoStartMode.OFF
+
+
+                    // On Android N and above we unbind notification service when autostart is disabled and
+                    // rebind when enabled
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (newValue != AutoStartMode.OFF) {
                             NotificationListenerService.requestRebind(
                                     ComponentName(requireContext(), NotificationService::class.java)
                             )
@@ -54,9 +68,21 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
                             serviceStopIntent.action = NotificationService.ACTION_UNBIND_SERVICE
                             requireContext().startService(serviceStopIntent)
                         }
-
-                        true
                     }
+
+                    true
+                }
+    }
+
+    private fun migrateOldAutoStartSetting() {
+        val preferences = preferenceManager.sharedPreferences
+        if (preferences.contains("auto_start")) {
+            val legacyAutoStart = Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)
+
+            val autoStartMode = if (legacyAutoStart) AutoStartMode.OPEN_APP else AutoStartMode.OFF
+            findPreference<ListPreference>("auto_start_mode")?.value = autoStartMode.name
+
+            preferences.edit().remove("auto_start").apply()
         }
     }
 

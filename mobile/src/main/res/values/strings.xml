@@ -81,6 +81,18 @@
     <string name="setting_swipe_up_for_queue">Open queue with swipe up gesture</string>
     <string name="setting_swipe_up_for_queue_description">When enabled, swiping up will display playback queue instead of actions menu. You can still open actions menu by assigning "Open actions menu" action to any button.</string>
 
+    <string-array name="auto_start_modes_keys">
+        <item>OFF</item>
+        <item>SHOW_ICON</item>
+        <item>OPEN_APP</item>
+    </string-array>
+
+    <string-array name="auto_start_modes_descriptions">
+        <item>Disabled</item>
+        <item>Show music watchface icon (only for Wear 3.0)</item>
+        <item>Open Music Center</item>
+    </string-array>
+
     <string name="setting_close_timeout">Close timeout</string>
     <string name="setting_close_timeout_description">Music Center will automatically close itself when there is no music playing for <![CDATA[<b>%1$s seconds</b>]]>. Feature is disabled when timeout is set to 0 seconds. Please not that, to save battery, this option may not be too accurate at times and it might delay the closing for up to a minute.</string>
     <string name="category_notifications">Notification popup</string>

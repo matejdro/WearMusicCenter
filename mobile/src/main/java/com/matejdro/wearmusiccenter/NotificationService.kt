@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.NodeClient
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
+import com.matejdro.wearmusiccenter.common.model.AutoStartMode
 import com.matejdro.wearmusiccenter.music.ActiveMediaSessionProvider
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.music.isPlaying
@@ -81,7 +82,7 @@ class NotificationService : NotificationListenerService() {
 
         activeMediaProvider = ActiveMediaSessionProvider(this)
 
-        if (Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)) {
+        if (MiscPreferences.isAnyKindOfAutoStartEnabled(preferences)) {
             activeMediaProvider!!.observeForever(mediaObserver)
         }
 
@@ -105,14 +106,27 @@ class NotificationService : NotificationListenerService() {
     }
 
     private fun shouldRun(): Boolean {
-        return Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)
+        return MiscPreferences.isAnyKindOfAutoStartEnabled(preferences)
     }
 
     private fun startAppOnWatch() {
         Timber.d("AttemptToStartApp")
         coroutineScope.launch {
             try {
-                messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_OPEN_APP)
+                val legacySetting = Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)
+                val openType = if (legacySetting) {
+                    AutoStartMode.OPEN_APP
+                } else {
+                    Preferences.getEnum(preferences, MiscPreferences.AUTO_START_MODE)
+                }
+
+                val message = when (openType) {
+                    AutoStartMode.OFF, null -> return@launch
+                    AutoStartMode.SHOW_ICON -> CommPaths.MESSAGE_START_SERVICE
+                    AutoStartMode.OPEN_APP -> CommPaths.MESSAGE_OPEN_APP
+                }
+
+                messageClient.sendMessageToNearestClient(nodeClient, message)
                 Timber.d("Start success")
             } catch (e: Exception) {
                 Timber.e(e, "Start Fail")

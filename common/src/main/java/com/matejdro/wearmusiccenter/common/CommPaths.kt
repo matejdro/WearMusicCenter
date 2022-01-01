@@ -23,6 +23,7 @@ interface CommPaths {
         const val MESSAGE_EXECUTE_MENU_ACTION = "/Messages/MenuAction"
         const val MESSAGE_SEND_LOGS = "/SendLogs"
         const val MESSAGE_OPEN_APP = "/IdleMessages/OpenApp"
+        const val MESSAGE_START_SERVICE = "/IdleMessages/StartService"
         const val MESSAGE_CUSTOM_LIST_ITEM_SELECTED = "/Messages/CustomListItemSelected"
         const val MESSAGE_OPEN_PLAYBACK_QUEUE = "/Messages/OpenPlaybackQueue"
 
