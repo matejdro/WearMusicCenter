@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
+import androidx.wear.ongoing.OngoingActivity
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.watch.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,15 +73,24 @@ class WatchMusicService : LifecycleService() {
         val openAppPendingIntent = PendingIntent.getActivity(this,
                 1,
                 openAppIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
 
         createNotificationChannel()
         val notificationBuilder = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
                 .setContentTitle(getString(R.string.music_control_active))
                 .setContentIntent(openAppPendingIntent)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.ic_notification_white)
+                .setOngoing(true)
 
+
+        val ongoingActivity = OngoingActivity.Builder(this, NOTIFICATION_ID_PERSISTENT, notificationBuilder)
+                .setStaticIcon(R.drawable.ic_notification_white)
+                .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
+                .setTouchIntent(openAppPendingIntent)
+                .build()
+
+        ongoingActivity.apply(this)
 
         startForeground(NOTIFICATION_ID_PERSISTENT, notificationBuilder.build())
     }

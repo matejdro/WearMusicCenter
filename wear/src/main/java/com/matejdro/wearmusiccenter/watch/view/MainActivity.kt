@@ -9,7 +9,13 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import android.os.Vibrator
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -31,7 +37,11 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.ScreenQuadrant
-import com.matejdro.wearmusiccenter.common.buttonconfig.*
+import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.common.view.FourWayTouchLayout
 import com.matejdro.wearmusiccenter.databinding.ActivityMainBinding
 import com.matejdro.wearmusiccenter.proto.MusicState
@@ -56,9 +66,9 @@ class MainActivity : WearCompanionWatchActivity(),
         AmbientModeSupport.AmbientCallbackProvider {
 
     companion object {
-        private const val MESSAGE_HIDE_VOLUME = 0
-        private const val MESSAGE_UPDATE_CLOCK = 2
-        private const val MESSAGE_DISMISS_NOTIFICATION = 3
+        private const val MESSAGE_HIDE_VOLUME = 10
+        private const val MESSAGE_UPDATE_CLOCK = 11
+        private const val MESSAGE_DISMISS_NOTIFICATION = 12
 
         private const val VOLUME_BAR_TIMEOUT = 1000L
     }
@@ -630,6 +640,7 @@ class MainActivity : WearCompanionWatchActivity(),
                 MESSAGE_DISMISS_NOTIFICATION -> {
                     activity.get()?.hideNotification()
                 }
+                else -> super.handleMessage(msg)
             }
 
         }
