@@ -19,12 +19,12 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.common.model.AutoStartMode
+import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
 import com.matejdro.wearutils.logging.LogRetrievalTask
 import com.matejdro.wearutils.preferences.compat.PreferenceFragmentCompatEx
 import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearutils.preferencesync.PreferencePusher
 import de.psdev.licensesdialog.LicensesDialog
-import kotlinx.coroutines.launch
 
 
 class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -180,7 +180,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     }
 
     private fun pushPreferencesToWatch() {
-        lifecycleScope.launch {
+        lifecycleScope.launchWithPlayServicesErrorHandling(requireContext().applicationContext) {
             PreferencePusher.pushPreferences(
                     requireContext().applicationContext,
                     preferenceManager.sharedPreferences,

@@ -14,10 +14,10 @@ import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.proto.WatchList
+import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
 import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @AutoFactory
 class ActionListTransmitter(actionList: ActionList,
@@ -32,7 +32,7 @@ class ActionListTransmitter(actionList: ActionList,
     }
 
     private fun resendIfNeeded(actionList: ActionList) {
-        GlobalScope.launch {
+        GlobalScope.launchWithPlayServicesErrorHandling(context) {
             val dataOnWatch = dataClient.getDataItems(Uri.parse("wear://*${CommPaths.DATA_LIST_ITEMS}")).await()
 
             if (!dataOnWatch.any()) {
