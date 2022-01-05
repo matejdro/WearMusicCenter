@@ -127,13 +127,16 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
     }
 
     suspend fun sendManualCloseMessage() {
-        if (running.get()) {
+        if (!running.get()) {
             return
         }
 
-        val phoneNode = nodeClient.getNearestNodeId()
-        if (phoneNode != null) {
-            messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
+        // Activity closes when manual close happens, so we must ignore cancel signal here
+        withContext(NonCancellable) {
+            val phoneNode = nodeClient.getNearestNodeId()
+            if (phoneNode != null) {
+                messageClient.sendMessage(phoneNode, CommPaths.MESSAGE_WATCH_CLOSED_MANUALLY, null).await()
+            }
         }
     }
 
