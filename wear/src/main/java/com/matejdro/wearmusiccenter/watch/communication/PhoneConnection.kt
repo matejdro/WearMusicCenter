@@ -6,7 +6,13 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.wearable.*
+import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.CapabilityInfo
+import com.google.android.gms.wearable.DataClient
+import com.google.android.gms.wearable.DataEvent
+import com.google.android.gms.wearable.DataEventBuffer
+import com.google.android.gms.wearable.DataItem
+import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
@@ -17,11 +23,22 @@ import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
 import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
 import com.matejdro.wearutils.coroutines.await
-import com.matejdro.wearutils.lifecycle.*
-import com.matejdro.wearutils.messages.*
+import com.matejdro.wearutils.lifecycle.ListenableLiveData
+import com.matejdro.wearutils.lifecycle.LiveDataLifecycleCombiner
+import com.matejdro.wearutils.lifecycle.LiveDataLifecycleListener
+import com.matejdro.wearutils.lifecycle.Resource
+import com.matejdro.wearutils.lifecycle.SingleLiveEvent
+import com.matejdro.wearutils.messages.getByteArrayAsset
+import com.matejdro.wearutils.messages.getNearestNodeId
+import com.matejdro.wearutils.messages.sendMessageToNearestClient
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
@@ -149,18 +166,20 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
                 return@launchWithErrorHandling
             }
 
-            sendingVolume = true
+            try {
+                sendingVolume = true
 
-            messageClient.sendMessageToNearestClient(
-                    nodeClient,
-                    CommPaths.MESSAGE_CHANGE_VOLUME,
-                    FloatPacker.packFloat(newVolume)
-            )
-        }
-
-        sendingVolume = false
-        if (nextVolume >= 0) {
-            sendVolume(nextVolume)
+                messageClient.sendMessageToNearestClient(
+                        nodeClient,
+                        CommPaths.MESSAGE_CHANGE_VOLUME,
+                        FloatPacker.packFloat(newVolume)
+                )
+            } finally {
+                sendingVolume = false
+                if (nextVolume >= 0) {
+                    sendVolume(nextVolume)
+                }
+            }
         }
     }
 
