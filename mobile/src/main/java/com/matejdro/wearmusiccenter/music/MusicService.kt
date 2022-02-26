@@ -446,7 +446,6 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
 
     private fun startTimeout() {
         ackTimeoutHandler.removeMessages(MESSAGE_STOP_SELF)
-        ackTimeoutHandler.sendEmptyMessageDelayed(MESSAGE_STOP_SELF, ACK_TIMEOUT_MS)
     }
 
     private class AckTimeoutHandler(val service: WeakReference<MusicService>) : Handler(Looper.getMainLooper()) {
