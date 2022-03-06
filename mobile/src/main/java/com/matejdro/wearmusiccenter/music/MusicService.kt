@@ -2,10 +2,15 @@ package com.matejdro.wearmusiccenter.music
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.ContentObserver
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -15,12 +20,18 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.preference.PreferenceManager
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.wearable.*
+import com.google.android.gms.wearable.Asset
+import com.google.android.gms.wearable.DataClient
+import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.PutDataRequest
+import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.OpenPlaylistAction
 import com.matejdro.wearmusiccenter.common.CommPaths
@@ -94,6 +105,8 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
     var currentMediaController: MediaController? = null
     private var startedFromWatch = false
 
+    private var currentVolume = 0
+
     @SuppressLint("LaunchActivityFromNotification")
     override fun onCreate() {
         super.onCreate()
@@ -131,6 +144,8 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 .setContentIntent(stopSelfPendingIntent)
                 .setSmallIcon(R.drawable.ic_notification)
 
+        contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, volumeContentObserver)
+
 
         // This is still needed for Pre-O versions, so it must be used, even if it is deprecated.
         @Suppress("DEPRECATION")
@@ -166,6 +181,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         messageClient.removeListener(this)
 
         ackTimeoutHandler.removeCallbacksAndMessages(null)
+        contentResolver.unregisterContentObserver(volumeContentObserver)
 
         active = false
 
@@ -223,7 +239,9 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         val previousMediaController = currentMediaController ?: return
 
         val maxVolume = previousMediaController.playbackInfo?.maxVolume ?: 0
-        previousMediaController.setVolumeTo((maxVolume * newVolume).toInt(), 0)
+        val newAbsoluteVolume = (maxVolume * newVolume).toInt()
+        currentVolume = newAbsoluteVolume
+        previousMediaController.setVolumeTo(newAbsoluteVolume, 0)
     }
 
     private fun executeAction(buttonInfo: ButtonInfo) {
@@ -273,8 +291,10 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             }
 
-            val volume = (mediaController.playbackInfo?.currentVolume?.toFloat()
-                    ?: 0f) / (mediaController.playbackInfo?.maxVolume?.toFloat() ?: 0f)
+            currentVolume = mediaController.playbackInfo?.currentVolume ?: 0
+
+            val volume = currentVolume.toFloat() / (mediaController.playbackInfo?.maxVolume?.toFloat() ?: 0f)
+
             musicStateBuilder.volume = volume
         }
 
@@ -464,5 +484,14 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 other.title == title &&
                 other.volume == volume &&
                 other.error == error
+    }
+
+    private val volumeContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            val newVolume = currentMediaController?.playbackInfo?.currentVolume
+            if (newVolume != currentVolume) {
+                buildMusicStateAndTransmit(currentMediaController)
+            }
+        }
     }
 }
