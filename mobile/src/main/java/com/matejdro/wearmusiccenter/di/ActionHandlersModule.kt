@@ -3,6 +3,7 @@ package com.matejdro.wearmusiccenter.di
 import com.matejdro.wearmusiccenter.actions.ActionHandler
 import com.matejdro.wearmusiccenter.actions.appplay.AppPlayAction
 import com.matejdro.wearmusiccenter.actions.playback.PauseAction
+import com.matejdro.wearmusiccenter.actions.playback.PlayAction
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.ClassKey
@@ -19,4 +20,9 @@ abstract class ActionHandlersModule {
     @IntoMap
     @ClassKey(PauseAction::class)
     abstract fun bindPauseActionsHandler(handler: PauseAction.Handler): ActionHandler<*>
+
+    @Binds
+    @IntoMap
+    @ClassKey(PlayAction::class)
+    abstract fun bindPlayActionsHandler(handler: PlayAction.Handler): ActionHandler<*>
 }
