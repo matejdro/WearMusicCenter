@@ -5,10 +5,12 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
 import androidx.appcompat.content.res.AppCompatResources
+import com.matejdro.wearmusiccenter.actions.ActionHandler
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.SelectableAction
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearutils.tasker.TaskerIntent
+import javax.inject.Inject
 
 class TaskerTaskAction : SelectableAction {
     companion object {
@@ -22,12 +24,6 @@ class TaskerTaskAction : SelectableAction {
     }
     constructor(context : Context, bundle: PersistableBundle) : super(context, bundle) {
         this.taskName = bundle.getString(KEY_TASK_NAME)!!
-    }
-
-
-    override fun execute(service: MusicService) {
-        val taskerIntent = TaskerIntent(taskName)
-        service.sendBroadcast(taskerIntent)
     }
 
     override fun writeToBundle(bundle: PersistableBundle) {
@@ -44,8 +40,15 @@ class TaskerTaskAction : SelectableAction {
             AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)!!
         }
 
-    override fun isEqualToAction(other : PhoneAction) : Boolean {
+    override fun isEqualToAction(other: PhoneAction): Boolean {
         other as TaskerTaskAction
-        return  super.isEqualToAction(other) && this.taskName == other.taskName
+        return super.isEqualToAction(other) && this.taskName == other.taskName
+    }
+
+    class Handler @Inject constructor(private val service: MusicService) : ActionHandler<TaskerTaskAction> {
+        override suspend fun handleAction(action: TaskerTaskAction) {
+            val taskerIntent = TaskerIntent(action.taskName)
+            service.sendBroadcast(taskerIntent)
+        }
     }
 }

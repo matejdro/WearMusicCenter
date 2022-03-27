@@ -8,6 +8,7 @@ import com.matejdro.wearmusiccenter.actions.playback.ReverseThirtySecondsAction
 import com.matejdro.wearmusiccenter.actions.playback.SkipThirtySecondsAction
 import com.matejdro.wearmusiccenter.actions.playback.SkipToNextAction
 import com.matejdro.wearmusiccenter.actions.playback.SkipToPrevAction
+import com.matejdro.wearmusiccenter.actions.tasker.TaskerTaskAction
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.ClassKey
@@ -49,4 +50,9 @@ abstract class ActionHandlersModule {
     @IntoMap
     @ClassKey(SkipToPrevAction::class)
     abstract fun bindSkipToPrevActionsHandler(handler: SkipToPrevAction.Handler): ActionHandler<*>
+
+    @Binds
+    @IntoMap
+    @ClassKey(TaskerTaskAction::class)
+    abstract fun bindTaskerTaskActionsHandler(handler: TaskerTaskAction.Handler): ActionHandler<*>
 }
