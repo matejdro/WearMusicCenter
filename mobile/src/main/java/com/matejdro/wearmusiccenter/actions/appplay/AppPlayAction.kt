@@ -10,14 +10,13 @@ import android.view.InputDevice
 import android.view.KeyEvent
 import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.actions.ActionHandler
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.actions.SelectableAction
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.music.isPlaying
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AppPlayAction : SelectableAction {
     companion object {
@@ -50,73 +49,6 @@ class AppPlayAction : SelectableAction {
         context.getString(R.string.play_app, appName)
     }
 
-    override fun execute(service: MusicService) {
-        // Some apps (Spotify for example) seems to obey commands
-        // sent from AVRCP device more than others. If there is AVRCP bluetooth device
-        // available, use it
-        var pickedDeviceID = -1
-        for (deviceId in InputDevice.getDeviceIds()) {
-            val device = InputDevice.getDevice(deviceId)
-
-            if (device.name == "AVRCP") {
-                pickedDeviceID = deviceId
-            }
-        }
-
-        val androidContext = context
-
-        GlobalScope.launch(Dispatchers.Main) {
-            dispatchUpDownEvents(pickedDeviceID)
-            delay(2000)
-
-            if (service.currentMediaController?.packageName == receiverComponent.packageName &&
-                    service.currentMediaController?.isPlaying() == true) {
-                return@launch
-            }
-
-            // Media is still not playing.
-            // Some players do not handle background starts very well. Start their UI activity first.
-            val launcherActivity = androidContext.packageManager.getLaunchIntentForPackage(receiverComponent.packageName)
-            if (launcherActivity != null) {
-                androidContext.startActivity(launcherActivity)
-                delay(500)
-
-                if (service.currentMediaController?.packageName == receiverComponent.packageName &&
-                        service.currentMediaController?.isPlaying() == true) {
-                    // In the time it took for activity to launch, media has already started playing. Nothing to do.
-                    return@launch
-                }
-
-                dispatchUpDownEvents(pickedDeviceID)
-                delay(500)
-            }
-
-            if (service.currentMediaController?.packageName == receiverComponent.packageName &&
-                    service.currentMediaController?.isPlaying() == true) {
-                return@launch
-            }
-
-            // Media is still not playing.
-            // Maybe UI activity took some time to restart?
-            // Retry sending play command one last time after 3 second delay
-            delay(3000)
-            dispatchUpDownEvents(pickedDeviceID)
-        }
-    }
-
-    private fun dispatchUpDownEvents(pickedDeviceID: Int, eventTime: Long = System.currentTimeMillis()) {
-        dispatchKeyEvent(KeyEvent(0, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0, 0, pickedDeviceID, 0))
-        dispatchKeyEvent(KeyEvent(0, eventTime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY, 0, 0, pickedDeviceID, 0))
-    }
-
-    private fun dispatchKeyEvent(keyEvent: KeyEvent) {
-        val intent = Intent(Intent.ACTION_MEDIA_BUTTON)
-        intent.putExtra(Intent.EXTRA_KEY_EVENT, keyEvent)
-        intent.component = receiverComponent
-
-        context.sendBroadcast(intent)
-    }
-
     override fun writeToBundle(bundle: PersistableBundle) {
         super.writeToBundle(bundle)
 
@@ -136,4 +68,86 @@ class AppPlayAction : SelectableAction {
         other as AppPlayAction
         return super.isEqualToAction(other) && this.receiverComponent == other.receiverComponent
     }
+
+    class Handler @Inject constructor(
+            private val service: MusicService
+    ) : ActionHandler<AppPlayAction> {
+        override suspend fun handleAction(action: AppPlayAction) {
+            val receiverComponent = action.receiverComponent
+
+            // Some apps (Spotify for example) seems to obey commands
+            // sent from AVRCP device more than others. If there is AVRCP bluetooth device
+            // available, use it
+            var pickedDeviceID = -1
+            for (deviceId in InputDevice.getDeviceIds()) {
+                val device = InputDevice.getDevice(deviceId)
+
+                if (device.name == "AVRCP") {
+                    pickedDeviceID = deviceId
+                }
+            }
+
+            val androidContext = service
+
+            dispatchUpDownEvents(pickedDeviceID, receiverComponent)
+            delay(2000)
+
+            if (service.currentMediaController?.packageName == receiverComponent.packageName &&
+                    service.currentMediaController?.isPlaying() == true) {
+                return
+            }
+
+            // Media is still not playing.
+            // Some players do not handle background starts very well. Start their UI activity first.
+            val launcherActivity = androidContext.packageManager.getLaunchIntentForPackage(receiverComponent.packageName)
+            if (launcherActivity != null) {
+                androidContext.startActivity(launcherActivity)
+                delay(500)
+
+                if (service.currentMediaController?.packageName == receiverComponent.packageName &&
+                        service.currentMediaController?.isPlaying() == true) {
+                    // In the time it took for activity to launch, media has already started playing. Nothing to do.
+                    return
+                }
+
+                dispatchUpDownEvents(pickedDeviceID, receiverComponent)
+                delay(500)
+            }
+
+            if (service.currentMediaController?.packageName == receiverComponent.packageName &&
+                    service.currentMediaController?.isPlaying() == true) {
+                return
+            }
+
+            // Media is still not playing.
+            // Maybe UI activity took some time to restart?
+            // Retry sending play command one last time after 3 second delay
+            delay(3000)
+            dispatchUpDownEvents(pickedDeviceID, receiverComponent)
+        }
+
+        private fun dispatchUpDownEvents(
+                pickedDeviceID: Int,
+                receiverComponent: ComponentName,
+                eventTime: Long = System.currentTimeMillis()
+        ) {
+            dispatchKeyEvent(
+                    KeyEvent(0, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY, 0, 0, pickedDeviceID, 0),
+                    receiverComponent
+            )
+            dispatchKeyEvent(
+                    KeyEvent(0, eventTime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY, 0, 0, pickedDeviceID, 0),
+                    receiverComponent
+            )
+        }
+
+        private fun dispatchKeyEvent(keyEvent: KeyEvent, receiverComponent: ComponentName) {
+            val intent = Intent(Intent.ACTION_MEDIA_BUTTON)
+            intent.putExtra(Intent.EXTRA_KEY_EVENT, keyEvent)
+            intent.component = receiverComponent
+
+            service.sendBroadcast(intent)
+        }
+    }
 }
+
