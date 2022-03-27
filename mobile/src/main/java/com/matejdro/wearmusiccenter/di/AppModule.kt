@@ -13,7 +13,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
+@Module(subcomponents = [MusicServiceSubComponent::class])
 class AppModule {
     @Provides
     @Singleton

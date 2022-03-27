@@ -33,7 +33,9 @@ import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 import com.matejdro.wearmusiccenter.R
+import com.matejdro.wearmusiccenter.actions.ActionHandler
 import com.matejdro.wearmusiccenter.actions.OpenPlaylistAction
+import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.common.MiscPreferences
@@ -43,6 +45,7 @@ import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.config.WatchInfoWithIcons
 import com.matejdro.wearmusiccenter.di.GlobalConfig
+import com.matejdro.wearmusiccenter.di.MusicServiceSubComponent
 import com.matejdro.wearmusiccenter.notifications.NotificationProvider
 import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
@@ -55,6 +58,7 @@ import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearvibrationcenter.notificationprovider.ReceivedNotification
 import dagger.android.AndroidInjection
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -99,6 +103,11 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
     @Inject
     lateinit var notificationProvider: NotificationProvider
 
+    @Inject
+    lateinit var musicServiceComponentFactory: MusicServiceSubComponent.Factory
+
+    private lateinit var actionHandlers: Map<Class<*>, ActionHandler<*>>
+
     private var ackTimeoutHandler = AckTimeoutHandler(WeakReference(this))
 
     private var previousMusicState: MusicState? = null
@@ -112,6 +121,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         super.onCreate()
 
         AndroidInjection.inject(this)
+        actionHandlers = musicServiceComponentFactory.build(this).getActionHandlers()
 
         messageClient = Wearable.getMessageClient(applicationContext)
         dataClient = Wearable.getDataClient(applicationContext)
@@ -253,7 +263,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
             config.getStoppedConfig()
 
         val buttonAction = config.getScreenAction(buttonInfo) ?: return
-        buttonAction.execute(this)
+        executeAction(buttonAction)
     }
 
     private fun executeMenuAction(index: Int) {
@@ -265,7 +275,20 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
             return
         }
 
-        list[index].execute(this)
+        executeAction(list[index])
+    }
+
+    private fun executeAction(action: PhoneAction) {
+        lifecycleScope.launch {
+            @Suppress("UNCHECKED_CAST")
+            val handler = actionHandlers[action.javaClass] as ActionHandler<PhoneAction>?
+
+            if (handler != null) {
+                handler.handleAction(action)
+            } else {
+                action.execute(this@MusicService)
+            }
+        }
     }
 
     private fun buildMusicStateAndTransmit(mediaController: MediaController?) {
@@ -401,7 +424,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
     }
 
     private fun openPlaybackQueueOnWatch() {
-        OpenPlaylistAction(this).execute(this)
+        executeAction(OpenPlaylistAction(this))
     }
 
     override fun onMessageReceived(event: MessageEvent?) {

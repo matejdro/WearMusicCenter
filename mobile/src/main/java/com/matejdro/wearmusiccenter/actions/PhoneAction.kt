@@ -28,7 +28,7 @@ abstract class PhoneAction : Bundlable {
         customTitle = bundle.getString(KEY_CUSTOM_TITLE)
     }
 
-    abstract fun execute(service: MusicService)
+    open fun execute(service: MusicService) {}
     abstract fun onActionPicked(actionPicker: ActionPickerViewModel)
     protected abstract fun retrieveTitle(): String
     abstract val defaultIcon: Drawable
