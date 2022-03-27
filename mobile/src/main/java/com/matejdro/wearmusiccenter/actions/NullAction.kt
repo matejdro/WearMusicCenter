@@ -7,6 +7,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
+import javax.inject.Inject
 
 class NullAction : PhoneAction {
     constructor(context : Context) : super(context)
@@ -23,4 +24,8 @@ class NullAction : PhoneAction {
 
     override val defaultIcon: Drawable
         get() = AppCompatResources.getDrawable(context, R.drawable.ic_cross_black)!!
+
+    class Handler @Inject constructor() : ActionHandler<NullAction> {
+        override suspend fun handleAction(action: NullAction) = Unit
+    }
 }

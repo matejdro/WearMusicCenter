@@ -1,6 +1,7 @@
 package com.matejdro.wearmusiccenter.di
 
 import com.matejdro.wearmusiccenter.actions.ActionHandler
+import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.appplay.AppPlayAction
 import com.matejdro.wearmusiccenter.actions.playback.PauseAction
 import com.matejdro.wearmusiccenter.actions.playback.PlayAction
@@ -55,4 +56,9 @@ abstract class ActionHandlersModule {
     @IntoMap
     @ClassKey(TaskerTaskAction::class)
     abstract fun bindTaskerTaskActionsHandler(handler: TaskerTaskAction.Handler): ActionHandler<*>
+
+    @Binds
+    @IntoMap
+    @ClassKey(NullAction::class)
+    abstract fun bindNullActionsHandler(handler: NullAction.Handler): ActionHandler<*>
 }
