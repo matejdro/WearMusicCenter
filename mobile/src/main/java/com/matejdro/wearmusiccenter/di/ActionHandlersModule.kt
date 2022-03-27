@@ -4,6 +4,7 @@ import com.matejdro.wearmusiccenter.actions.ActionHandler
 import com.matejdro.wearmusiccenter.actions.appplay.AppPlayAction
 import com.matejdro.wearmusiccenter.actions.playback.PauseAction
 import com.matejdro.wearmusiccenter.actions.playback.PlayAction
+import com.matejdro.wearmusiccenter.actions.playback.ReverseThirtySecondsAction
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.ClassKey
@@ -25,4 +26,9 @@ abstract class ActionHandlersModule {
     @IntoMap
     @ClassKey(PlayAction::class)
     abstract fun bindPlayActionsHandler(handler: PlayAction.Handler): ActionHandler<*>
+
+    @Binds
+    @IntoMap
+    @ClassKey(ReverseThirtySecondsAction::class)
+    abstract fun bindReverseThirtySecondsActionsHandler(handler: ReverseThirtySecondsAction.Handler): ActionHandler<*>
 }
