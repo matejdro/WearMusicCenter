@@ -13,17 +13,20 @@ import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.proto.CustomList
-import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
 import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
-import kotlinx.coroutines.GlobalScope
+import javax.inject.Inject
 
 class OpenPlaylistAction : SelectableAction {
     constructor(context: Context) : super(context)
     constructor(context: Context, bundle: PersistableBundle) : super(context, bundle)
 
-    override fun execute(service: MusicService) {
-        GlobalScope.launchWithPlayServicesErrorHandling(context) {
+    override fun retrieveTitle(): String = context.getString(R.string.open_playlist_menu)
+    override val defaultIcon: Drawable
+        get() = AppCompatResources.getDrawable(context, R.drawable.action_open_playlist)!!
+
+    class Handler @Inject constructor(private val service: MusicService) : ActionHandler<OpenPlaylistAction> {
+        override suspend fun handleAction(action: OpenPlaylistAction) {
             // TODO take density of Watch's display into account
             val targetIconSize = (ConfigConstants.BUTTON_ICON_SIZE_DP)
 
@@ -76,11 +79,7 @@ class OpenPlaylistAction : SelectableAction {
 
             putDataRequest.data = protoData.toByteArray()
 
-            Wearable.getDataClient(context).putDataItem(putDataRequest).await()
+            Wearable.getDataClient(service).putDataItem(putDataRequest).await()
         }
     }
-
-    override fun retrieveTitle(): String = context.getString(R.string.open_playlist_menu)
-    override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_open_playlist)!!
 }

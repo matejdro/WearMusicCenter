@@ -58,7 +58,6 @@ import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearvibrationcenter.notificationprovider.ReceivedNotification
 import dagger.android.AndroidInjection
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -279,7 +278,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
     }
 
     private fun executeAction(action: PhoneAction) {
-        lifecycleScope.launch {
+        lifecycleScope.launchWithPlayServicesErrorHandling(this) {
             @Suppress("UNCHECKED_CAST")
             val handler = actionHandlers[action.javaClass] as ActionHandler<PhoneAction>?
 
