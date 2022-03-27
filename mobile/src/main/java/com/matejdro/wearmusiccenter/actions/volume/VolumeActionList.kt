@@ -6,16 +6,11 @@ import android.os.PersistableBundle
 import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 
 class VolumeActionList : PhoneAction {
     constructor(context : Context) : super(context)
     constructor(context : Context, bundle: PersistableBundle) : super(context, bundle)
-
-    override fun execute(service: MusicService) {
-        throw UnsupportedOperationException()
-    }
 
     override fun onActionPicked(actionPicker: ActionPickerViewModel) {
         actionPicker.updateDisplayedActionsWithBackStack(listOf(

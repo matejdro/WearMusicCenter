@@ -281,12 +281,9 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         lifecycleScope.launchWithPlayServicesErrorHandling(this) {
             @Suppress("UNCHECKED_CAST")
             val handler = actionHandlers[action.javaClass] as ActionHandler<PhoneAction>?
+                    ?: throw IllegalStateException("Action handler for $action missing")
 
-            if (handler != null) {
-                handler.handleAction(action)
-            } else {
-                action.execute(this@MusicService)
-            }
+            handler.handleAction(action)
         }
     }
 

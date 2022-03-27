@@ -9,7 +9,6 @@ import android.os.PersistableBundle
 import androidx.appcompat.content.res.AppCompatResources
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.tasker.TaskerIntent
@@ -19,11 +18,6 @@ class TaskerTaskPickerAction : PhoneAction, ActivityResultReceiver {
     constructor(context: Context, bundle: PersistableBundle) : super(context, bundle)
 
     private var prevActionPicker: ActionPickerViewModel? = null
-
-    override fun execute(service: MusicService) {
-        throw UnsupportedOperationException()
-    }
-
 
     override fun retrieveTitle(): String = context.getString(R.string.tasker_task)
     override val defaultIcon: Drawable

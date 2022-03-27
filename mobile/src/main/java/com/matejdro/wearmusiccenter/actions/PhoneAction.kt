@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.PersistableBundle
 import androidx.annotation.CallSuper
-import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.serialization.Bundlable
 import timber.log.Timber
@@ -28,7 +27,6 @@ abstract class PhoneAction : Bundlable {
         customTitle = bundle.getString(KEY_CUSTOM_TITLE)
     }
 
-    open fun execute(service: MusicService) {}
     abstract fun onActionPicked(actionPicker: ActionPickerViewModel)
     protected abstract fun retrieveTitle(): String
     abstract val defaultIcon: Drawable
