@@ -113,7 +113,7 @@ constructor(context: Context, attributeSet: AttributeSet? = null) :
                 .setNegativeButton(android.R.string.cancel, this)
         }
 
-        override fun onCreateDialogView(context: Context?): View? {
+        override fun onCreateDialogView(context: Context): View? {
             return null
         }
     }

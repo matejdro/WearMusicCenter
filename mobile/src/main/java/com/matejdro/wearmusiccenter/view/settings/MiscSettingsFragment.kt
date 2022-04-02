@@ -75,7 +75,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     }
 
     private fun migrateOldAutoStartSetting() {
-        val preferences = preferenceManager.sharedPreferences
+        val preferences = preferenceManager.sharedPreferences!!
         if (preferences.contains("auto_start")) {
             val legacyAutoStart = Preferences.getBoolean(preferences, MiscPreferences.AUTO_START)
 
@@ -166,13 +166,13 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     override fun onStart() {
         super.onStart()
 
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences!!.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onStop() {
         super.onStop()
 
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences!!.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -183,7 +183,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
         lifecycleScope.launchWithPlayServicesErrorHandling(requireContext().applicationContext) {
             PreferencePusher.pushPreferences(
                     requireContext().applicationContext,
-                    preferenceManager.sharedPreferences,
+                    preferenceManager.sharedPreferences!!,
                     CommPaths.PREFERENCES_PREFIX,
                     false
             )
