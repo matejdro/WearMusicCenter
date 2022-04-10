@@ -149,7 +149,7 @@ class MiscSettingsFragment : PreferenceFragmentCompatEx(), SharedPreferences.OnS
     private fun sendLogs() {
         LogRetrievalTask(activity,
                 CommPaths.MESSAGE_SEND_LOGS,
-                "matejdro+support@gmail.com",
+                "apps@matejdro.com",
                 "com.matejdro.wearmusiccenter.logs").execute(null as Void?)
     }
 
