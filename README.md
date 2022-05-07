@@ -3,10 +3,12 @@ Music Center for Wear
 
 Application for customizable music control from Android Wear devices with support for additional watch's buttons and digital crown.
 
-See Play Store's description for more information.
+## Installing
 
-[![Play Store link](https://play.google.com/intl/en_us/badges/images/badge_new.png)](https://play.google.com/store/apps/details?id=com.matejdro.wearmusiccenter)
+App is not on the Play Store anymore, due to Google's constant annoying policies and takedowns without a way to get a good explanation.
 
+You can install the app by manually sideloading the apk from releases to your phone and to your watch. To make watch install easier, you can
+use [Wear Installer](https://www.xda-developers.com/wear-installer-sideload-wear-os-apps/).
 
 ## Building
 
