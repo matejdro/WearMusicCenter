@@ -7,8 +7,8 @@
     <string name="action_play">Play</string>
     <string name="action_skip_prev">Skip prev</string>
     <string name="action_skip_next">Skip next</string>
-    <string name="action_skip_30_seconds">Skip 30 seconds</string>
-    <string name="action_reverse_30_seconds">Reverse for 30 seconds</string>
+    <string name="action_skip_seconds">Skip %1$d seconds</string>
+    <string name="action_reverse_seconds">Reverse for %1$d seconds</string>
     <string name="group_playback_controls">Playback controls</string>
     <string name="pick_action">Pick action</string>
     <string name="action_volume_up">Increase volume</string>
@@ -110,4 +110,6 @@
     <string name="please_wait">Please wait</string>
 
     <string name="error_playlist_not_supported">Not supported by this media app</string>
+    <string name="seconds_to_skip">Seconds to skip:</string>
+    <string name="seconds_to_reverse">Seconds to reverse:</string>
 </resources>
