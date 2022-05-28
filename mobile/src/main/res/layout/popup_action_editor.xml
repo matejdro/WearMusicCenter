@@ -28,11 +28,21 @@
         android:hint="@string/action_text"
         tools:text="@string/action_play" />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/action_config_fragment"
+        tools:name="com.matejdro.wearmusiccenter.view.actionconfigs.SkipSecondsConfigFragment"
+        android:layout_below="@id/name_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp" />
+
     <Button
         android:id="@+id/swap_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/name_box"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/action_config_fragment"
         android:text="@string/swap_action" />
 
     <Button

@@ -1,7 +1,6 @@
 package com.matejdro.wearmusiccenter.view.actionlist
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,18 +9,20 @@ import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.PhoneAction
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.databinding.PopupActionEditorBinding
+import com.matejdro.wearmusiccenter.view.actionconfigs.ActionConfigFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerActivity
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
-class ActionEditorActivity : Activity() {
+class ActionEditorActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACTION = "Action"
@@ -103,6 +104,11 @@ class ActionEditorActivity : Activity() {
             currentAction.customTitle = customTitle
         }
 
+        @Suppress("UNCHECKED_CAST")
+        (supportFragmentManager.findFragmentById(R.id.action_config_fragment) as? ActionConfigFragment<PhoneAction>)
+                ?.save(currentAction)
+
+
         val returnIntent = Intent()
         returnIntent.putExtra(EXTRA_ACTION, currentAction.serialize())
         setResult(RESULT_OK, returnIntent)
@@ -131,7 +137,7 @@ class ActionEditorActivity : Activity() {
             intent = Intent.createChooser(intent, getString(R.string.icon_selection_title))
 
             startActivityForResult(intent, REQUEST_CODE_PICK_ICON)
-        } catch(ignored: ActivityNotFoundException) {
+        } catch (ignored: ActivityNotFoundException) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.icon_selection_title)
                     .setMessage(R.string.icon_selection_no_icon_pack)
@@ -168,6 +174,25 @@ class ActionEditorActivity : Activity() {
         binding.icon.setImageDrawable(icon)
 
         binding.nameBox.setText(currentAction.title)
+
+        val configFragmentClass = currentAction.configFragment
+        if (configFragmentClass != null) {
+            @Suppress("UNCHECKED_CAST")
+            val configFragment: ActionConfigFragment<PhoneAction> = configFragmentClass.newInstance() as ActionConfigFragment<PhoneAction>
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.action_config_fragment, configFragment)
+                    .commit()
+
+            configFragment.load(currentAction)
+
+        } else {
+            val existingFragment = supportFragmentManager.findFragmentById(R.id.action_config_fragment)
+            existingFragment?.let {
+                supportFragmentManager.beginTransaction()
+                        .remove(it)
+                        .commit()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -18,16 +18,23 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentContainerView
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.actions.NullAction
 import com.matejdro.wearmusiccenter.actions.PhoneAction
-import com.matejdro.wearmusiccenter.common.buttonconfig.*
+import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonGesture
+import com.matejdro.wearmusiccenter.common.buttonconfig.ButtonInfo
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_DOUBLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_LONG_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.GESTURE_SINGLE_TAP
+import com.matejdro.wearmusiccenter.common.buttonconfig.NUM_BUTTON_GESTURES
 import com.matejdro.wearmusiccenter.config.ActionConfig
 import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.buttons.ButtonConfig
 import com.matejdro.wearmusiccenter.databinding.PopupGesturePickerBinding
 import com.matejdro.wearmusiccenter.di.LocalActivityConfig
 import com.matejdro.wearmusiccenter.view.ActivityResultReceiver
+import com.matejdro.wearmusiccenter.view.actionconfigs.ActionConfigFragment
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
@@ -76,8 +83,8 @@ class GesturePickerFragment : DialogFragment() {
     lateinit var customIconStorage: CustomIconStorage
 
     private lateinit var buttonConfig: ButtonConfig
-    private lateinit var buttons: Array<Button>
-    private var anythingChanged = false
+    private lateinit var buttons: Array<ButtonSet>
+    private var anyActionChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,11 +120,15 @@ class GesturePickerFragment : DialogFragment() {
         dialog!!.setCanceledOnTouchOutside(true)
         dialog!!.setTitle(buttonName)
 
-        buttons = arrayOf(binding.singlePressButton, binding.doublePressButton, binding.longPressButton)
+        buttons = arrayOf(
+                ButtonSet(binding.singlePressButton, binding.singlePressConfigFragment),
+                ButtonSet(binding.doublePressButton, binding.doublePressConfigFragment),
+                ButtonSet(binding.longPressButton, binding.longPressConfigFragment)
+        )
 
-        updateButton(binding.singlePressButton, GESTURE_SINGLE_TAP)
-        updateButton(binding.doublePressButton, GESTURE_DOUBLE_TAP)
-        updateButton(binding.longPressButton, GESTURE_LONG_TAP)
+        updateButton(buttons.elementAt(0), GESTURE_SINGLE_TAP)
+        updateButton(buttons.elementAt(1), GESTURE_DOUBLE_TAP)
+        updateButton(buttons.elementAt(2), GESTURE_LONG_TAP)
 
         binding.customizeIcon.isVisible = !baseButtonInfo.physicalButton
 
@@ -138,14 +149,14 @@ class GesturePickerFragment : DialogFragment() {
 
     }
 
-    private fun updateButton(button: Button, @ButtonGesture gesture: Int) {
+    private fun updateButton(buttonSet: ButtonSet, @ButtonGesture gesture: Int) {
         val phoneAction = actions[gesture]
 
 
-        updateButton(button, phoneAction)
+        updateButton(buttonSet, phoneAction)
     }
 
-    private fun updateButton(button: Button, phoneAction: PhoneAction?) {
+    private fun updateButton(buttonSet: ButtonSet, phoneAction: PhoneAction?) {
         var mutableAction = phoneAction
 
         if (mutableAction == null) {
@@ -161,13 +172,43 @@ class GesturePickerFragment : DialogFragment() {
         val iconSize = resources.getDimensionPixelSize(R.dimen.action_icon_size)
         icon.setBounds(0, 0, iconSize, iconSize)
 
-        button.text = mutableAction.title
-        button.setCompoundDrawables(icon, null, null, null)
+        buttonSet.button.text = mutableAction.title
+        buttonSet.button.setCompoundDrawables(icon, null, null, null)
+
+        val configFragmentClass = mutableAction.configFragment
+        if (configFragmentClass != null) {
+            @Suppress("UNCHECKED_CAST")
+            val configFragment: ActionConfigFragment<PhoneAction> = configFragmentClass.newInstance() as ActionConfigFragment<PhoneAction>
+            childFragmentManager.beginTransaction()
+                    .replace(buttonSet.configFragmentContainer.id, configFragment)
+                    .commit()
+
+            configFragment.load(mutableAction)
+
+        } else {
+            val existingFragment = childFragmentManager.findFragmentById(buttonSet.configFragmentContainer.id)
+            existingFragment?.let {
+                childFragmentManager.beginTransaction()
+                        .remove(it)
+                        .commit()
+            }
+        }
     }
 
     fun save() {
-        if (anythingChanged) {
+        val anyActionHasConfigFragment = buttons
+                .mapNotNull { childFragmentManager.findFragmentById(it.configFragmentContainer.id) }
+                .isNotEmpty()
+
+        if (anyActionChanged || anyActionHasConfigFragment) {
             for ((gesture, action) in actions.withIndex()) {
+                val button = buttons[gesture]
+                if (action != null) {
+                    @Suppress("UNCHECKED_CAST")
+                    (childFragmentManager.findFragmentById(button.configFragmentContainer.id) as? ActionConfigFragment<PhoneAction>)
+                            ?.save(action)
+                }
+
                 val buttonInfo = baseButtonInfo.copy(gesture = gesture)
 
                 buttonConfig.saveButtonAction(buttonInfo, action)
@@ -226,7 +267,7 @@ class GesturePickerFragment : DialogFragment() {
             val actionBundle = data.getParcelableExtra<PersistableBundle>(ActionPickerActivity.EXTRA_ACTION_BUNDLE)
             val action = PhoneAction.deserialize<PhoneAction>(requireActivity(), actionBundle)
 
-            anythingChanged = anythingChanged || action != actions[gesture]
+            anyActionChanged = anyActionChanged || action != actions[gesture]
 
             actions[gesture] = action
             updateButton(buttons[gesture], action)
@@ -249,7 +290,7 @@ class GesturePickerFragment : DialogFragment() {
             action.customIconUri = iconUri
             customIconStorage.setIcon(iconUri, bitmap)
 
-            anythingChanged = true
+            anyActionChanged = true
             updateButton(buttons[GESTURE_SINGLE_TAP], action)
         }
     }
@@ -263,4 +304,6 @@ class GesturePickerFragment : DialogFragment() {
             startIconSelection()
         }
     }
+
+    private class ButtonSet(val button: Button, val configFragmentContainer: FragmentContainerView)
 }

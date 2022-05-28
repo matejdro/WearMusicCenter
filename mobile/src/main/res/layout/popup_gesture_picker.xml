@@ -31,34 +31,50 @@
         android:id="@+id/single_press_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:drawablePadding="10dp"
         tools:drawableLeft="@drawable/action_volume_up"
         tools:drawableTint="@android:color/black"
         tools:text="Volume up" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/single_press_config_fragment"
+        tools:name="com.matejdro.wearmusiccenter.view.actionconfigs.SkipSecondsConfigFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp" />
 
     <TextView
         android:id="@+id/double_press_description"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/gesture_double_press" />
 
     <Button
         android:id="@+id/double_press_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:drawablePadding="10dp"
         tools:drawableLeft="@drawable/action_volume_up"
         tools:drawableTint="@android:color/black"
         tools:text="Volume down" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/double_press_config_fragment"
+        tools:name="com.matejdro.wearmusiccenter.view.actionconfigs.SkipSecondsConfigFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp" />
 
     <TextView
         android:id="@+id/long_press_description"
         style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/gesture_long_press" />
 
     <Button
@@ -70,6 +86,13 @@
         tools:drawableTint="@android:color/black"
         tools:text="Pause" />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/long_press_config_fragment"
+        tools:name="com.matejdro.wearmusiccenter.view.actionconfigs.SkipSecondsConfigFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"

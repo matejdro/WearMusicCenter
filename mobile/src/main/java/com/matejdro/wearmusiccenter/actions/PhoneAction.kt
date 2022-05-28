@@ -5,19 +5,23 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.PersistableBundle
 import androidx.annotation.CallSuper
+import com.matejdro.wearmusiccenter.view.actionconfigs.ActionConfigFragment
 import com.matejdro.wearmusiccenter.view.buttonconfig.ActionPickerViewModel
 import com.matejdro.wearutils.serialization.Bundlable
 import timber.log.Timber
 
 abstract class PhoneAction : Bundlable {
-    protected val context : Context
-    var customIconUri : Uri? = null
+    open val configFragment: Class<out ActionConfigFragment<out PhoneAction>>? = null
+
+    protected val context: Context
+    var customIconUri: Uri? = null
     var customTitle: String? = null
 
-    constructor(context : Context) : super() {
+    constructor(context: Context) : super() {
         this.context = context
     }
-    constructor(context : Context, bundle: PersistableBundle) : super(bundle) {
+
+    constructor(context: Context, bundle: PersistableBundle) : super(bundle) {
         this.context = context
 
         bundle.getString(KEY_CUSTOM_ICON_URI)?.also {
@@ -54,7 +58,7 @@ abstract class PhoneAction : Bundlable {
     }
 
     @CallSuper
-    protected open fun isEqualToAction(other : PhoneAction) : Boolean {
+    protected open fun isEqualToAction(other: PhoneAction): Boolean {
         return customIconUri == other.customIconUri &&
                 customTitle == other.customTitle
     }
@@ -64,7 +68,7 @@ abstract class PhoneAction : Bundlable {
         const val KEY_CUSTOM_TITLE = "CUSTOM_TITLE"
 
         @Suppress("UNCHECKED_CAST")
-        fun <T : PhoneAction> deserialize(context : Context, bundle: PersistableBundle?) : T? {
+        fun <T : PhoneAction> deserialize(context: Context, bundle: PersistableBundle?): T? {
             val className = bundle?.getString(CLASS_KEY) ?: return null
 
             return try {
