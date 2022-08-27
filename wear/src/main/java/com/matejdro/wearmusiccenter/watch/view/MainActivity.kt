@@ -59,6 +59,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class MainActivity : WearCompanionWatchActivity(),
@@ -436,6 +437,9 @@ class MainActivity : WearCompanionWatchActivity(),
                 override fun onUpdateAmbient() {
                     updateClock()
                     viewModel.updateTimers()
+
+                    binding.root.translationX = Random.nextInt(-5, 6).toFloat()
+                    binding.root.translationY = Random.nextInt(-5, 6).toFloat()
                 }
 
                 override fun onExitAmbient() {
@@ -475,6 +479,9 @@ class MainActivity : WearCompanionWatchActivity(),
 
                     binding.textArtist.displayTextOutline = false
                     binding.textTitle.displayTextOutline = false
+
+                    binding.root.translationX = 0f
+                    binding.root.translationY = 0f
                 }
 
             }
