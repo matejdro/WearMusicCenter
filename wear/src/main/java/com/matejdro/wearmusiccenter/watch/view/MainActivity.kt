@@ -438,8 +438,8 @@ class MainActivity : WearCompanionWatchActivity(),
                     updateClock()
                     viewModel.updateTimers()
 
-                    binding.root.translationX = Random.nextInt(-5, 6).toFloat()
-                    binding.root.translationY = Random.nextInt(-5, 6).toFloat()
+                    binding.drawerLayout.translationX = Random.nextInt(-5, 6).toFloat()
+                    binding.drawerLayout.translationY = Random.nextInt(-5, 6).toFloat()
                 }
 
                 override fun onExitAmbient() {
