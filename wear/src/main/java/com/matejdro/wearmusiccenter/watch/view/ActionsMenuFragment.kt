@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.wearable.input.WearableButtons
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -20,9 +21,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.wear.widget.CurvingLayoutCallback
 import androidx.wear.widget.WearableLinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
+import com.google.android.wearable.input.RotaryEncoderHelper
 import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.MiscPreferences
 import com.matejdro.wearmusiccenter.watch.communication.CustomListWithBitmaps
+import com.matejdro.wearmusiccenter.watch.communication.WatchInfoSender
 import com.matejdro.wearmusiccenter.watch.config.ButtonAction
 import com.matejdro.wearutils.preferences.definition.Preferences
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,6 +84,25 @@ class ActionsMenuFragment : Fragment() {
 
     }
 
+    fun onGenericMotionEvent(ev: MotionEvent): Boolean {
+        if (RotaryEncoderHelper.isFromRotaryEncoder(ev) && WatchInfoSender.hasDiscreteRotaryInput()) {
+            val moveForward = RotaryEncoderHelper.getRotaryAxisValue(ev) < 0
+
+            val currentPosition = layoutManager.getCenterItem() ?: return true
+
+            val targetPosition = if (moveForward) {
+                (currentPosition + 1).coerceAtMost(adapter.itemCount - 1)
+            } else {
+                (currentPosition - 1).coerceAtLeast(0)
+            }
+
+            layoutManager.scrollToPosition(targetPosition)
+
+            return true
+        }
+        return false
+    }
+
     private val actionItemsListener = Observer<List<ButtonAction>> {
         if (it == null) {
             return@Observer
@@ -116,8 +138,8 @@ class ActionsMenuFragment : Fragment() {
 
         //Find button with lowest Y value (furthest from user) - that will be close button
         closeDrawerKeycode = (KeyEvent.KEYCODE_STEM_1..KeyEvent.KEYCODE_STEM_3)
-            .mapNotNull { WearableButtons.getButtonInfo(context, it) }
-            .minByOrNull { it.y }?.keycode ?: -1
+                .mapNotNull { WearableButtons.getButtonInfo(context, it) }
+                .minByOrNull { it.y }?.keycode ?: -1
     }
 
     fun scrollToTop() {

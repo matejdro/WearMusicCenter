@@ -17,6 +17,7 @@ import android.os.Looper
 import android.os.Message
 import android.os.Vibrator
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.activity.viewModels
@@ -485,6 +486,14 @@ class MainActivity : WearCompanionWatchActivity(),
                 }
 
             }
+
+    override fun dispatchGenericMotionEvent(ev: MotionEvent): Boolean {
+        if (binding.actionDrawer.isOpened && actionsMenuFragment.onGenericMotionEvent(ev)) {
+            return true
+        }
+
+        return super.dispatchGenericMotionEvent(ev)
+    }
 
     override fun onGenericMotionEvent(ev: android.view.MotionEvent): Boolean {
         if (binding.actionDrawer.isOpened) {
