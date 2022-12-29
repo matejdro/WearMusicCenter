@@ -10,8 +10,8 @@ android {
         applicationId "com.matejdro.wearmusiccenter"
         minSdkVersion 25
         targetSdkVersion 30
-        versionCode 129
-        versionName "1.6.2"
+        versionCode 130
+        versionName "1.9.0"
     }
     buildTypes {
         release {
@@ -34,6 +34,9 @@ android {
 
         freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalStdlibApi"
         freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+    }
+    lintOptions {
+        disable 'ExpiredTargetSdkVersion'
     }
 }
 
