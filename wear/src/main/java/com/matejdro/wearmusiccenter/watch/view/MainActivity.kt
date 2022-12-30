@@ -84,6 +84,8 @@ class MainActivity : WearCompanionWatchActivity(),
     private lateinit var stemButtonsManager: StemButtonsManager
     private val handler = TimeoutsHandler(WeakReference(this))
 
+    private var notificationDismissDeadline: Long = Long.MAX_VALUE
+
     private lateinit var preferences: SharedPreferences
 
     private val viewModel: MusicViewModel by viewModels()
@@ -194,6 +196,10 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private fun updateClock() {
         binding.ambientClock.text = timeFormat.format(java.util.Date())
+
+        if (notificationDismissDeadline < System.currentTimeMillis()) {
+            hideNotification()
+        }
     }
 
     private val musicStateObserver = Observer<Resource<MusicState>> {
@@ -572,6 +578,7 @@ class MainActivity : WearCompanionWatchActivity(),
             card.visibility = View.GONE
         }.start()
         handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
+        notificationDismissDeadline = Long.MAX_VALUE
     }
 
     private fun showNotification() {
@@ -581,10 +588,12 @@ class MainActivity : WearCompanionWatchActivity(),
         }.start()
 
         val timeout = Preferences.getInt(preferences, MiscPreferences.NOTIFICATION_TIMEOUT)
+        val deadlineMs = timeout * 1000
+        notificationDismissDeadline = System.currentTimeMillis() + deadlineMs
 
         handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
         if (timeout > 0) {
-            handler.sendEmptyMessageDelayed(MESSAGE_DISMISS_NOTIFICATION, (timeout * 1000).toLong())
+            handler.sendEmptyMessageDelayed(MESSAGE_DISMISS_NOTIFICATION, deadlineMs.toLong())
         }
     }
 
