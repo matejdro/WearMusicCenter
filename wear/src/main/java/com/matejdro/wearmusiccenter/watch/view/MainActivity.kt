@@ -158,6 +158,7 @@ class MainActivity : WearCompanionWatchActivity(),
         }
 
         viewModel.updateTimers()
+        hideNotificationIfOverdue()
 
         bindService(Intent(this, WatchMusicService::class.java), serviceConnection, BIND_AUTO_CREATE)
     }
@@ -196,10 +197,6 @@ class MainActivity : WearCompanionWatchActivity(),
 
     private fun updateClock() {
         binding.ambientClock.text = timeFormat.format(java.util.Date())
-
-        if (notificationDismissDeadline < System.currentTimeMillis()) {
-            hideNotification()
-        }
     }
 
     private val musicStateObserver = Observer<Resource<MusicState>> {
@@ -314,7 +311,7 @@ class MainActivity : WearCompanionWatchActivity(),
         notificationPopup.body.text = it.description
         notificationPopup.backgroundImage.setImageBitmap(it.background)
 
-        showNotification()
+        showNotification(it)
     }
 
     private val phoneVolumeListener = Observer<Float> {
@@ -420,6 +417,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
                     handler.removeMessages(MESSAGE_UPDATE_CLOCK)
                     updateClock()
+                    hideNotificationIfOverdue()
 
                     binding.iconTop.visibility = View.GONE
                     binding.iconBottom.visibility = View.GONE
@@ -444,6 +442,7 @@ class MainActivity : WearCompanionWatchActivity(),
                 override fun onUpdateAmbient() {
                     updateClock()
                     viewModel.updateTimers()
+                    hideNotificationIfOverdue()
 
                     binding.drawerLayout.translationX = Random.nextInt(-5, 6).toFloat()
                     binding.drawerLayout.translationY = Random.nextInt(-5, 6).toFloat()
@@ -572,6 +571,12 @@ class MainActivity : WearCompanionWatchActivity(),
         hideNotification()
     }
 
+    private fun hideNotificationIfOverdue() {
+        if (notificationDismissDeadline < System.currentTimeMillis()) {
+            hideNotification()
+        }
+    }
+
     private fun hideNotification() {
         val card = binding.notificationPopup.notificationCard
         card.animate().scaleX(0f).scaleY(0f).setDuration(200).withEndAction {
@@ -581,15 +586,19 @@ class MainActivity : WearCompanionWatchActivity(),
         notificationDismissDeadline = Long.MAX_VALUE
     }
 
-    private fun showNotification() {
+    private fun showNotification(notification: Notification) {
+        val timeout = Preferences.getInt(preferences, MiscPreferences.NOTIFICATION_TIMEOUT)
+        val deadlineMs = timeout * 1000
+
+        notificationDismissDeadline = notification.time + deadlineMs
+        if (notificationDismissDeadline < System.currentTimeMillis()) {
+            return
+        }
+
         val card = binding.notificationPopup.notificationCard
         card.animate().scaleX(1f).scaleY(1f).setDuration(200).withStartAction {
             card.visibility = View.VISIBLE
         }.start()
-
-        val timeout = Preferences.getInt(preferences, MiscPreferences.NOTIFICATION_TIMEOUT)
-        val deadlineMs = timeout * 1000
-        notificationDismissDeadline = System.currentTimeMillis() + deadlineMs
 
         handler.removeMessages(MESSAGE_DISMISS_NOTIFICATION)
         if (timeout > 0) {

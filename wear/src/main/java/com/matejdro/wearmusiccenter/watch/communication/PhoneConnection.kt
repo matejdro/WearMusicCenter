@@ -261,7 +261,8 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
                                 val mergedNotification = com.matejdro.wearmusiccenter.watch.model.Notification(
                                         receivedNotification.title,
                                         receivedNotification.description,
-                                        picture
+                                        picture,
+                                        System.currentTimeMillis()
                                 )
 
                                 notification.postValue(mergedNotification)
