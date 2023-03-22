@@ -217,11 +217,7 @@ class PhoneConnection @Inject constructor(@ApplicationContext private val contex
         messageClient.sendMessageToNearestClient(nodeClient, CommPaths.MESSAGE_ACK)
     }
 
-    override fun onDataChanged(data: DataEventBuffer?) {
-        if (data == null) {
-            return
-        }
-
+    override fun onDataChanged(data: DataEventBuffer) {
         val frozenData = data.use { _ ->
             data.map { it.freeze() }
         }

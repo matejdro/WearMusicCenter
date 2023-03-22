@@ -13,7 +13,7 @@ class PreferencesReceiver : PreferenceReceiverService(CommPaths.PREFERENCES_PREF
     override fun getDestinationPreferences(): SharedPreferences.Editor =
             PreferenceManager.getDefaultSharedPreferences(this).edit()
 
-    override fun onDataChanged(dataEventBuffer: DataEventBuffer?) {
+    override fun onDataChanged(dataEventBuffer: DataEventBuffer) {
         super.onDataChanged(dataEventBuffer)
 
         PreferencesBus.postValue(PreferenceManager.getDefaultSharedPreferences(this))

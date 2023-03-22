@@ -423,11 +423,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         executeAction(OpenPlaylistAction(this))
     }
 
-    override fun onMessageReceived(event: MessageEvent?) {
-        if (event == null) {
-            return
-        }
-
+    override fun onMessageReceived(event: MessageEvent) {
         Timber.d("Message %s", event.path)
 
         when (event.path) {
