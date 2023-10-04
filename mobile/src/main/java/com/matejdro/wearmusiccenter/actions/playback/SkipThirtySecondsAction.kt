@@ -27,7 +27,7 @@ class SkipThirtySecondsAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_skip_seconds, secondsToSkip)
     override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_skip_30_seconds)!!
+        get() = AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_skip_30_seconds)!!
     override val configFragment: Class<out ActionConfigFragment<out PhoneAction>>
         get() = SkipSecondsConfigFragment::class.java
 

@@ -25,7 +25,7 @@ class VolumeActionList : PhoneAction {
 
     override val defaultIcon: Drawable
         get() {
-            return AppCompatResources.getDrawable(context, R.drawable.action_volume_up)!!
+            return AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_volume_up)!!
         }
 
 }

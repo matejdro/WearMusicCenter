@@ -26,7 +26,7 @@ class ReverseThirtySecondsAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_reverse_seconds, secondsToReverse)
     override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_reverse_30_seconds)!!
+        get() = AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_reverse_30_seconds)!!
     override val configFragment: Class<out ActionConfigFragment<out PhoneAction>>
         get() = ReverseSecondsConfigFragment::class.java
 

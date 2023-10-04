@@ -195,6 +195,7 @@ class ActionEditorActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_PICK_ACTION) {
             if (data == null) {

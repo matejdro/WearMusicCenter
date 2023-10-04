@@ -169,6 +169,7 @@ class MainActivity : WearCompanionPhoneActivity(), NavigationView.OnNavigationIt
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         if (drawer.isDrawerOpen(GravityCompat.START)) {

@@ -105,12 +105,14 @@ class ActionPickerActivity : AppCompatActivity() {
         startActivityForResult(it, VIEW_MODEL_REQUEST_CODE)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (!viewModel.tryGoBack()) {
             super.onBackPressed()
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

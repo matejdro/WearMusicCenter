@@ -103,7 +103,7 @@ class MainActivity : WearCompanionWatchActivity(),
 
         // Hide peek container - we only want full blown drawer without peeks
         val peekContainer: android.view.ViewGroup = binding.drawerLayout.findViewById(
-                R.id.ws_drawer_view_peek_container
+                androidx.wear.R.id.ws_drawer_view_peek_container
         )
         peekContainer.visibility = View.GONE
         while (peekContainer.childCount > 0) {

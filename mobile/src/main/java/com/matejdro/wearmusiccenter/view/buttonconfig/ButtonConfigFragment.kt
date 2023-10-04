@@ -74,6 +74,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -186,6 +187,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         viewModel.commitConfig()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == GesturePickerFragment.REQUEST_CODE_SAVE_NOTIFICATION &&
                 resultCode == Activity.RESULT_OK) {

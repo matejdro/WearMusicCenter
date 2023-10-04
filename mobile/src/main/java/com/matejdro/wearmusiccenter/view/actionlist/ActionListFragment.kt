@@ -130,6 +130,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         dragDropManager.attachRecyclerView(recycler)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -259,6 +260,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_EDIT_WINDOW &&
                 resultCode == Activity.RESULT_OK &&

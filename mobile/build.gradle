@@ -9,6 +9,7 @@ android {
     compileSdkVersion 33
     defaultConfig {
         applicationId "com.matejdro.wearmusiccenter"
+        namespace = "com.matejdro.wearmusiccenter"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 25
@@ -28,15 +29,14 @@ android {
         exclude 'META-INF/gradle/*'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding true
+        aidl true
     }
     kotlinOptions {
-        jvmTarget = '1.8'
-
         freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalStdlibApi"
         freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.DelicateCoroutinesApi"
 
@@ -48,6 +48,10 @@ android {
 
 kapt {
     correctErrorTypes = true
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {

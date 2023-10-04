@@ -23,7 +23,7 @@ class OpenPlaylistAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.open_playlist_menu)
     override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_open_playlist)!!
+        get() = AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_open_playlist)!!
 
     class Handler @Inject constructor(private val service: MusicService) : ActionHandler<OpenPlaylistAction> {
         override suspend fun handleAction(action: OpenPlaylistAction) {

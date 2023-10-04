@@ -16,7 +16,7 @@ class SkipToPrevAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_skip_prev)
     override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_skip_prev)!!
+        get() = AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_skip_prev)!!
 
     class Handler @Inject constructor(private val service: MusicService) : ActionHandler<SkipToPrevAction> {
         override suspend fun handleAction(action: SkipToPrevAction) {

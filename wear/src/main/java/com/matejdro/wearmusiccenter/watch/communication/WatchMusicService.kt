@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import com.matejdro.common.R as commonR
 
 @AndroidEntryPoint
 class WatchMusicService : LifecycleService() {
@@ -78,14 +79,14 @@ class WatchMusicService : LifecycleService() {
 
         createNotificationChannel()
         val notificationBuilder = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
-                .setContentTitle(getString(R.string.music_control_active))
+                .setContentTitle(getString(commonR.string.music_control_active))
                 .setContentIntent(openAppPendingIntent)
-                .setSmallIcon(R.drawable.ic_notification_white)
+                .setSmallIcon(commonR.drawable.ic_notification_white)
                 .setOngoing(true)
 
 
         val ongoingActivity = OngoingActivity.Builder(this, NOTIFICATION_ID_PERSISTENT, notificationBuilder)
-                .setStaticIcon(R.drawable.ic_notification_white)
+                .setStaticIcon(commonR.drawable.ic_notification_white)
                 .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
                 .setTouchIntent(openAppPendingIntent)
                 .build()
@@ -125,7 +126,7 @@ class WatchMusicService : LifecycleService() {
 
 
         val persistentChannel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
-                getString(R.string.music_control),
+                getString(commonR.string.music_control),
                 NotificationManager.IMPORTANCE_MIN)
         notificationManager.createNotificationChannel(persistentChannel)
     }

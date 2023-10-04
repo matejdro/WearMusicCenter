@@ -17,7 +17,7 @@ class PauseAction : SelectableAction {
 
     override fun retrieveTitle(): String = context.getString(R.string.action_pause)
     override val defaultIcon: Drawable
-        get() = AppCompatResources.getDrawable(context, R.drawable.action_pause)!!
+        get() = AppCompatResources.getDrawable(context, com.matejdro.common.R.drawable.action_pause)!!
 
     class Handler @Inject constructor(private val service: MusicService) : ActionHandler<PauseAction> {
         override suspend fun handleAction(action: PauseAction) {

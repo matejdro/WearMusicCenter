@@ -63,6 +63,7 @@ import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import com.matejdro.common.R as commonR
 
 class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener {
     companion object {
@@ -148,10 +149,10 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
 
         createNotificationChannel()
         val notificationBuilder = NotificationCompat.Builder(this, KEY_NOTIFICATION_CHANNEL)
-                .setContentTitle(getString(R.string.music_control_active))
+                .setContentTitle(getString(commonR.string.music_control_active))
                 .setContentText(getString(R.string.tap_to_force_stop))
                 .setContentIntent(stopSelfPendingIntent)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(commonR.drawable.ic_notification)
 
         contentResolver.registerContentObserver(Settings.System.CONTENT_URI, true, volumeContentObserver)
 
@@ -388,7 +389,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 .setContentTitle(getString(R.string.notification_access_notification_title))
                 .setContentText(getString(R.string.notification_access_notification_title_description))
                 .setContentIntent(notificationManagerPendingIntent)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(commonR.drawable.ic_notification)
 
 
         NotificationManagerCompat.from(this).notify(NOTIFICATION_ID_SERVICE_ERROR,
@@ -469,7 +470,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
 
 
         val persistentChannel = NotificationChannel(KEY_NOTIFICATION_CHANNEL,
-                getString(R.string.music_control),
+                getString(commonR.string.music_control),
                 NotificationManager.IMPORTANCE_MIN)
         notificationManager.createNotificationChannel(persistentChannel)
 
