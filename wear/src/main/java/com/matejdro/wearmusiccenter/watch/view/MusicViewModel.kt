@@ -149,11 +149,11 @@ class MusicViewModel @Inject constructor(
         }
     }
 
-    private val configChangeListener = Observer<WatchActionConfigProvider> {
+    private val configChangeListener = Observer<WatchActionConfigProvider?> {
         currentButtonConfig.value = it
     }
 
-    private val musicStateListener = Observer<Resource<MusicState>> {
+    private val musicStateListener = Observer<Resource<MusicState>?> {
         Timber.d("Received MusicState %s", it?.data)
         val playing = it?.data?.playing == true
 

@@ -149,7 +149,7 @@ class ActionListFragment : Fragment(), FabFragment, RecyclerViewDragDropManager.
         startActivityForResult(intent, REQUEST_CODE_EDIT_WINDOW)
     }
 
-    private val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>> {
+    private val actionListListener = Observer<List<IdentifiedItem<PhoneAction>>?> {
         if (it == null) {
             return@Observer
         }

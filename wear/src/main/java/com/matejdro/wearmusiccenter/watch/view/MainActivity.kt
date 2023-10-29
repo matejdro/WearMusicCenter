@@ -199,7 +199,7 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.ambientClock.text = timeFormat.format(java.util.Date())
     }
 
-    private val musicStateObserver = Observer<Resource<MusicState>> {
+    private val musicStateObserver = Observer<Resource<MusicState>?> {
         Timber.d("GUI Music State %s %s", it?.status, it?.data)
         if (it == null || it.status == Resource.Status.LOADING) {
             binding.loadingIndicator.visibility = View.VISIBLE
@@ -237,7 +237,7 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.albumArt.setImageBitmap(it)
     }
 
-    private val buttonConfigObserver = Observer<WatchActionConfigProvider> { config ->
+    private val buttonConfigObserver = Observer<WatchActionConfigProvider?> { config ->
         if (config == null) {
             return@Observer
         }
@@ -273,7 +273,7 @@ class MainActivity : WearCompanionWatchActivity(),
         }
     }
 
-    private val preferencesChangeObserver = Observer<SharedPreferences> {
+    private val preferencesChangeObserver = Observer<SharedPreferences?> {
         if (it == null) {
             return@Observer
         }
@@ -300,7 +300,7 @@ class MainActivity : WearCompanionWatchActivity(),
         }
     }
 
-    private val notificationObserver = Observer<Notification> {
+    private val notificationObserver = Observer<Notification?> {
         if (it == null) {
             return@Observer
         }
@@ -315,14 +315,14 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private val phoneVolumeListener = Observer<Float> {
-        binding.volumeBar.volume = it!!
+        binding.volumeBar.volume = it
     }
 
-    private val volumeBarPopupListener = Observer<Unit> {
+    private val volumeBarPopupListener = Observer<Unit?> {
         showVolumeBar()
     }
 
-    private val closeDrawerListener = Observer<Unit> {
+    private val closeDrawerListener = Observer<Unit?> {
         closeMenuDrawer()
     }
 
@@ -330,16 +330,16 @@ class MainActivity : WearCompanionWatchActivity(),
         binding.actionDrawer.controller.closeDrawer()
     }
 
-    private val openActionsMenuListener = Observer<Unit> {
+    private val openActionsMenuListener = Observer<Unit?> {
         actionsMenuFragment.refreshMenu(ActionsMenuFragment.MenuType.Actions)
         openMenuDrawer()
     }
 
-    private val closeAppListener = Observer<Unit> {
+    private val closeAppListener = Observer<Unit?> {
         finish()
     }
 
-    private val customListListener = Observer<CustomListWithBitmaps> {
+    private val customListListener = Observer<CustomListWithBitmaps?> {
         val lastListDisplayed = Preferences.getString(
                 preferences,
                 MiscPreferences.LAST_MENU_DISPLAYED

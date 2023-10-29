@@ -16,7 +16,7 @@ class WatchActionMenuProvider(context: Context, coroutineScope: CoroutineScope, 
     private val dataClient = Wearable.getDataClient(context)
     val config = MutableLiveData<List<ButtonAction>>()
 
-    private val dataObserver = Observer<DataItem> { dataItem ->
+    private val dataObserver = Observer<DataItem?> { dataItem ->
         if (dataItem == null) {
             return@Observer
         }

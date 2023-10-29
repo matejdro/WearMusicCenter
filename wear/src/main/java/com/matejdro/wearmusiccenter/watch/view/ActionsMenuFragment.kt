@@ -103,7 +103,7 @@ class ActionsMenuFragment : Fragment() {
         return false
     }
 
-    private val actionItemsListener = Observer<List<ButtonAction>> {
+    private val actionItemsListener = Observer<List<ButtonAction>?> {
         if (it == null) {
             return@Observer
         }
@@ -112,7 +112,7 @@ class ActionsMenuFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    private val preferencesListener = Observer<SharedPreferences> {
+    private val preferencesListener = Observer<SharedPreferences?> {
         if (it == null) {
             return@Observer
         }

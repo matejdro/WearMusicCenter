@@ -134,7 +134,7 @@ class NotificationService : NotificationListenerService() {
         }
     }
 
-    private val mediaObserver = Observer<Resource<MediaController>> {
+    private val mediaObserver = Observer<Resource<MediaController>?> {
         Timber.d("Playback update %b %s", MusicService.active, it?.data?.playbackState?.state)
 
         if (!MusicService.active && it?.data?.playbackState?.isPlaying() == true) {

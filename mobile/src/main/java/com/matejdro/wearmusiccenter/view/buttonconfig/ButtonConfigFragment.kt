@@ -139,7 +139,7 @@ class ButtonConfigFragment : Fragment(), FourWayTouchLayout.UserActionListener {
         }
     }
 
-    private val buttonsConfigObserver = Observer<ButtonConfig> {
+    private val buttonsConfigObserver = Observer<ButtonConfig?> {
         if (it == null) {
             return@Observer
         }

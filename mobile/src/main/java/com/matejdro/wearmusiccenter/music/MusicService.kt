@@ -217,7 +217,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
         }
     }
 
-    private val notificationCallback = Observer<ReceivedNotification> {
+    private val notificationCallback = Observer<ReceivedNotification?> {
         if (it == null) {
             return@Observer
         }

@@ -40,7 +40,7 @@ class WatchActionConfigProvider(context: Context, scope: CoroutineScope, rawConf
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private val rawConfigObserver = Observer<DataItem> {
+    private val rawConfigObserver = Observer<DataItem?> {
         configMap.clear()
 
         if (it == null) {

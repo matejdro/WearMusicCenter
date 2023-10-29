@@ -80,7 +80,7 @@ class ActionPickerActivity : AppCompatActivity() {
         setFinishOnTouchOutside(true)
     }
 
-    private val listObserver = Observer<List<PhoneAction>> {
+    private val listObserver = Observer<List<PhoneAction>?> {
         if (it == null) {
             return@Observer
         }
@@ -90,7 +90,7 @@ class ActionPickerActivity : AppCompatActivity() {
         oldRecyclerSize = adapter.itemCount
     }
 
-    private val pickObserver = Observer<PhoneAction> {
+    private val pickObserver = Observer<PhoneAction?> {
         val resultIntent = Intent()
         resultIntent.putExtra(EXTRA_ACTION_BUNDLE, it?.serialize())
         setResult(Activity.RESULT_OK, resultIntent)
