@@ -11,8 +11,8 @@ android {
         namespace = "com.matejdro.wearmusiccenter"
         minSdkVersion 25
         targetSdkVersion 30
-        versionCode 131
-        versionName "1.9.1"
+        versionCode 132
+        versionName "1.9.2"
     }
     buildTypes {
         release {
