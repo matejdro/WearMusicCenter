@@ -43,3 +43,7 @@
 
 # Dagger
 -dontwarn com.google.errorprone.annotations.*
+
+# AutoValue
+-dontwarn javax.lang.model.**
+-dontwarn net.ltgt.gradle.incap.*
