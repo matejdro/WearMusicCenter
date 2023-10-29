@@ -340,6 +340,9 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     private val customListListener = Observer<CustomListWithBitmaps?> {
+        if (it == null) {
+            return@Observer
+        }
         val lastListDisplayed = Preferences.getString(
                 preferences,
                 MiscPreferences.LAST_MENU_DISPLAYED
