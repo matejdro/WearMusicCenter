@@ -57,10 +57,10 @@ class CircularVolumeBar : android.view.View {
         circleBounds.bottom = circleBounds.top + circleSize
     }
 
-    override fun onDraw(canvas: android.graphics.Canvas?) {
+    override fun onDraw(canvas: android.graphics.Canvas) {
         super.onDraw(canvas)
 
-        canvas?.drawArc(circleBounds, 0f, 360f, false, backgroundPaint)
-        canvas?.drawArc(circleBounds, -90f, volume * 360f, false, foregroundPaint)
+        canvas.drawArc(circleBounds, 0f, 360f, false, backgroundPaint)
+        canvas.drawArc(circleBounds, -90f, volume * 360f, false, foregroundPaint)
     }
 }

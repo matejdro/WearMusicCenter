@@ -88,7 +88,8 @@ class FourWayTouchLayout : FrameLayout,
         return true
     }
 
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean = false
+
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean = false
 
     private fun createFullScreenImageView(): android.widget.ImageView {
         val imageView = android.widget.ImageView(context)
@@ -129,7 +130,7 @@ class FourWayTouchLayout : FrameLayout,
         }
     }
 
-    override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         if (abs(velocityY) > abs(velocityX) && velocityY < 0) {
             listener?.onUpwardsSwipe()
             return true

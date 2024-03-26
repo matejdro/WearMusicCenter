@@ -82,7 +82,7 @@ class AppPlayAction : SelectableAction {
             for (deviceId in InputDevice.getDeviceIds()) {
                 val device = InputDevice.getDevice(deviceId)
 
-                if (device.name == "AVRCP") {
+                if (device?.name == "AVRCP") {
                     pickedDeviceID = deviceId
                 }
             }
@@ -150,4 +150,3 @@ class AppPlayAction : SelectableAction {
         }
     }
 }
-
