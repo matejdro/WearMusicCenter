@@ -22,7 +22,6 @@ import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.Notification
 import com.matejdro.wearmusiccenter.watch.util.launchWithErrorHandling
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.ListenableLiveData
 import com.matejdro.wearutils.lifecycle.LiveDataLifecycleCombiner
 import com.matejdro.wearutils.lifecycle.LiveDataLifecycleListener
@@ -38,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer

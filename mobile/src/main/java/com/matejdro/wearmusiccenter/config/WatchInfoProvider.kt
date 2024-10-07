@@ -8,11 +8,11 @@ import com.google.android.gms.wearable.*
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.proto.WatchInfo
 import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.messages.getByteArrayAsset
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import dagger.Reusable
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @Reusable

@@ -14,8 +14,8 @@ import com.matejdro.wearmusiccenter.R
 import com.matejdro.wearmusiccenter.common.CommPaths
 import com.matejdro.wearmusiccenter.common.buttonconfig.SpecialButtonCodes
 import com.matejdro.wearmusiccenter.proto.WatchInfo
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import kotlinx.coroutines.tasks.await
 
 class WatchInfoSender(private val context: Context, private val urgent: Boolean) {
     suspend fun sendWatchInfoToPhone() {

@@ -16,9 +16,9 @@ import com.matejdro.wearmusiccenter.config.CustomIconStorage
 import com.matejdro.wearmusiccenter.config.WatchInfoProvider
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.tasks.await
 
 @AutoFactory
 class ButtonConfigTransmitter(buttonConfig: ButtonConfig,

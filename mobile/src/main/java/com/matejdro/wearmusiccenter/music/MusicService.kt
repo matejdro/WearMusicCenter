@@ -51,13 +51,13 @@ import com.matejdro.wearmusiccenter.proto.CustomListItemAction
 import com.matejdro.wearmusiccenter.proto.MusicState
 import com.matejdro.wearmusiccenter.proto.WatchActions
 import com.matejdro.wearmusiccenter.util.launchWithPlayServicesErrorHandling
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.lifecycle.EmptyObserver
 import com.matejdro.wearutils.lifecycle.Resource
 import com.matejdro.wearutils.miscutils.BitmapUtils
 import com.matejdro.wearutils.preferences.definition.Preferences
 import com.matejdro.wearvibrationcenter.notificationprovider.ReceivedNotification
 import dagger.android.AndroidInjection
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer

@@ -13,8 +13,8 @@ import com.matejdro.wearmusiccenter.common.CustomLists
 import com.matejdro.wearmusiccenter.config.buttons.ConfigConstants
 import com.matejdro.wearmusiccenter.music.MusicService
 import com.matejdro.wearmusiccenter.proto.CustomList
-import com.matejdro.wearutils.coroutines.await
 import com.matejdro.wearutils.miscutils.BitmapUtils
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class OpenPlaylistAction : SelectableAction {
