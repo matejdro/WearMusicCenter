@@ -1,6 +1,5 @@
 package com.matejdro.wearmusiccenter.watch.view
 
-import android.annotation.TargetApi
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -20,6 +18,8 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.Lifecycle
@@ -142,6 +142,8 @@ class MainActivity : WearCompanionWatchActivity(),
 
         actionsMenuFragment =
                 supportFragmentManager.findFragmentById(R.id.drawer_content) as ActionsMenuFragment
+
+        onBackPressedDispatcher.addCallback(this, backButtonOverrideCallback)
     }
 
     override fun onStart() {
@@ -269,8 +271,9 @@ class MainActivity : WearCompanionWatchActivity(),
                 enabledLongPressActions[button] =
                         config.isActionActive(ButtonInfo(true, button, GESTURE_LONG_TAP))
             }
-
         }
+
+        backButtonOverrideCallback.isEnabled = config.isActionActive(ButtonInfo(true, KeyEvent.KEYCODE_BACK, GESTURE_SINGLE_TAP))
     }
 
     private val preferencesChangeObserver = Observer<SharedPreferences?> {
@@ -391,6 +394,12 @@ class MainActivity : WearCompanionWatchActivity(),
             if (newState == WearableDrawerView.STATE_DRAGGING && binding.actionDrawer.isClosed) {
                 openDefaultListInDrawer()
             }
+        }
+    }
+
+    val backButtonOverrideCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            stemButtonsManager.simulateKeyPress(KeyEvent.KEYCODE_BACK)
         }
     }
 
@@ -545,9 +554,9 @@ class MainActivity : WearCompanionWatchActivity(),
         return super.onGenericMotionEvent(ev)
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // Back button is handled through onBackPressedDispatcher
             return super.onKeyDown(keyCode, event)
         }
 
@@ -563,6 +572,11 @@ class MainActivity : WearCompanionWatchActivity(),
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // Back button is handled through onBackPressedDispatcher
+            return super.onKeyDown(keyCode, event)
+        }
+
         if (stemButtonsManager.onKeyUp(keyCode)) {
             return true
         }
