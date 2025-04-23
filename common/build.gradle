@@ -13,11 +13,11 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 34
     namespace = "com.matejdro.common"
 
 
     defaultConfig {
+        compileSdk 35
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

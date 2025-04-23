@@ -122,7 +122,7 @@ class ActiveMediaSessionProvider @Inject constructor(private val context: Contex
             }
         }
 
-        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo?) {
+        override fun onAudioInfoChanged(info: MediaController.PlaybackInfo) {
             updateControllerIfNeeded()
         }
     }
