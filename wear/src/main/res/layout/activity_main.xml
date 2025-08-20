@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.333"
+            android:scaleType="centerCrop"
             tools:ignore="ContentDescription" />
 
         <androidx.wear.widget.BoxInsetLayout
