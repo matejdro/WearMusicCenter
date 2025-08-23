@@ -309,6 +309,7 @@ class MusicService : LifecycleService(), MessageClient.OnMessageReceivedListener
                 }
 
                 albumArt = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+                    ?: meta.getBitmap(MediaMetadata.METADATA_KEY_ART)
             }
 
             currentVolume = mediaController.playbackInfo?.currentVolume ?: 0
