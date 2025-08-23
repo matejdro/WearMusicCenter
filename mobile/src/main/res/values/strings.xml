@@ -80,6 +80,8 @@
     <string name="setting_auto_start_apps_blacklist_description">List of media apps that can auto-start Music Center</string>
     <string name="setting_swipe_up_for_queue">Open queue with swipe up gesture</string>
     <string name="setting_swipe_up_for_queue_description">When enabled, swiping up will display playback queue instead of actions menu. You can still open actions menu by assigning "Open actions menu" action to any button.</string>
+    <string name="setting_dim_album_art">Dim the album art</string>
+    <string name="setting_dim_album_art_description">When enabled, displayed album art will be dimmed, allowing for better text visibility.</string>
 
     <string-array name="auto_start_modes_keys">
         <item>OFF</item>

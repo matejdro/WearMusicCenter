@@ -39,6 +39,8 @@ object MiscPreferences {
 
     val OPEN_PLAYBACK_QUEUE_ON_SWIPE_UP: PreferenceDefinition<Boolean> = SimplePreferenceDefinition("swipe_up_for_queue", false)
 
+    val DIM_ALBUM_ART: PreferenceDefinition<Boolean> = SimplePreferenceDefinition("dim_album_art", true)
+
     fun isAnyKindOfAutoStartEnabled(preferences: SharedPreferences): Boolean {
         return Preferences.getBoolean(preferences, AUTO_START) || Preferences.getEnum(preferences, AUTO_START_MODE) != AutoStartMode.OFF
     }

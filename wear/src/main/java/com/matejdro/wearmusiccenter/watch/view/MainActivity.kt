@@ -301,6 +301,13 @@ class MainActivity : WearCompanionWatchActivity(),
                 binding.ambientClock.visibility = View.GONE
             }
         }
+
+        val dimAlbumArt = Preferences.getBoolean(
+            preferences,
+            MiscPreferences.DIM_ALBUM_ART
+        )
+
+        binding.albumArt.alpha = if (dimAlbumArt) 0.333f else 1f
     }
 
     private val notificationObserver = Observer<Notification?> {
