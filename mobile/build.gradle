@@ -11,7 +11,7 @@ android {
         namespace = "com.matejdro.wearmusiccenter"
         minSdkVersion 23
         targetSdkVersion 30
-        compileSdk 35
+        compileSdk 36
         versionCode 26
         versionName "1.10"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

@@ -17,7 +17,7 @@ android {
 
 
     defaultConfig {
-        compileSdk 35
+        compileSdk 36
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
